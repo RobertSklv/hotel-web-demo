@@ -6,6 +6,7 @@ namespace HotelWebDemo.Data;
 public class AppDbContext : DbContext
 {
     public DbSet<Address> Addresses { get; set; }
+    public DbSet<AdminRole> AdminRoles { get; set; }
     public DbSet<AdminUser> AdminUsers { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<BookingCancellation> BookingCancellations { get; set; }

@@ -23,7 +23,9 @@ public class AdminUser : BaseEntity
     [MaxLength(16)]
     public byte[] PasswordHashSalt { get; set; }
 
-    public AdminUserRole Role { get; set; }
+    public AdminRole Role { get; set; }
+
+    public int RoleId { get; set; }
 
     [MaxLength(64)]
     [Column(TypeName = "varchar")]
