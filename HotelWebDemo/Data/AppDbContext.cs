@@ -1,10 +1,13 @@
 ﻿using HotelWebDemo.Models.Database;
+using HotelWebDemo.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data;
 
 public class AppDbContext : DbContext
 {
+    private readonly IServiceProvider serviceProvider;
+
     public DbSet<Address> Addresses { get; set; }
     public DbSet<AdminRole> AdminRoles { get; set; }
     public DbSet<AdminUser> AdminUsers { get; set; }
@@ -26,9 +29,10 @@ public class AppDbContext : DbContext
     public DbSet<RoomFeature> RoomFeatures { get; set; }
     public DbSet<RoomFeatureRoom> RoomFeatureRooms { get; set; }
 
-	public AppDbContext(DbContextOptions<AppDbContext> options)
+	public AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvider serviceProvider)
         : base(options)
     {
+        this.serviceProvider = serviceProvider;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -74,6 +78,8 @@ public class AppDbContext : DbContext
             .HasOne(e => e.Author)
             .WithMany(e => e.Reviews)
             .OnDelete(DeleteBehavior.NoAction);
+
+        serviceProvider.GetRequiredService<IAdminAuthService>().CreateDefaultAdminUser();
     }
 
     protected void SetTimestamps()
