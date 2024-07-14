@@ -28,4 +28,21 @@ public class Customer : BaseEntity
     public List<BookingCustomer> BookingCustomers { get; set; }
 
     public List<Review> Reviews { get; set; }
+
+    public string FullName
+    {
+        get
+        {
+            string fullName = FirstName;
+            
+            if (MiddleName != null)
+            {
+                fullName += " " + MiddleName;
+            }
+
+            fullName += " " + LastName;
+
+            return fullName;
+        }
+    }
 }

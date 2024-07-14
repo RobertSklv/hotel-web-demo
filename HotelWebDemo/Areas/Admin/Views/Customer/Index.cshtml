@@ -1,0 +1,76 @@
+﻿@using HotelWebDemo.Models.Components
+@using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.Utilities
+
+@model PaginatedList<Customer>
+
+@{
+    ViewData["Title"] = "All Customers";
+    var totalPages = ViewData["TotalPages"] as int?;
+    TableContext tableContext = new("Index", ViewData);
+}
+
+<div class="container">
+    <h1 class="mt-4 mb-5">All customers</h1>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <partial name="_TableLink" model="@tableContext.CreateLink("#").SetOrder(nameof(Customer.Id))" />
+                </th>
+                <th>
+                    <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.FirstName)).SetOrder()" />
+                </th>
+                <th>
+                    <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.MiddleName)).SetOrder()" />
+                </th>
+                <th>
+                    <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.LastName)).SetOrder()" />
+                </th>
+                <th>
+                    <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.CreatedAt)).SetOrder()" />
+                </th>
+                <th>
+                    <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.UpdatedAt)).SetOrder()" />
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (Customer customer in Model)
+                {
+                    <tr>
+                        <td>
+                            @customer.Id
+                        </td>
+                        <td>
+                            @customer.FirstName
+                        </td>
+                        <td>
+                            @customer.MiddleName
+                        </td>
+                        <td>
+                            @customer.LastName
+                        </td>
+                        <td>
+                            @customer.CreatedAt
+                        </td>
+                        <td>
+                            @customer.UpdatedAt
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">
+                        No results were found.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <partial name="_Pagination" model="@tableContext.CreatePagination(Model)" />
+</div>

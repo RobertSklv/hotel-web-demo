@@ -1,0 +1,16 @@
+﻿@using HotelWebDemo.Models.Components
+
+@model TableLink
+
+@{
+}
+
+<a asp-action="@Model.ActionName"
+   asp-route-orderBy="@Model.OrderBy"
+   asp-route-direction="@Model.Direction"
+   asp-route-page="@Model.Page"
+   title="@Model.Content"
+   class="@Model.Class"
+   disabled="@Model.Disabled">
+    @Model.Content
+</a>

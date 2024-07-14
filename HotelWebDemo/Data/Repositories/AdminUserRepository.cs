@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Models.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
 
@@ -20,7 +21,10 @@ public class AdminUserRepository : IAdminUserRepository
 
     public AdminUser? FindUser(string usernameOrEmail)
     {
-        return db.AdminUsers.Where(u => u.UserName == usernameOrEmail || u.Email == usernameOrEmail).FirstOrDefault();
+        return db.AdminUsers
+            .Where(u => u.UserName == usernameOrEmail || u.Email == usernameOrEmail)
+            .Include(u => u.Role)
+            .FirstOrDefault();
     }
 
     public bool IsUsernameTaken(string username)

@@ -30,6 +30,9 @@ builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 builder.Services.AddScoped<IAdminUserCreateService, AdminUserCreateService>();
 
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

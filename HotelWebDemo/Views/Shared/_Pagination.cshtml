@@ -1,0 +1,17 @@
+﻿@using HotelWebDemo.Models.Components
+
+@model Pagination
+
+@{
+}
+
+<nav>
+    <ul class="pagination">
+        @foreach (TableLink pageLink in Model.GeneratePaginationLinks())
+        {
+            <li class="page-item">
+                <partial name="_TableLink" model="pageLink" />
+            </li>
+        }
+    </ul>
+</nav>
