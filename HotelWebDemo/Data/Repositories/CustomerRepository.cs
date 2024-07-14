@@ -14,6 +14,39 @@ public class CustomerRepository : ICustomerRepository
         this.db = db;
     }
 
+    public Customer? Get(int id)
+    {
+        return db.Customers
+            .Where(c => c.Id == id)
+            .Include(c => c.CustomerIdentity)
+            .Include(c => c.CustomerAccount)
+            .FirstOrDefault();
+    }
+
+    public async Task<int> Upsert(Customer customer)
+    {
+        if (customer.Id == 0)
+        {
+            db.Customers.Add(customer);
+        }
+        else
+        {
+            db.Customers.Update(customer);
+        }
+
+        return await db.SaveChangesAsync();
+    }
+
+    public async Task<int> Delete(int id)
+    {
+        db.Customers
+            .Where(c => c.Id == id)
+            .Take(1)
+            .ExecuteDelete();
+
+        return await db.SaveChangesAsync();
+    }
+
     public async Task<PaginatedList<Customer>> GetCustomers(string orderBy, bool desc, int page, int pageSize)
     {
         IQueryable<Customer> customers = db.Customers

@@ -1,0 +1,24 @@
+﻿@using HotelWebDemo.Models.Database
+
+@model Customer
+
+@{
+    bool isCreate = Model.Id == 0;
+}
+
+<h1 class="mt-4 mb-5">
+    @(isCreate ? "New Customer" : $"Customer: {Model.FullName}")
+</h1>
+
+<form asp-action="Upsert" method="@(isCreate ? "POST" : "PUT")">
+    @if (!isCreate)
+    {
+        <input type="hidden" asp-for=@Model.Id />
+    }
+
+    <partial name="_GeneralFieldset" model="@Model" />
+    <partial name="_IdentityFieldset" model="@Model" />
+    <partial name="_AddressFieldset" model="@Model" />
+
+    <button type="submit" class="btn btn-lg btn-primary mt-4 px-4">Save</button>
+</form>

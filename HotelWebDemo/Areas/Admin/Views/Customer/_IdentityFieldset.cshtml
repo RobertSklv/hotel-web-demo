@@ -1,0 +1,27 @@
+﻿@using HotelWebDemo.Models.Database
+
+@model Customer
+
+@{
+    Layout = "_FieldsetLayout";
+    ViewData["Legend"] = "Identification";
+}
+
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.CustomerIdentity.NationalId></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.CustomerIdentity.NationalId class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.CustomerIdentity.NationalId class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.CustomerIdentity.PassportId></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.CustomerIdentity.PassportId class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.CustomerIdentity.PassportId class="text-danger"></span>
+    </div>
+</div>

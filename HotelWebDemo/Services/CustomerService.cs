@@ -13,6 +13,21 @@ public class CustomerService : ICustomerService
         this.repository = repository;
     }
 
+    public Customer? Get(int id)
+    {
+        return repository.Get(id);
+    }
+
+    public Task<int> Upsert(Customer customer)
+    {
+        return repository.Upsert(customer);
+    }
+
+    public Task<int> Delete(int id)
+    {
+        return repository.Delete(id);
+    }
+
     public async Task<PaginatedList<Customer>> GetCustomers(string orderBy, string direction, int page, int pageSize)
     {
         bool desc = direction == "desc";

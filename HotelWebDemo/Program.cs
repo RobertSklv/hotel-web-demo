@@ -2,6 +2,7 @@ using HotelWebDemo.Data;
 using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Services;
 using Microsoft.EntityFrameworkCore;
+using StarExplorerMainServer.Areas.Admin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,8 @@ builder.Services.AddScoped<IAdminUserCreateService, AdminUserCreateService>();
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 
 var app = builder.Build();
 
