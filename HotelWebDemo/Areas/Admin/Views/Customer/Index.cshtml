@@ -33,6 +33,7 @@
                 <th>
                     <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.UpdatedAt)).SetOrder()" />
                 </th>
+                <th class="text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -59,13 +60,17 @@
                         <td>
                             @customer.UpdatedAt
                         </td>
+                        <partial name="_RowActions" model="@(new TableRowActions("Customer", customer.Id, confirmDelete: true)
+                        {
+                            ConfirmMessage = $"Are you sure you want to delete customer {customer.FullName}?"
+                        })" />
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="6">
+                    <td colspan="7">
                         No results were found.
                     </td>
                 </tr>
