@@ -51,6 +51,7 @@ public class AppDbContext : DbContext
     protected void SeedDefaultData(ModelBuilder modelBuilder)
     {
         JsonSeeder<AdminRole>.SeedDefaultData(modelBuilder, "AdminRoles");
+        JsonSeeder<Country>.SeedDefaultData(modelBuilder, "Countries");
     }
 
     protected void SeedSampleData(ModelBuilder modelBuilder)
