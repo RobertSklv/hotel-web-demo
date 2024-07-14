@@ -1,0 +1,10 @@
+[
+  {
+    "Code": "Administrator",
+    "DisplayedName": "Administrator"
+  },
+  {
+    "Code": "CustomerService",
+    "DisplayedName": "Customer Service"
+  }
+]

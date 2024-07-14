@@ -84,11 +84,19 @@ public class AdminAuthService : IAdminAuthService
                 return;
             }
 
+            AdminRole? role = adminUserRepository.FindRole("Administrator");
+
+            if (role == null)
+            {
+                return;
+            }
+
             AdminUserRegistration registerModel = new()
             {
                 UserName = username,
                 Email = email,
-                Password = password
+                Password = password,
+                RoleId = role.Id,
             };
 
             AdminUser? admin = adminUserCreateService.CreateAdminUser(registerModel);

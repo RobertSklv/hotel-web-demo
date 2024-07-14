@@ -27,6 +27,11 @@ public class AdminUser : BaseEntity
 
     public int RoleId { get; set; }
 
+    [Display(Name = "Workplace")]
+    public Hotel? Hotel { get; set; }
+
+    public int? HotelId { get; set; }
+
     [MaxLength(64)]
     [Column(TypeName = "varchar")]
     public string? ProfileImagePath { get; set; }

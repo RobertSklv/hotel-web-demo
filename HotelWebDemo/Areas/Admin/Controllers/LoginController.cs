@@ -55,7 +55,7 @@ public class LoginController : AdminController
     [HttpPost]
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignOutAsync("AdminCookie");
 
         return RedirectToAction("Index");
     }
@@ -63,6 +63,6 @@ public class LoginController : AdminController
     private async Task AttemptAuthenticate(AdminUser user)
     {
         ClaimsPrincipal principal = adminAuthService.CreateClaimsPrincipal(user);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+        await HttpContext.SignInAsync("AdminCookie", principal);
     }
 }

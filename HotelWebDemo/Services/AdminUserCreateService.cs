@@ -21,6 +21,7 @@ public class AdminUserCreateService : IAdminUserCreateService
         {
             UserName = registerModel.UserName,
             Email = registerModel.Email,
+            RoleId = registerModel.RoleId,
             PasswordHash = passwordHash,
             PasswordHashSalt = passwordHashSalt
         };

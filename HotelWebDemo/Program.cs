@@ -1,7 +1,6 @@
 using HotelWebDemo.Data;
 using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString, p => p.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
 //Cookie Authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication()
     .AddCookie("AdminCookie", options =>
     {
         options.Cookie.Name = "AdminAuth";

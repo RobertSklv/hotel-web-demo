@@ -13,4 +13,6 @@ public interface IAdminUserRepository
     bool IsEmailTaken(string email);
 
     int GetAdminUserCount();
+
+    AdminRole? FindRole(string code);
 }

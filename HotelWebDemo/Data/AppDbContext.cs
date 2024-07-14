@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Models.Database;
+﻿using HotelWebDemo.Data.Seeding;
+using HotelWebDemo.Models.Database;
 using HotelWebDemo.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +40,25 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        ConfigureDeleteBehavior(modelBuilder);
+
+        SeedDefaultData(modelBuilder);
+        SeedSampleData(modelBuilder);
+
+        serviceProvider.GetRequiredService<IAdminAuthService>().CreateDefaultAdminUser();
+    }
+
+    protected void SeedDefaultData(ModelBuilder modelBuilder)
+    {
+        JsonSeeder<AdminRole>.SeedDefaultData(modelBuilder, "AdminRoles");
+    }
+
+    protected void SeedSampleData(ModelBuilder modelBuilder)
+    {
+    }
+
+    protected void ConfigureDeleteBehavior(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<BookingCustomer>()
             .HasOne(e => e.Customer)
             .WithMany(e => e.BookingCustomers)
@@ -79,7 +99,10 @@ public class AppDbContext : DbContext
             .WithMany(e => e.Reviews)
             .OnDelete(DeleteBehavior.NoAction);
 
-        serviceProvider.GetRequiredService<IAdminAuthService>().CreateDefaultAdminUser();
+        modelBuilder.Entity<AdminUser>()
+            .HasOne(e => e.Hotel)
+            .WithMany(e => e.AdminUsers)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 
     protected void SetTimestamps()

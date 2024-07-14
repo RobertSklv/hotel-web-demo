@@ -37,4 +37,9 @@ public class AdminUserRepository : IAdminUserRepository
     {
         return db.AdminUsers.Count();
     }
+
+    public AdminRole? FindRole(string code)
+    {
+        return db.AdminRoles.Where(r => r.Code == code).FirstOrDefault();
+    }
 }

@@ -4,6 +4,7 @@ using HotelWebDemo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelWebDemo.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240714123433_AdminRolesFix")]
+    partial class AdminRolesFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +82,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.AdminRole", b =>
@@ -107,7 +110,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdminRoles", (string)null);
+                    b.ToTable("AdminRoles");
 
                     b.HasData(
                         new
@@ -182,7 +185,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AdminUsers", (string)null);
+                    b.ToTable("AdminUsers");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.Booking", b =>
@@ -214,7 +217,7 @@ namespace HotelWebDemo.Migrations
                     b.HasIndex("BookingPaymentId")
                         .IsUnique();
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.BookingCancellation", b =>
@@ -242,7 +245,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BookingCancellations", (string)null);
+                    b.ToTable("BookingCancellations");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.BookingCustomer", b =>
@@ -272,7 +275,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("BookingCustomers", (string)null);
+                    b.ToTable("BookingCustomers");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.BookingItem", b =>
@@ -305,7 +308,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("RoomCategoryId");
 
-                    b.ToTable("BookingItems", (string)null);
+                    b.ToTable("BookingItems");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.BookingItemRoomFeature", b =>
@@ -335,7 +338,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("RoomFeatureid");
 
-                    b.ToTable("BookingItemRoomFeatures", (string)null);
+                    b.ToTable("BookingItemRoomFeatures");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.BookingPayment", b =>
@@ -408,7 +411,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("BookingPayments", (string)null);
+                    b.ToTable("BookingPayments");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.Country", b =>
@@ -438,7 +441,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Countries", (string)null);
+                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.Customer", b =>
@@ -486,7 +489,7 @@ namespace HotelWebDemo.Migrations
                         .IsUnique()
                         .HasFilter("[CustomerIdentityId] IS NOT NULL");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.CustomerAccount", b =>
@@ -532,7 +535,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("AddressId");
 
-                    b.ToTable("CustomerAccounts", (string)null);
+                    b.ToTable("CustomerAccounts");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.CustomerIdentity", b =>
@@ -568,7 +571,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("CitizenshipId");
 
-                    b.ToTable("CustomerIdentities", (string)null);
+                    b.ToTable("CustomerIdentities");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.Hotel", b =>
@@ -601,7 +604,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Hotels", (string)null);
+                    b.ToTable("Hotels");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.Review", b =>
@@ -644,7 +647,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
 
                     b.UseTptMappingStrategy();
                 });
@@ -688,7 +691,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("Rooms", (string)null);
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.RoomCategory", b =>
@@ -724,7 +727,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoomCategories", (string)null);
+                    b.ToTable("RoomCategories");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.RoomFeature", b =>
@@ -754,7 +757,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoomFeatures", (string)null);
+                    b.ToTable("RoomFeatures");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.RoomFeatureRoom", b =>
@@ -784,7 +787,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("RoomFeatureRooms", (string)null);
+                    b.ToTable("RoomFeatureRooms");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.HotelReview", b =>
@@ -796,7 +799,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("HotelReviews", (string)null);
+                    b.ToTable("HotelReviews");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.Address", b =>
