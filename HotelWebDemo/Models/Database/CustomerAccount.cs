@@ -30,4 +30,12 @@ public class CustomerAccount : BaseEntity
     public Address Address { get; set; }
 
     public int AddressId { get; set; }
+
+    [MinLength(12)]
+    [MaxLength(12)]
+    public byte[]? PasswordResetToken { get; set; }
+
+    public DateTime? PasswordResetStart { get; set; }
+
+    public bool EmailVerified { get; set; }
 }

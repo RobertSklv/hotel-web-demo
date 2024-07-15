@@ -1,6 +1,8 @@
+using HotelWebDemo.Configuration;
 using HotelWebDemo.Data;
 using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Services;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using StarExplorerMainServer.Areas.Admin.Services;
 
@@ -35,6 +37,14 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+
+builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
+builder.Services.AddTransient<IMailingService, MailingService>();
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
+builder.Services.AddScoped<ILinkGeneratorSerivce, LinkGeneratorService>();
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
 

@@ -6,9 +6,9 @@ namespace HotelWebDemo.Models.Database;
 [Table("Addresses")]
 public class Address : BaseEntity
 {
-    public Customer Customer { get; set; }
+    public CustomerAccount CustomerAccount { get; set; }
 
-    public int CustomerId { get; set; }
+    public int CustomerAccountId { get; set; }
 
     [Required]
     [StringLength(64)]
@@ -17,11 +17,11 @@ public class Address : BaseEntity
 
     [StringLength(64)]
     [Display(Name = "Street line 2")]
-    public string StreetLine2 { get; set; }
+    public string? StreetLine2 { get; set; }
 
     [StringLength(64)]
     [Display(Name = "Street line 3")]
-    public string StreetLine3 { get; set; }
+    public string? StreetLine3 { get; set; }
 
     public Country Country { get; set; }
 

@@ -12,4 +12,12 @@ public interface ICustomerService
     Task<int> Delete(int id);
 
     Task<PaginatedList<Customer>> GetCustomers(string orderBy, string direction, int page, int pageSize);
+
+    byte[] GenerateResetPasswordBytes();
+
+    Task<bool> SendResetPasswordEmail(Customer customer, string subject, string emailTemplate, byte[] token);
+
+    Task<bool> ResetPasswordNewAccountAndNotify(Customer customer);
+
+    Task<bool> ResetPasswordAndNotify(Customer customer);
 }

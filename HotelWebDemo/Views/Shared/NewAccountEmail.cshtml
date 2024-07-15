@@ -1,0 +1,14 @@
+﻿@using HotelWebDemo.Models.Mailing
+
+@model ResetPasswordEmailModel
+
+@{
+    Layout = "_EmailTemplate";
+    ViewData["Title"] = "Welcome to HotelWebDemo";
+}
+
+<div>
+    <h1>Your HotelWebDemo account is almost complete!</h1>
+
+    <p><a href="@Model.ResetPasswordUrl">Click here</a> to create a new password and activate your account.</p>
+</div>

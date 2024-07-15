@@ -20,6 +20,7 @@ public class CustomerRepository : ICustomerRepository
             .Where(c => c.Id == id)
             .Include(c => c.CustomerIdentity)
             .Include(c => c.CustomerAccount)
+            .ThenInclude(a => a.Address)
             .FirstOrDefault();
     }
 
@@ -27,7 +28,7 @@ public class CustomerRepository : ICustomerRepository
     {
         if (customer.Id == 0)
         {
-            db.Customers.Add(customer);
+            await db.Customers.AddAsync(customer);
         }
         else
         {
@@ -72,5 +73,27 @@ public class CustomerRepository : ICustomerRepository
             nameof(Customer.UpdatedAt) => customers.OrderByExtended(c => c.UpdatedAt, desc),
             _ => customers.OrderByExtended(c => c.Id, desc),
         };
+    }
+
+    public CustomerAccount GetOrLoadCustomerAccount(Customer customer)
+    {
+        CustomerAccount? account = customer.CustomerAccount;
+
+        if (account == null)
+        {
+            account = db.CustomerAccounts.Where(a => a.Id == customer.CustomerAccountId).First();
+        }
+
+        return account;
+    }
+
+    public async Task<int> SaveResetPasswordToken(Customer customer, byte[] token)
+    {
+        CustomerAccount account = GetOrLoadCustomerAccount(customer);
+
+        account.PasswordResetToken = token;
+        account.PasswordResetStart = DateTime.UtcNow;
+
+        return await db.SaveChangesAsync();
     }
 }

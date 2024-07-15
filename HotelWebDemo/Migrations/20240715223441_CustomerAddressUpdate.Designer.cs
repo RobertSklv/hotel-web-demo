@@ -4,6 +4,7 @@ using HotelWebDemo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelWebDemo.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240715223441_CustomerAddressUpdate")]
+    partial class CustomerAddressUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2363,9 +2366,9 @@ namespace HotelWebDemo.Migrations
             modelBuilder.Entity("HotelWebDemo.Models.Database.Address", b =>
                 {
                     b.HasOne("HotelWebDemo.Models.Database.Country", "Country")
-                        .WithMany("Addresses")
+                        .WithMany()
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Country");
@@ -2511,9 +2514,9 @@ namespace HotelWebDemo.Migrations
             modelBuilder.Entity("HotelWebDemo.Models.Database.CustomerIdentity", b =>
                 {
                     b.HasOne("HotelWebDemo.Models.Database.Country", "Citizenship")
-                        .WithMany("Citizenships")
+                        .WithMany()
                         .HasForeignKey("CitizenshipId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Citizenship");
@@ -2621,13 +2624,6 @@ namespace HotelWebDemo.Migrations
                 {
                     b.Navigation("Booking")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HotelWebDemo.Models.Database.Country", b =>
-                {
-                    b.Navigation("Addresses");
-
-                    b.Navigation("Citizenships");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.Customer", b =>

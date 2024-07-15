@@ -12,4 +12,8 @@ public class Country : BaseEntity
     [MaxLength(3)]
     [Column(TypeName = "varchar")]
     public string Code { get; set; }
+
+    public List<Address> Addresses { get; set; }
+
+    public List<CustomerIdentity> Citizenships { get; set; }
 }

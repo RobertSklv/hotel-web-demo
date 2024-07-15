@@ -17,4 +17,6 @@ public class CustomerIdentity : BaseEntity
     public string? PassportId { get; set; }
 
     public Country Citizenship { get; set; }
+
+    public int CitizenshipId { get; set; }
 }

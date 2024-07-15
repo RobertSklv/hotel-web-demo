@@ -90,4 +90,11 @@ public class CustomerController : AdminController
 
         return RedirectToAction("Index");
     }
+
+    public async Task<IActionResult> ResetPassword(Customer customer)
+    {
+        await service.ResetPasswordAndNotify(customer);
+
+        return RedirectToAction("Edit", customer.Id);
+    }
 }

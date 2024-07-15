@@ -104,6 +104,21 @@ public class AppDbContext : DbContext
             .HasOne(e => e.Hotel)
             .WithMany(e => e.AdminUsers)
             .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<CustomerAccount>()
+            .HasOne(e => e.Address)
+            .WithOne(e => e.CustomerAccount)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Address>()
+            .HasOne(e => e.Country)
+            .WithMany(e => e.Addresses)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<CustomerIdentity>()
+            .HasOne(e => e.Citizenship)
+            .WithMany(e => e.Citizenships)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 
     protected void SetTimestamps()

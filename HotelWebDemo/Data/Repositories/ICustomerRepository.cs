@@ -14,4 +14,8 @@ public interface ICustomerRepository
     Task<PaginatedList<Customer>> GetCustomers(string orderBy, bool desc, int page, int pageSize);
 
     IOrderedQueryable<Customer> OrderBy(IQueryable<Customer> customers, string propertyName, bool desc);
+
+    CustomerAccount GetOrLoadCustomerAccount(Customer customer);
+
+    Task<int> SaveResetPasswordToken(Customer customer, byte[] token);
 }
