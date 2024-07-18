@@ -1,6 +1,8 @@
 ﻿using HotelWebDemo.Extensions;
+using HotelWebDemo.Models.Components;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
+using HotelWebDemo.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
@@ -8,10 +10,12 @@ namespace HotelWebDemo.Data.Repositories;
 public class CustomerRepository : ICustomerRepository
 {
     private readonly AppDbContext db;
+    private readonly IFilterService filterService;
 
-    public CustomerRepository(AppDbContext db)
+    public CustomerRepository(AppDbContext db, IFilterService filterService)
     {
         this.db = db;
+        this.filterService = filterService;
     }
 
     public Customer? GetFull(int id)
@@ -63,7 +67,7 @@ public class CustomerRepository : ICustomerRepository
         return await db.SaveChangesAsync();
     }
 
-    public async Task<PaginatedList<Customer>> GetCustomers(string orderBy, bool desc, int page, int pageSize)
+    public async Task<PaginatedList<Customer>> GetCustomers(string orderBy, bool desc, int page, int pageSize, Dictionary<string, TableFilter>? filters)
     {
         IQueryable<Customer> customers = db.Customers
             .Include(c => c.CustomerIdentity)
@@ -73,6 +77,7 @@ public class CustomerRepository : ICustomerRepository
             .ThenInclude(a => a.Country);
 
         customers = OrderBy(customers, orderBy, desc);
+        customers = filterService.FilterBy(customers, filters);
 
         PaginatedList<Customer> paginatedList = await PaginatedList<Customer>.CreateAsync(customers, page, pageSize);
 

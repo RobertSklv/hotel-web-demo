@@ -12,6 +12,7 @@
     Table table = new Table<Customer>(tableContext, items: Model)
         .OverrideColumnName(nameof(Customer.CreatedAt), "Registration date")
         .SetOrderable(true)
+        .SetFilterable(true)
         .AddRowActions("Customer", options => options.IncludesDelete(false))
         .AddPagination(Model);
 }

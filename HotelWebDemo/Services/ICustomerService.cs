@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Models.Database;
+﻿using HotelWebDemo.Models.Components;
+using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -12,7 +13,7 @@ public interface ICustomerService
 
     Task<int> Delete(int id);
 
-    Task<PaginatedList<Customer>> GetCustomers(string orderBy, string direction, int page, int pageSize);
+    Task<PaginatedList<Customer>> GetCustomers(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters);
 
     bool CompareResetPasswordToken(Customer customer, string token);
 

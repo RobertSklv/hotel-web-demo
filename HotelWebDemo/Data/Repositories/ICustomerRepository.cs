@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Models.Database;
+﻿using HotelWebDemo.Models.Components;
+using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Data.Repositories;
@@ -15,7 +16,7 @@ public interface ICustomerRepository
 
     Task<int> Delete(int id);
 
-    Task<PaginatedList<Customer>> GetCustomers(string orderBy, bool desc, int page, int pageSize);
+    Task<PaginatedList<Customer>> GetCustomers(string orderBy, bool desc, int page, int pageSize, Dictionary<string, TableFilter>? filters);
 
     IOrderedQueryable<Customer> OrderBy(IQueryable<Customer> customers, string propertyName, bool desc);
 

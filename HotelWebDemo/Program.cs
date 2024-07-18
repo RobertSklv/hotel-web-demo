@@ -46,6 +46,8 @@ builder.Services.AddScoped<ILinkGeneratorSerivce, LinkGeneratorService>();
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+builder.Services.AddScoped<IFilterService, FilterService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

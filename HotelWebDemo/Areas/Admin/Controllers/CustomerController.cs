@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Models.Database;
+﻿using HotelWebDemo.Models.Components;
+using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +18,14 @@ public class CustomerController : AdminController
         this.countryService = countryService;
     }
 
-    public async Task<IActionResult> Index(string orderBy = "Id", string direction = "desc", int page = 1)
+    public async Task<IActionResult> Index(string orderBy = "Id", string direction = "desc", int page = 1, Dictionary<string, TableFilter>? filters = null)
     {
         ViewData["OrderBy"] = orderBy;
         ViewData["Direction"] = direction;
         ViewData["Page"] = page;
+        ViewData["Filter"] = filters;
 
-        PaginatedList<Customer> customers = await service.GetCustomers(orderBy, direction, page, 10);
+        PaginatedList<Customer> customers = await service.GetCustomers(orderBy, direction, page, 10, filters);
 
         return View(customers);
     }

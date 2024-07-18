@@ -16,6 +16,8 @@ public abstract class Table
 
     public bool IsOrderable { get; set; }
 
+    public bool IsFilterable { get; set; }
+
     public bool HasCreateAction { get; set; } = true;
 
     public abstract bool HasItems { get; }
@@ -39,6 +41,13 @@ public abstract class Table
     public Table SetOrderable(bool orderable)
     {
         IsOrderable = orderable;
+
+        return this;
+    }
+
+    public Table SetFilterable(bool filterable)
+    {
+        IsFilterable = filterable;
 
         return this;
     }
@@ -237,6 +246,11 @@ public class Table<T> : Table
     public new Table<T> SetOrderable(bool orderable)
     {
         return (Table<T>)base.SetOrderable(orderable);
+    }
+
+    public new Table<T> SetFilterable(bool filterable)
+    {
+        return (Table<T>)base.SetFilterable(filterable);
     }
 
     public new Table<T> IncludeCreateAction(bool createAction)

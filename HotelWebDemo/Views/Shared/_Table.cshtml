@@ -12,6 +12,39 @@
         <a asp-action="Create" class="btn btn-lg btn-primary">Create New</a>
     </div>
 }
+
+@foreach (var filter in ViewData["Filter"] as Dictionary<string, TableFilter> ?? new())
+{
+    if (string.IsNullOrEmpty(filter.Value?.Value))
+    {
+        continue;
+    }
+    <div class="mb-3">
+        <p>Property: @filter.Key</p>
+        <p>Filter: @filter.Value.Operator</p>
+        <p>Value: @filter.Value.Value</p>
+    </div>
+}
+@if (Model.IsFilterable)
+{
+    <form method="GET">
+        @foreach (TableColumnData colData in Model.ColumnDatas)
+        {
+            @if (!colData.Filterable) continue;
+            <div class="filter mb-3">
+                <label>@colData.Name</label>
+                <select name="Filters.@(colData.PropertyName).Operator" class="form-select d-inline-block w-auto">
+                    <option value="eq">Equal to</option>
+                    <option value="neq">Not equal to</option>
+                    <option value="con">Contains</option>
+                </select>
+                <input id="@colData.PropertyName" name="Filters.@(colData.PropertyName).Value" type="search" class="form-control d-inline-block w-auto" />
+            </div>
+        }
+        <button type="submit" class="btn btn-secondary">Apply filters</button>
+    </form>
+}
+
 <div class="table-responsive-lg">
     <table class="table table-bordered table-striped">
         <thead>

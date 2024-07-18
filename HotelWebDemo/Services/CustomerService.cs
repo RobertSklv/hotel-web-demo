@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using HotelWebDemo.Data.Repositories;
+using HotelWebDemo.Models.Components;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.Mailing;
 using HotelWebDemo.Models.ViewModels;
@@ -71,11 +72,11 @@ public class CustomerService : ICustomerService
         return await repository.Delete(id);
     }
 
-    public async Task<PaginatedList<Customer>> GetCustomers(string orderBy, string direction, int page, int pageSize)
+    public async Task<PaginatedList<Customer>> GetCustomers(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
     {
         bool desc = direction == "desc";
 
-        return await repository.GetCustomers(orderBy, desc, page, pageSize);
+        return await repository.GetCustomers(orderBy, desc, page, pageSize, filters);
     }
 
     public bool CompareResetPasswordToken(Customer customer, string token)
