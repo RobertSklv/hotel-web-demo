@@ -8,6 +8,10 @@ public class TableRowActionsOptions
 
     public bool ConfirmDelete { get; set; }
 
+    public bool Edit { get; set; } = true;
+
+    public bool Delete { get; set; } = true;
+
     public Func<BaseEntity, string> DeleteConfirmMessageCallback { get; set; } = m => $"Are you sure you want to delete item of type {m.GetType().Name} and ID {m.Id}?";
 
     public TableRowActionsOptions(string controller, bool confirmDelete = true)
@@ -29,6 +33,20 @@ public class TableRowActionsOptions
     {
         ConfirmDelete = true;
         DeleteConfirmMessageCallback = m => deleteConfirmMessageCallback((T)m);
+
+        return this;
+    }
+
+    public TableRowActionsOptions IncludesEdit(bool edit)
+    {
+        Edit = edit;
+
+        return this;
+    }
+
+    public TableRowActionsOptions IncludesDelete(bool delete)
+    {
+        Delete = delete;
 
         return this;
     }

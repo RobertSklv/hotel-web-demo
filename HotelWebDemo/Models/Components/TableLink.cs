@@ -10,8 +10,6 @@ public class TableLink : Link
 
     public string ActionName { get; set; }
 
-    public string Content { get; set; }
-
     public string? OrderBy { get; set; }
 
     public string? Direction { get; set; }

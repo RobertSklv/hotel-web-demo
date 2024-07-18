@@ -6,18 +6,28 @@
 @{
 }
 
-<div class="w-100 text-end mb-4">
-    <a asp-action="Create" class="btn btn-lg btn-primary">Create New</a>
-</div>
+@if (Model.HasCreateAction)
+{
+    <div class="w-100 text-end mb-4">
+        <a asp-action="Create" class="btn btn-lg btn-primary">Create New</a>
+    </div>
+}
 <div class="table-responsive-lg">
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                @foreach (TableLink headingLink in Model.GenerateHeadingLinks())
+                @foreach (Element heading in Model.GenerateHeadingElements())
                 {
-                    <th>
-                        <partial name="_TableLink" model="@headingLink" />
-                    </th>
+                    if (heading is TableLink link)
+                    {
+                        <th>
+                            <partial name="_TableLink" model="@heading" />
+                        </th>
+                    }
+                    else
+                    {
+                        <th>@heading.Content</th>
+                    }
                 }
                 @if (Model.RowActionOptions != null)
                 {

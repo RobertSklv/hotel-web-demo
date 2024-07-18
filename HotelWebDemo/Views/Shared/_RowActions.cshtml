@@ -6,34 +6,40 @@
 }
 
 <td class="text-center">
-    <a asp-action="Edit" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" class="btn btn-sm mx-2 btn-primary text-decoration-none">Edit</a>
-    @if (Model.Options.ConfirmDelete)
+    @if (Model.Options.Edit)
     {
-        <button type="button" data-bs-toggle="modal" data-bs-target="#@Model.ConfirmModalId" class="btn btn-sm mx-2 btn-danger">Delete</button>
+        <a asp-action="Edit" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" class="btn btn-sm mx-2 btn-primary text-decoration-none">Edit</a>
     }
-    else
+    @if (Model.Options.Delete)
     {
+        if (Model.Options.ConfirmDelete)
+        {
+        <button type="button" data-bs-toggle="modal" data-bs-target="#@Model.ConfirmModalId" class="btn btn-sm mx-2 btn-danger">Delete</button>
+        }
+        else
+        {
         <form asp-action="Delete" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" method="DELETE">
             <button type="submit" class="btn btn-sm mx-2 btn-danger">Delete</button>
         </form>
-    }
-    <div class="modal fade" id="@Model.ConfirmModalId" tabindex="-1" aria-labelledby="@Model.ConfirmModalLabelId" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title fs-5" id="@Model.ConfirmModalLabelId">Delete confirmation</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-start">@Model.DeleteConfirmMessage</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form asp-action="Delete" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" method="DELETE">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
+        }
+        <div class="modal fade" id="@Model.ConfirmModalId" tabindex="-1" aria-labelledby="@Model.ConfirmModalLabelId" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title fs-5" id="@Model.ConfirmModalLabelId">Delete confirmation</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-start">@Model.DeleteConfirmMessage</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form asp-action="Delete" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" method="DELETE">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 </td>

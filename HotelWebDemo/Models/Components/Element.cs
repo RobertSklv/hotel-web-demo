@@ -7,4 +7,6 @@ public class Element
     public List<string> ClassList { get; set; } = new();
 
     public string? Class => ClassList.Any() ? string.Join(' ', ClassList) : null;
+
+    public string? Content { get; set; }
 }

@@ -9,7 +9,7 @@
     var totalPages = ViewData["TotalPages"] as int?;
     TableContext tableContext = new("Index", ViewData);
 
-    Table table = new Table<Customer>(tableContext, "Customer", items: Model)
+    Table table = new Table<Customer>(tableContext, items: Model)
         .AddCellData(nameof(Customer.Id), c => c.Id)
         .AddCellData(nameof(CustomerAccount.Email), c => c.CustomerAccount?.Email)
         .AddCellData(nameof(Customer.FirstName), c => c.FirstName)
@@ -19,7 +19,8 @@
         .AddCellData(nameof(Customer.Address), c => c.Address)
         .AddCellData(nameof(Customer.CreatedAt), c => c.CreatedAt)
         .AddCellData(nameof(Customer.UpdatedAt), c => c.UpdatedAt)
-        .AddRowActions(options => options.SetDeleteConfirmationMessage<Customer>(customer => $"Are you sure you want to delete customer {customer.FullName}?"))
+        .SetOrderable(true)
+        .AddRowActions("Customer", options => options.IncludesDelete(false))
         .AddPagination(Model);
 }
 
