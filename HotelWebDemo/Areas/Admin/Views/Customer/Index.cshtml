@@ -11,9 +11,12 @@
 
     Table table = new Table<Customer>(tableContext, "Customer", items: Model)
         .AddCellData(nameof(Customer.Id), c => c.Id)
+        .AddCellData(nameof(CustomerAccount.Email), c => c.CustomerAccount?.Email)
         .AddCellData(nameof(Customer.FirstName), c => c.FirstName)
         .AddCellData(nameof(Customer.MiddleName), c => c.MiddleName)
         .AddCellData(nameof(Customer.LastName), c => c.LastName)
+        .AddCellData(nameof(CustomerIdentity.Citizenship), c => c.CustomerIdentity?.Citizenship?.Code)
+        .AddCellData(nameof(Customer.Address), c => c.Address)
         .AddCellData(nameof(Customer.CreatedAt), c => c.CreatedAt)
         .AddCellData(nameof(Customer.UpdatedAt), c => c.UpdatedAt)
         .AddRowActions(options => options.SetDeleteConfirmationMessage<Customer>(customer => $"Are you sure you want to delete customer {customer.FullName}?"))

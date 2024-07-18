@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 
 namespace HotelWebDemo.Models.Database;
 
@@ -43,6 +44,26 @@ public class Customer : BaseEntity
             fullName += " " + LastName;
 
             return fullName;
+        }
+    }
+
+    public string Address
+    {
+        get
+        {
+            StringBuilder sb = new();
+            sb.AppendLine(CustomerAccount?.Address?.StreetLine1);
+
+            if (CustomerAccount?.Address?.StreetLine2 != null) sb.AppendLine(CustomerAccount?.Address?.StreetLine2);
+            if (CustomerAccount?.Address?.StreetLine3 != null) sb.AppendLine(CustomerAccount?.Address?.StreetLine3);
+
+            sb.Append(CustomerAccount?.Address?.City);
+            sb.Append(", ");
+            sb.AppendLine(CustomerAccount?.Address?.PostalCode);
+
+            sb.AppendLine(CustomerAccount?.Address?.Country?.Name);
+
+            return sb.ToString();
         }
     }
 }
