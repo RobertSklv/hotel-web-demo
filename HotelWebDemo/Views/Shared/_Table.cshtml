@@ -1,0 +1,61 @@
+﻿@using HotelWebDemo.Models.Components
+@using HotelWebDemo.Models.Database
+
+@model Table
+
+@{
+}
+
+<div class="w-100 text-end mb-4">
+    <a asp-action="Create" class="btn btn-lg btn-primary">Create New</a>
+</div>
+<div class="table-responsive-lg">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                @foreach (TableLink headingLink in Model.GenerateHeadingLinks())
+                {
+                    <th>
+                        <partial name="_TableLink" model="@headingLink" />
+                    </th>
+                }
+                @if (Model.RowActionOptions != null)
+                {
+                    <th class="text-center">Actions</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.HasItems)
+            {
+                foreach (BaseEntity item in Model.GetItems())
+                {
+                    <tr>
+                        @foreach (object? cellData in Model.GetRowData(item))
+                        {
+                            <td>
+                                @cellData
+                            </td>
+                        }
+                        @if (Model.RowActionOptions != null)
+                        {
+                            <partial name="_RowActions" model="@Model.GenerateRowActions(item)" />
+                        }
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="@(Model.Headings.Count + (Model.RowActionOptions != null ? 1 : 0))">
+                        No results were found.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@if (Model.Pagination != null)
+{
+    <partial name="_Pagination" model="@Model.Pagination" />
+}

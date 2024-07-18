@@ -1,23 +1,22 @@
-﻿namespace HotelWebDemo.Models.Components;
+﻿using HotelWebDemo.Models.Database;
+
+namespace HotelWebDemo.Models.Components;
 
 public class TableRowActions
 {
-    public string Controller { get; }
+    public BaseEntity Item { get; }
 
-    public int ItemId { get; }
+    public TableRowActionsOptions Options { get; }
 
-    public bool ConfirmDelete { get; }
+    public string DeleteConfirmMessage => Options.DeleteConfirmMessageCallback(Item);
 
-    public string ConfirmMessage { get; set; } = "Are you sure you want to delete this item?";
+    public string ConfirmModalId => $"delete{Options.Controller}Modal-{Item.Id}";
 
-    public string ConfirmModalId => $"delete{Controller}Modal-{ItemId}";
+    public string ConfirmModalLabelId => $"delete{Options.Controller}ModalLabel-{Item.Id}";
 
-    public string ConfirmModalLabelId => $"delete{Controller}ModalLabel-{ItemId}";
-
-    public TableRowActions(string controller, int itemId, bool confirmDelete = true)
+    public TableRowActions(BaseEntity item, TableRowActionsOptions options)
     {
-        Controller = controller;
-        ItemId = itemId;
-        ConfirmDelete = confirmDelete;
+        Item = item;
+        Options = options;
     }
 }

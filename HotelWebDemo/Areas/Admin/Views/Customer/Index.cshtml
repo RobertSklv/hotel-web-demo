@@ -8,79 +8,19 @@
     ViewData["Title"] = "All Customers";
     var totalPages = ViewData["TotalPages"] as int?;
     TableContext tableContext = new("Index", ViewData);
+
+    Table table = new Table<Customer>(tableContext, "Customer", items: Model)
+        .AddCellData(nameof(Customer.Id), c => c.Id)
+        .AddCellData(nameof(Customer.FirstName), c => c.FirstName)
+        .AddCellData(nameof(Customer.MiddleName), c => c.MiddleName)
+        .AddCellData(nameof(Customer.LastName), c => c.LastName)
+        .AddCellData(nameof(Customer.CreatedAt), c => c.CreatedAt)
+        .AddCellData(nameof(Customer.UpdatedAt), c => c.UpdatedAt)
+        .AddRowActions(options => options.SetDeleteConfirmationMessage<Customer>(customer => $"Are you sure you want to delete customer {customer.FullName}?"))
+        .AddPagination(Model);
 }
 
 <section>
     <h1 class="mt-4 mb-5">All customers</h1>
-    <div class="w-100 text-end mb-4">
-        <a asp-action="Create" class="btn btn-lg btn-primary">Create New</a>
-    </div>
-    <div class="table-responsive-lg">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>
-                        <partial name="_TableLink" model="@tableContext.CreateLink("#").SetOrder(nameof(Customer.Id))" />
-                    </th>
-                    <th>
-                        <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.FirstName)).SetOrder()" />
-                    </th>
-                    <th>
-                        <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.MiddleName)).SetOrder()" />
-                    </th>
-                    <th>
-                        <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.LastName)).SetOrder()" />
-                    </th>
-                    <th>
-                        <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.CreatedAt)).SetOrder()" />
-                    </th>
-                    <th>
-                        <partial name="_TableLink" model="@tableContext.CreateLink(nameof(Customer.UpdatedAt)).SetOrder()" />
-                    </th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.Any())
-                {
-                    foreach (Customer customer in Model)
-                    {
-                        <tr>
-                            <td>
-                                @customer.Id
-                            </td>
-                            <td>
-                                @customer.FirstName
-                            </td>
-                            <td>
-                                @customer.MiddleName
-                            </td>
-                            <td>
-                                @customer.LastName
-                            </td>
-                            <td>
-                                @customer.CreatedAt
-                            </td>
-                            <td>
-                                @customer.UpdatedAt
-                            </td>
-                            <partial name="_RowActions" model="@(new TableRowActions("Customer", customer.Id, confirmDelete: true)
-                        {
-                            ConfirmMessage = $"Are you sure you want to delete customer {customer.FullName}?"
-                        })" />
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="7">
-                            No results were found.
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <partial name="_Pagination" model="@tableContext.CreatePagination(Model)" />
+    <partial name="_Table" model="@table" />
 </section>
