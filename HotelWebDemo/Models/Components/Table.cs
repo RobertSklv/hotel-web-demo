@@ -1,18 +1,18 @@
-﻿using HotelWebDemo.Models.Database;
+﻿using HotelWebDemo.Models.Attributes;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Models.Components;
 
 public abstract class Table
 {
-    public List<string> Headings { get; set; } = new();
-
-    public Dictionary<string, string> HeadingCustomNames { get; set; } = new()
-    {
-        { "Id", "#" }
-    };
-
     public TableContext TableContext { get; }
+
+    public Type ModelType { get; }
+
+    public List<TableColumnData> ColumnDatas { get; private set; }
 
     public bool IsOrderable { get; set; }
 
@@ -24,9 +24,12 @@ public abstract class Table
 
     public TableRowActionsOptions? RowActionOptions { get; set; }
 
-    public Table(TableContext tableContext)
+    public Table(TableContext tableContext, Type modelType)
     {
         TableContext = tableContext;
+        ModelType = modelType;
+
+        GenerateTableColumnDatas();
     }
 
     public abstract List<object?> GetRowData(BaseEntity item);
@@ -57,27 +60,71 @@ public abstract class Table
         return new TableRowActions(item, RowActionOptions);
     }
 
+    public string GetColumnName(PropertyInfo propertyInfo, TableColumnAttribute columnAttr)
+    {
+        if (!string.IsNullOrEmpty(columnAttr.Name))
+        {
+            return columnAttr.Name;
+        }
+
+        DisplayAttribute? displayAttr = propertyInfo.GetCustomAttribute<DisplayAttribute>();
+
+        if (displayAttr != null && !string.IsNullOrEmpty(displayAttr.Name))
+        {
+            return displayAttr.Name;
+        }
+
+        return propertyInfo.Name;
+    }
+
+    public void GenerateTableColumnDatas()
+    {
+        PropertyInfo[] properties = ModelType.GetProperties();
+        ColumnDatas = new();
+
+        foreach (PropertyInfo property in properties)
+        {
+            TableColumnAttribute? columnAttr = property.GetCustomAttribute<TableColumnAttribute>();
+
+            if (columnAttr == null)
+            {
+                continue;
+            }
+
+            TableColumnData colData = new()
+            {
+                PropertyName = property.Name,
+                Name = GetColumnName(property, columnAttr),
+                DefaultValue = columnAttr.DefaultValue,
+                Filterable = columnAttr.Filterable,
+                Orderable = columnAttr.Orderable,
+                SortOrder = columnAttr.SortOrder,
+            };
+            colData.ValueCallback = (object obj) => property.GetValue(obj) ?? colData.DefaultValue;
+
+            ColumnDatas.Add(colData);
+        }
+
+        ColumnDatas.Sort((d1, d2) => d1.SortOrder - d2.SortOrder);
+    }
+
     public List<Element> GenerateHeadingElements()
     {
         List<Element> headingElements = new();
 
-        foreach (string heading in Headings)
+        foreach (TableColumnData colData in ColumnDatas)
         {
-            string content = HeadingCustomNames.ContainsKey(heading)
-                ? HeadingCustomNames[heading]
-                : heading;
-
             Element headingElement;
 
-            if (IsOrderable)
+            if (IsOrderable && colData.Orderable)
             {
-                headingElement = TableContext.CreateLink(content).SetOrder(heading);
+                headingElement = TableContext.CreateLink(colData.Name).SetOrder(colData.PropertyName);
             }
             else
             {
                 headingElement = new Element()
                 {
-                    Content = content
+                    Content = colData.Name
                 };
             }
 
@@ -91,14 +138,14 @@ public abstract class Table
 public class Table<T> : Table
     where T : BaseEntity
 {
-    private List<Func<T, object?>> CellDataDelegates { get; set; } = new();
+    public delegate object? ColumnValueOverrider(T model, object? originalValue);
 
     public List<T> Items { get; set; }
 
     public override bool HasItems => Items.Count > 0;
 
     public Table(TableContext tableContext, List<T> items)
-        : base(tableContext)
+        : base(tableContext, typeof(T))
     {
         Items = items;
     }
@@ -124,27 +171,52 @@ public class Table<T> : Table
     {
         List<object?> rowData = new();
 
-        foreach (Func<T, object?> callback in CellDataDelegates)
+        foreach (TableColumnData colData in ColumnDatas)
         {
-            rowData.Add(callback(item));
+            rowData.Add(colData.ValueCallback(item));
         }
 
         return rowData;
     }
 
-    public Table<T> AddCellData(string propertyName, Func<T, object?> cellData)
+    private TableColumnData FindColumn(string propertyName)
     {
-        Headings.Add(propertyName);
-        CellDataDelegates.Add(cellData);
+        return ColumnDatas.Where(cd => cd.PropertyName == propertyName).FirstOrDefault() ?? throw new Exception($"No '{propertyName}' column was defined!");
+    }
+
+    public Table<T> OverrideColumnName(string propertyName, string columnName)
+    {
+        FindColumn(propertyName).Name = columnName;
 
         return this;
     }
 
-    public Table<T> AddCellData(string propertyName, string customName, Func<T, object?> cellData)
+    public Table<T> OverrideColumnValue(string propertyName, ColumnValueOverrider callback)
     {
-        HeadingCustomNames.Add(propertyName, customName);
+        TableColumnData colData = FindColumn(propertyName);
 
-        return AddCellData(propertyName, cellData);
+        colData.ValueCallback = (object obj) =>
+        {
+            return callback(
+                model: (T)obj,
+                originalValue: colData.ValueCallback(obj));
+        };
+
+        return this;
+    }
+
+    public Table<T> OverrideColumnSortOrder(string propertyName, int sortOrder)
+    {
+        FindColumn(propertyName).SortOrder = sortOrder;
+
+        return this;
+    }
+
+    public Table<T> RemoveColumn(string propertyName)
+    {
+        ColumnDatas.Remove(FindColumn(propertyName));
+
+        return this;
     }
 
     public Table<T> AddPagination(PaginatedList<T> paginatedList)

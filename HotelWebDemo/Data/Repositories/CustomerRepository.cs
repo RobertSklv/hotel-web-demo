@@ -84,11 +84,11 @@ public class CustomerRepository : ICustomerRepository
         return propertyName switch
         {
             nameof(Customer.Id) => customers.OrderByExtended(c => c.Id, desc),
-            nameof(CustomerAccount.Email) => customers.OrderByExtended(c => c.CustomerAccount.Email, desc),
+            nameof(Customer.Email) => customers.OrderByExtended(c => c.CustomerAccount.Email, desc),
             nameof(Customer.FirstName) => customers.OrderByExtended(c => c.FirstName, desc),
             nameof(Customer.MiddleName) => customers.OrderByExtended(c => c.MiddleName, desc),
             nameof(Customer.LastName) => customers.OrderByExtended(c => c.LastName, desc),
-            nameof(CustomerIdentity.Citizenship) => customers.OrderByExtended(c => c.CustomerIdentity.Citizenship.Name, desc),
+            nameof(Customer.Citizenship) => customers.OrderByExtended(c => c.CustomerIdentity.Citizenship.Name, desc),
             nameof(Customer.Address) => customers.OrderByExtended(c => c.CustomerAccount.Address.StreetLine1, desc),
             nameof(Customer.CreatedAt) => customers.OrderByExtended(c => c.CreatedAt, desc),
             nameof(Customer.UpdatedAt) => customers.OrderByExtended(c => c.UpdatedAt, desc),
