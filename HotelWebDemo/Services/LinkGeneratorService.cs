@@ -13,7 +13,7 @@ public class LinkGeneratorService : ILinkGeneratorSerivce
         this.linkGenerator = linkGenerator;
     }
 
-    public string GenerateResetPasswordLink(string token)
+    public string GenerateResetPasswordLink(int userId, string token)
     {
         if (httpContextAccessor.HttpContext == null)
         {
@@ -24,7 +24,11 @@ public class LinkGeneratorService : ILinkGeneratorSerivce
             httpContextAccessor.HttpContext,
             "ResetPassword",
             "Customer",
-            new { token },
+            new {
+                userId,
+                token,
+                area = ""
+            },
             httpContextAccessor.HttpContext.Request.Scheme);
 
         return url ?? throw new Exception("Failed to generate password reset URL.");

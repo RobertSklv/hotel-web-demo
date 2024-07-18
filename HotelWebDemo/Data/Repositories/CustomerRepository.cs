@@ -1,6 +1,6 @@
 ﻿using HotelWebDemo.Extensions;
 using HotelWebDemo.Models.Database;
-using HotelWebDemo.Models.Utilities;
+using HotelWebDemo.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
@@ -14,7 +14,7 @@ public class CustomerRepository : ICustomerRepository
         this.db = db;
     }
 
-    public Customer? Get(int id)
+    public Customer? GetFull(int id)
     {
         return db.Customers
             .Where(c => c.Id == id)
@@ -24,16 +24,29 @@ public class CustomerRepository : ICustomerRepository
             .FirstOrDefault();
     }
 
+    public Customer? Get(int id)
+    {
+        return db.Customers
+            .Where(c => c.Id == id)
+            .Include(c => c.CustomerAccount)
+            .FirstOrDefault();
+    }
+
     public async Task<int> Upsert(Customer customer)
     {
-        if (customer.Id == 0)
+        if (customer.Id > 0)
         {
-            await db.Customers.AddAsync(customer);
+            return await Save(customer);
         }
-        else
-        {
-            db.Customers.Update(customer);
-        }
+
+        await db.Customers.AddAsync(customer);
+
+        return await db.SaveChangesAsync();
+    }
+
+    public async Task<int> Save(Customer customer)
+    {
+        db.Customers.Update(customer);
 
         return await db.SaveChangesAsync();
     }
@@ -82,6 +95,7 @@ public class CustomerRepository : ICustomerRepository
         if (account == null)
         {
             account = db.CustomerAccounts.Where(a => a.Id == customer.CustomerAccountId).First();
+            customer.CustomerAccount = account;
         }
 
         return account;

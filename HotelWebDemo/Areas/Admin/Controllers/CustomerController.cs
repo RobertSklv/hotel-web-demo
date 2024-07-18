@@ -1,5 +1,5 @@
 ﻿using HotelWebDemo.Models.Database;
-using HotelWebDemo.Models.Utilities;
+using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc;
 using StarExplorerMainServer.Areas.Admin.Services;
@@ -48,7 +48,7 @@ public class CustomerController : AdminController
             return RedirectToAction("Index");
         }
 
-        Customer? customer = service.Get((int)id);
+        Customer? customer = service.GetFull((int)id);
 
         if (customer == null)
         {
@@ -62,14 +62,9 @@ public class CustomerController : AdminController
 
     public async Task<IActionResult> Upsert(Customer customer)
     {
-        int recordsSaved = await service.Upsert(customer);
+        await service.Upsert(customer, ModelState);
 
-        if (recordsSaved == 0)
-        {
-            return BadRequest($"Failed to save customer: {customer.Id}.");
-        }
-
-        return RedirectToAction("Index");
+        return RedirectToAction("Edit", new { customer.Id });
     }
 
     public async Task<IActionResult> Delete(int? id)
@@ -79,7 +74,7 @@ public class CustomerController : AdminController
             return RedirectToAction("Index");
         }
 
-        Customer? customer = service.Get((int)id);
+        Customer? customer = service.GetFull((int)id);
 
         if (customer == null)
         {
@@ -91,10 +86,18 @@ public class CustomerController : AdminController
         return RedirectToAction("Index");
     }
 
-    public async Task<IActionResult> ResetPassword(Customer customer)
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword(int id)
     {
-        await service.ResetPasswordAndNotify(customer);
+        try
+        {
+            await service.InitiateResetPasswordAndNotify(id);
+        }
+        catch (Exception e)
+        {
+            ModelState.AddModelError(string.Empty, e.Message);
+        }
 
-        return RedirectToAction("Edit", customer.Id);
+        return RedirectToAction("Edit", new { id });
     }
 }

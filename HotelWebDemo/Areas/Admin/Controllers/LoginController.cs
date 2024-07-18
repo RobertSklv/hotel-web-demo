@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using HotelWebDemo.Models.Users;
+using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Areas.Admin.Controllers;
 

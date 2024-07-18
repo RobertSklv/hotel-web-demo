@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HotelWebDemo.Models.Users;
+namespace HotelWebDemo.Models.ViewModels;
 
 public class LoginCredentials
 {

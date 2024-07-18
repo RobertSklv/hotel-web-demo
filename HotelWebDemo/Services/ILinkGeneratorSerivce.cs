@@ -2,5 +2,5 @@
 
 public interface ILinkGeneratorSerivce
 {
-    string GenerateResetPasswordLink(string token);
+    string GenerateResetPasswordLink(int userId, string token);
 }

@@ -1,4 +1,4 @@
-﻿using HotelWebDemo.Models.Utilities;
+﻿using HotelWebDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HotelWebDemo.Models.Components;

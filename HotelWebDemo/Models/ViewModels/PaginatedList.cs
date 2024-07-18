@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace HotelWebDemo.Models.Utilities;
+namespace HotelWebDemo.Models.ViewModels;
 
 public class PaginatedList<T> : List<T>
 {

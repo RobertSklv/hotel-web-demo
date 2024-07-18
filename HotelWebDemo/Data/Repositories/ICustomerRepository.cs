@@ -1,13 +1,17 @@
 ﻿using HotelWebDemo.Models.Database;
-using HotelWebDemo.Models.Utilities;
+using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Data.Repositories;
 
 public interface ICustomerRepository
 {
+    Customer? GetFull(int id);
+
     Customer? Get(int id);
 
     Task<int> Upsert(Customer customer);
+
+    Task<int> Save(Customer customer);
 
     Task<int> Delete(int id);
 

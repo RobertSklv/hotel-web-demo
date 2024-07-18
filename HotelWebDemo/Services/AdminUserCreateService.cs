@@ -1,5 +1,5 @@
 ﻿using HotelWebDemo.Models.Database;
-using HotelWebDemo.Models.Users;
+using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Services;
 

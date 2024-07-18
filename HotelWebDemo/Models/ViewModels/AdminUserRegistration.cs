@@ -1,4 +1,4 @@
-﻿namespace HotelWebDemo.Models.Users;
+﻿namespace HotelWebDemo.Models.ViewModels;
 
 public class AdminUserRegistration
 {

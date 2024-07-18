@@ -1,6 +1,6 @@
 ﻿using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Models.Database;
-using HotelWebDemo.Models.Users;
+using HotelWebDemo.Models.ViewModels;
 using System.Security.Claims;
 
 namespace HotelWebDemo.Services;
