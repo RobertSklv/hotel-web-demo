@@ -4,6 +4,8 @@ public class TableColumnData
 {
     public string PropertyName { get; set; }
 
+    public Type PropertyType { get; set; }
+
     public string Name { get; set; }
 
     public Func<object, object?> ValueCallback { get; set; }

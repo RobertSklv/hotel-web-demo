@@ -26,12 +26,15 @@ public abstract class Table
 
     public TableRowActionsOptions? RowActionOptions { get; set; }
 
+    public FilterContext FilterContext { get; set; }
+
     public Table(TableContext tableContext, Type modelType)
     {
         TableContext = tableContext;
         ModelType = modelType;
 
         GenerateTableColumnDatas();
+        FilterContext = new(this, ColumnDatas!);
     }
 
     public abstract List<object?> GetRowData(BaseEntity item);
@@ -69,6 +72,11 @@ public abstract class Table
         return new TableRowActions(item, RowActionOptions);
     }
 
+    public TableColumnData FindColumn(string propertyName)
+    {
+        return ColumnDatas.Where(cd => cd.PropertyName == propertyName).FirstOrDefault() ?? throw new Exception($"No '{propertyName}' column was defined!");
+    }
+
     public string GetColumnName(PropertyInfo propertyInfo, TableColumnAttribute columnAttr)
     {
         if (!string.IsNullOrEmpty(columnAttr.Name))
@@ -103,6 +111,7 @@ public abstract class Table
             TableColumnData colData = new()
             {
                 PropertyName = property.Name,
+                PropertyType = property.PropertyType,
                 Name = GetColumnName(property, columnAttr),
                 DefaultValue = columnAttr.DefaultValue,
                 Filterable = columnAttr.Filterable,
@@ -186,11 +195,6 @@ public class Table<T> : Table
         }
 
         return rowData;
-    }
-
-    private TableColumnData FindColumn(string propertyName)
-    {
-        return ColumnDatas.Where(cd => cd.PropertyName == propertyName).FirstOrDefault() ?? throw new Exception($"No '{propertyName}' column was defined!");
     }
 
     public Table<T> OverrideColumnName(string propertyName, string columnName)

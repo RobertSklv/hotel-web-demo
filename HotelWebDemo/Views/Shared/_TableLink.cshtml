@@ -5,7 +5,8 @@
 @{
 }
 
-<a asp-action="@Model.ActionName"
+<a asp-all-route-data=@Model.GetFilterQueryParameters()
+   asp-action=@Model.ActionName
    asp-route-orderBy="@Model.OrderBy"
    asp-route-direction="@Model.Direction"
    asp-route-page="@Model.Page"

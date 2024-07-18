@@ -16,6 +16,18 @@ public class FilterService : IFilterService
     public const string OPERATOR_GREATER_THAN_OR_EQUAL = "gte";
     public const string BETWEEN = "btw";
 
+    public static readonly Dictionary<string, string> OperatorLabelMap = new()
+    {
+        { OPERATOR_EQUAL, "Equal to" },
+        { OPERATOR_NOT_EQUAL, "Not equal to" },
+        { OPERATOR_CONTAINS, "Contains" },
+        { OPERATOR_LESS_THAN, "Less than" },
+        { OPERATOR_LESS_THAN_OR_EQUAL, "Less than or equal" },
+        { OPERATOR_GREATER_THAN, "Greater than" },
+        { OPERATOR_GREATER_THAN_OR_EQUAL, "Greater than or equal" },
+        { BETWEEN, "Between" },
+    };
+
     public object? ParseValue(Type type, string value)
     {
         if (string.IsNullOrEmpty(value)) return null;
@@ -30,6 +42,7 @@ public class FilterService : IFilterService
         else if (type.Equals(typeof(double))) return double.Parse(value);
         else if (type.Equals(typeof(float))) return float.Parse(value);
         else if (type.Equals(typeof(decimal))) return decimal.Parse(value);
+        else if (type.Equals(typeof(DateTime))) return DateTime.Parse(value);
         else return value;
     }
 
@@ -94,7 +107,7 @@ public class FilterService : IFilterService
     public Expression<Func<T, bool>> BuildFilterPredicate<T>(string propertyName, string @operator, dynamic value, dynamic? secondaryValue = null)
     {
         ParameterExpression param = Expression.Parameter(typeof(T));
-        MemberExpression property = Expression.Property(param, propertyName);
+        MemberExpression property = ParseMemberExpression(param, SplitHierarchicalPropertyName(propertyName));
         Expression constant = Expression.Constant(value);
         Expression? secondaryConstant = null;
 
@@ -144,5 +157,35 @@ public class FilterService : IFilterService
         }
 
         return Expression.Lambda<Func<T, bool>>(body, param);
+    }
+
+    public string[] SplitHierarchicalPropertyName(string propertyName)
+    {
+        return propertyName.Split('_');
+    }
+
+    public MemberExpression ParseMemberExpression(ParameterExpression param, params string[] propertyName)
+    {
+        if (propertyName.Length > 1)
+        {
+            string bottom = propertyName[^1];
+            string[] parentHierarchy = new string[propertyName.Length - 1];
+            Array.Copy(propertyName, 0, parentHierarchy, 0, parentHierarchy.Length);
+
+            MemberExpression parentHierarchyExpression = ParseMemberExpression(param, parentHierarchy);
+
+            if (string.IsNullOrEmpty(bottom))
+            {
+                return parentHierarchyExpression;
+            }
+
+            return Expression.Property(parentHierarchyExpression, bottom);
+        }
+        else if (propertyName.Length == 1)
+        {
+            return Expression.Property(param, propertyName[0]);
+        }
+
+        throw new Exception($"Failed to parse an empty property name!");
     }
 }

@@ -16,6 +16,8 @@ public class TableLink : Link
 
     public int? Page { get; set; }
 
+    public Dictionary<string, TableFilter>? Filter { get; set; }
+
     public TableLink(string actionName, string content)
     {
         ActionName = actionName;
@@ -44,7 +46,7 @@ public class TableLink : Link
     public TableLink SetOrder(string? propertyName = null)
     {
         propertyName ??= Content;
-        bool propertyIsDefaultOrder = propertyName == "Id";
+        bool propertyIsDefaultOrder = propertyName == DEFAULT_ORDER_BY;
 
         OrderBy = propertyIsDefaultOrder ? null : propertyName;
         Direction = GetOppositeDirection();
@@ -53,6 +55,27 @@ public class TableLink : Link
         CheckDefaultDirection();
 
         return this;
+    }
+
+    public Dictionary<string, string?> GetFilterQueryParameters()
+    {
+        Dictionary<string, string?> query = new();
+
+        if (Filter != null)
+        {
+            foreach (var kvp in Filter)
+            {
+                if (kvp.Value == null) continue;
+
+                string operatorParamName = $"Filters.{kvp.Key}.Operator";
+                string valueParamName = $"Filters.{kvp.Key}.Value";
+
+                query.Add(operatorParamName, kvp.Value.Operator);
+                query.Add(valueParamName, kvp.Value.Value);
+            }
+        }
+
+        return query;
     }
 
     private string GetOppositeDirection()

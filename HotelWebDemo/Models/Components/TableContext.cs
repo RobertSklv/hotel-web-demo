@@ -13,12 +13,15 @@ public class TableContext
 
     public int? Page { get; set; }
 
+    public Dictionary<string, TableFilter>? Filter { get; set; }
+
     public TableContext(string actionName, ViewDataDictionary viewData)
     {
         ActionName = actionName;
         OrderBy = (string?)viewData["OrderBy"];
         Direction = (string?)viewData["Direction"];
         Page = (int?)viewData["Page"];
+        Filter = (Dictionary<string, TableFilter>?)viewData["Filter"];
     }
 
     public TableLink CreateLink(string content)
@@ -27,7 +30,8 @@ public class TableContext
         {
             OrderBy = OrderBy,
             Direction = Direction,
-            Page = Page
+            Page = Page,
+            Filter = Filter,
         };
     }
 

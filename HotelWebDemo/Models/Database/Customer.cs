@@ -54,14 +54,14 @@ public class Customer : BaseEntity
         }
     }
 
-    [TableColumn(DefaultValue = "Not specified.", SortOrder = -1)]
-    public string? Email => CustomerAccount?.Email;
+    [TableColumn(Name = "E-mail", DefaultValue = "Not specified.", SortOrder = -1)]
+    public string? CustomerAccount_Email => CustomerAccount?.Email;
 
-    [TableColumn(DefaultValue = "Not specified.")]
-    public string? Citizenship => CustomerIdentity?.Citizenship.Code;
+    [TableColumn(Name = "Citizenship", DefaultValue = "Not specified.")]
+    public string? CustomerIdentity_Citizenship_Code => CustomerIdentity?.Citizenship.Code;
 
-    [TableColumn(DefaultValue = "Not specified.")]
-    public string? Address
+    [TableColumn(Name = "Address", DefaultValue = "Not specified.")]
+    public string? CustomerAccount_Address_StreetLine1
     {
         get
         {
