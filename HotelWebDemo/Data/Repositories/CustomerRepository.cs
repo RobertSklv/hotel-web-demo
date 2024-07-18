@@ -93,7 +93,7 @@ public class CustomerRepository : ICustomerRepository
             nameof(Customer.FirstName) => customers.OrderByExtended(c => c.FirstName, desc),
             nameof(Customer.MiddleName) => customers.OrderByExtended(c => c.MiddleName, desc),
             nameof(Customer.LastName) => customers.OrderByExtended(c => c.LastName, desc),
-            nameof(Customer.CustomerIdentity_Citizenship_Code) => customers.OrderByExtended(c => c.CustomerIdentity.Citizenship.Name, desc),
+            nameof(Customer.CustomerIdentity_Citizenship_Name) => customers.OrderByExtended(c => c.CustomerIdentity.Citizenship.Name, desc),
             nameof(Customer.CustomerAccount_Address_StreetLine1) => customers.OrderByExtended(c => c.CustomerAccount.Address.StreetLine1, desc),
             nameof(Customer.CreatedAt) => customers.OrderByExtended(c => c.CreatedAt, desc),
             nameof(Customer.UpdatedAt) => customers.OrderByExtended(c => c.UpdatedAt, desc),

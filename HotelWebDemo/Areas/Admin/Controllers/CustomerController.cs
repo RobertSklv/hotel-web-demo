@@ -24,6 +24,7 @@ public class CustomerController : AdminController
         ViewData["Direction"] = direction;
         ViewData["Page"] = page;
         ViewData["Filter"] = filters;
+        ViewData["Countries"] = countryService.GetAll();
 
         PaginatedList<Customer> customers = await service.GetCustomers(orderBy, direction, page, 10, filters);
 

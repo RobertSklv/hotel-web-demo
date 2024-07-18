@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using HotelWebDemo.Models.Attributes;
 
 namespace HotelWebDemo.Models.Database;
 
 [Table("Countries")]
+[SelectOption]
 public class Country : BaseEntity
 {
     [StringLength(64, MinimumLength = 2)]

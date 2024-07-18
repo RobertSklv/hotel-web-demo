@@ -6,6 +6,8 @@ public class ActiveFilter
 
     public string Name { get; set; }
 
+    public string RawOperator { get; set; }
+
     public string Operator { get; set; }
 
     public string Value { get; set; }

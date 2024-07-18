@@ -1,4 +1,7 @@
-﻿using HotelWebDemo.Services;
+﻿using HotelWebDemo.Models.Attributes;
+using System.Reflection;
+using HotelWebDemo.Services;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace HotelWebDemo.Models.Components;
 
@@ -57,11 +60,13 @@ public class FilterContext
             {
                 Name = colData.Name,
                 PropertyName = colData.PropertyName,
-                SelectedOperator = activeFilter?.Operator ?? string.Empty,
+                SelectedOperator = activeFilter?.RawOperator ?? string.Empty,
                 Value = activeFilter?.Value,
                 SecondaryValue = activeFilter?.SecondaryValue,
                 InputType = GetFilterInputType(propType),
                 OperatorOptions = GetOperatorOptions(propType),
+                IsSelectableFilter = colData.IsSelectable,
+                SelectableOptions = GenerateSelectableOptions(colData.SelectableDataSource)
             };
 
             controlsList.Add(controls);
@@ -100,6 +105,34 @@ public class FilterContext
         else return "text";
     }
 
+    protected List<Option> GenerateSelectableOptions(dynamic selectableDataSource)
+    {
+        List<Option> options = new();
+
+        if (selectableDataSource != null)
+        {
+            foreach (object item in selectableDataSource)
+            {
+                SelectOptionAttribute? selectOptionAttribute = item.GetType().GetCustomAttribute<SelectOptionAttribute>();
+
+                if (selectOptionAttribute == null)
+                {
+                    throw new Exception($"The specified item found in the list doesn't have the {typeof(SelectOptionAttribute).ShortDisplayName()} attribute.");
+                }
+
+                Option option = new()
+                {
+                    Value = item.GetType().GetProperty(selectOptionAttribute.IdentityProperty).GetValue(item),
+                    Label = item.GetType().GetProperty(selectOptionAttribute.LabelProperty).GetValue(item) as string,
+                };
+
+                options.Add(option);
+            }
+        }
+
+        return options;
+    }
+
     protected List<FilterOperatorOption> GetOperatorOptions(Type type)
     {
         if (type.Equals(typeof(string))) return TextOperatorOptions;
@@ -131,6 +164,7 @@ public class FilterContext
                 {
                     Name = colData.Name,
                     PropertyName = colData.PropertyName,
+                    RawOperator = filter.Value.Operator,
                     Operator = GetOperatorLabel(filter.Value.Operator),
                     Value = filter.Value.Value,
                     SecondaryValue = filter.Value.SecondaryValue,

@@ -74,11 +74,25 @@
                                         </select>
                                     </div>
                                     <div class="col">
-                                        <input
-                                            data-name="Filters.@(controls.PropertyName).Value"
-                                            type="@controls.InputType"
-                                            value="@controls.Value"
-                                            class="form-control d-inline-block filter-value" />
+                                        @if (controls.IsSelectableFilter)
+                                        {
+                                            <select data-name="Filters.@(controls.PropertyName).Value"
+                                                    value="@controls.Value"
+                                                    class="form-select d-inline-block filter-value">
+                                                <option value="0">-- Please select --</option>
+                                                @foreach (Option op in controls.SelectableOptions)
+                                                {
+                                                    <option value="@op.Value">@op.Label</option>
+                                                }
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <input data-name="Filters.@(controls.PropertyName).Value"
+                                                   type="@controls.InputType"
+                                                   value="@controls.Value"
+                                                   class="form-control d-inline-block filter-value" />
+                                        }
                                     </div>
                                 </div>
                             </div>

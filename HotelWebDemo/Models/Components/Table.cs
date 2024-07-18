@@ -77,6 +77,37 @@ public abstract class Table
         return ColumnDatas.Where(cd => cd.PropertyName == propertyName).FirstOrDefault() ?? throw new Exception($"No '{propertyName}' column was defined!");
     }
 
+    public object? GetPropertyValue(PropertyInfo property, object obj)
+    {
+        object? propertyValue = property.GetValue(obj);
+
+        SelectOptionAttribute? selectOptionAttribute = property.PropertyType.GetCustomAttribute<SelectOptionAttribute>();
+
+        if (propertyValue == null)
+        {
+            if (selectOptionAttribute != null)
+            {
+                return selectOptionAttribute.UndefinedLabel;
+            }
+
+            return null;
+        }
+
+        if (selectOptionAttribute != null)
+        {
+            PropertyInfo? identityProperty = property.PropertyType.GetProperty(selectOptionAttribute.LabelProperty);
+
+            if (identityProperty == null)
+            {
+                throw new Exception($"Cannot find identity property '{selectOptionAttribute.LabelProperty}' in the object of type {property.PropertyType}.");
+            }
+
+            return identityProperty.GetValue(propertyValue);
+        }
+
+        return propertyValue;
+    }
+
     public string GetColumnName(PropertyInfo propertyInfo, TableColumnAttribute columnAttr)
     {
         if (!string.IsNullOrEmpty(columnAttr.Name))
@@ -117,8 +148,9 @@ public abstract class Table
                 Filterable = columnAttr.Filterable,
                 Orderable = columnAttr.Orderable,
                 SortOrder = columnAttr.SortOrder,
+                IsSelectable = property.PropertyType.IsSubclassOf(typeof(BaseEntity)) && property.PropertyType.GetCustomAttribute<SelectOptionAttribute>() != null
             };
-            colData.ValueCallback = (object obj) => property.GetValue(obj) ?? colData.DefaultValue;
+            colData.ValueCallback = (object obj) => GetPropertyValue(property, obj) ?? colData.DefaultValue;
 
             ColumnDatas.Add(colData);
         }
@@ -243,6 +275,13 @@ public class Table<T> : Table
     {
         TableRowActionsOptions opt = new(controller);
         RowActionOptions = options(opt);
+
+        return this;
+    }
+
+    public Table<T> SetSelectableOptionsSource(string propertyName, dynamic dataSource)
+    {
+        FindColumn(propertyName).SelectableDataSource = dataSource;
 
         return this;
     }

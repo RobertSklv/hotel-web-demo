@@ -1,5 +1,6 @@
 ﻿using HotelWebDemo.Models.Attributes;
 using HotelWebDemo.Models.Components;
+using HotelWebDemo.Models.Database;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -43,6 +44,7 @@ public class FilterService : IFilterService
         else if (type.Equals(typeof(float))) return float.Parse(value);
         else if (type.Equals(typeof(decimal))) return decimal.Parse(value);
         else if (type.Equals(typeof(DateTime))) return DateTime.Parse(value);
+        else if (type.IsSubclassOf(typeof(BaseEntity))) return int.Parse(value);
         else return value;
     }
 
@@ -71,12 +73,14 @@ public class FilterService : IFilterService
         {
             foreach (PropertyInfo prop in GetFilterableProperties(typeof(T)))
             {
-                if (!filters.ContainsKey(prop.Name))
+                string propertyName = prop.Name;
+
+                if (!filters.ContainsKey(propertyName))
                 {
                     continue;
                 }
 
-                TableFilter filter = filters[prop.Name];
+                TableFilter filter = filters[propertyName];
 
                 object? parsedValue = ParseValue(prop.PropertyType, filter.Value);
                 object? parsedSecondaryValue = ParseValue(prop.PropertyType, filter.Value);
@@ -86,9 +90,16 @@ public class FilterService : IFilterService
                     continue;
                 }
 
+                SelectOptionAttribute? selectOptionAttr = prop.PropertyType.GetCustomAttribute<SelectOptionAttribute>();
+
+                if (selectOptionAttr != null)
+                {
+                    propertyName += '_' + selectOptionAttr.IdentityProperty;
+                }
+
                 try
                 {
-                    Expression<Func<T, bool>> expr = BuildFilterPredicate<T>(prop.Name, filter.Operator, parsedValue, parsedSecondaryValue);
+                    Expression<Func<T, bool>> expr = BuildFilterPredicate<T>(propertyName, filter.Operator, parsedValue, parsedSecondaryValue);
 
                     queryable = queryable.Where(expr);
                 }

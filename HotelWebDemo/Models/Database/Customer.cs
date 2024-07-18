@@ -6,6 +6,7 @@ using HotelWebDemo.Models.Attributes;
 namespace HotelWebDemo.Models.Database;
 
 [Table("Customers")]
+[SelectOption(LabelProperty = nameof(FullName))]
 public class Customer : BaseEntity
 {
     [TableColumn]
@@ -58,7 +59,7 @@ public class Customer : BaseEntity
     public string? CustomerAccount_Email => CustomerAccount?.Email;
 
     [TableColumn(Name = "Citizenship", DefaultValue = "Not specified.")]
-    public string? CustomerIdentity_Citizenship_Code => CustomerIdentity?.Citizenship.Code;
+    public Country? CustomerIdentity_Citizenship_Name => CustomerIdentity?.Citizenship;
 
     [TableColumn(Name = "Address", DefaultValue = "Not specified.")]
     public string? CustomerAccount_Address_StreetLine1

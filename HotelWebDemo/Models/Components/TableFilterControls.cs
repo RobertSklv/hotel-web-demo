@@ -15,4 +15,8 @@ public class TableFilterControls
     public string? SecondaryValue { get; set; }
 
     public List<FilterOperatorOption> OperatorOptions { get; set; }
+
+    public bool IsSelectableFilter { get; set; }
+
+    public List<Option> SelectableOptions { get; set; }
 }

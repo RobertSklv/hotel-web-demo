@@ -17,4 +17,8 @@ public class TableColumnData
     public bool Filterable { get; set; }
 
     public int SortOrder { get; set; }
+
+    public bool IsSelectable { get; set; }
+
+    public dynamic SelectableDataSource { get; set; }
 }
