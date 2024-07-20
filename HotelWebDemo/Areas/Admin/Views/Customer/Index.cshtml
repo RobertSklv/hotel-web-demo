@@ -13,7 +13,7 @@
         .OverrideColumnName(nameof(Customer.CreatedAt), "Registration date")
         .SetOrderable(true)
         .SetFilterable(true)
-        .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship_Name), ViewData["Countries"] as List<Country> ?? throw new Exception($"Countries not loaded."))
+        .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship), ViewData["Countries"] as List<Country> ?? throw new Exception($"Countries not loaded."))
         .AddRowActions("Customer", options => options.IncludesDelete(false))
         .AddPagination(Model);
 }

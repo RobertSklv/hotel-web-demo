@@ -10,7 +10,9 @@ public class ActiveFilter
 
     public string Operator { get; set; }
 
-    public string Value { get; set; }
+    public string RawValue { get; set; }
+
+    public string? Value { get; set; }
 
     public string? SecondaryValue { get; set; }
 }

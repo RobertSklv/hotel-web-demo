@@ -17,6 +17,9 @@ public class FilterService : IFilterService
     public const string OPERATOR_GREATER_THAN_OR_EQUAL = "gte";
     public const string BETWEEN = "btw";
 
+    public const string OPERATOR_BEFORE = "bf";
+    public const string OPERATOR_AFTER = "af";
+
     public static readonly Dictionary<string, string> OperatorLabelMap = new()
     {
         { OPERATOR_EQUAL, "Equal to" },
@@ -26,6 +29,8 @@ public class FilterService : IFilterService
         { OPERATOR_LESS_THAN_OR_EQUAL, "Less than or equal" },
         { OPERATOR_GREATER_THAN, "Greater than" },
         { OPERATOR_GREATER_THAN_OR_EQUAL, "Greater than or equal" },
+        { OPERATOR_BEFORE, "Before" },
+        { OPERATOR_AFTER, "After" },
         { BETWEEN, "Between" },
     };
 
@@ -44,7 +49,7 @@ public class FilterService : IFilterService
         else if (type.Equals(typeof(float))) return float.Parse(value);
         else if (type.Equals(typeof(decimal))) return decimal.Parse(value);
         else if (type.Equals(typeof(DateTime))) return DateTime.Parse(value);
-        else if (type.IsSubclassOf(typeof(BaseEntity))) return int.Parse(value);
+        else if (type.IsSubclassOf(typeof(BaseEntity))) return int.TryParse(value, out int modelId) && modelId > 0 ? modelId : null;
         else return value;
     }
 
@@ -83,7 +88,7 @@ public class FilterService : IFilterService
                 TableFilter filter = filters[propertyName];
 
                 object? parsedValue = ParseValue(prop.PropertyType, filter.Value);
-                object? parsedSecondaryValue = ParseValue(prop.PropertyType, filter.Value);
+                object? parsedSecondaryValue = ParseValue(prop.PropertyType, filter.SecondaryValue);
 
                 if (parsedValue == null)
                 {
@@ -141,12 +146,14 @@ public class FilterService : IFilterService
                 body = Expression.Call(property, "Contains", null, constant);
                 break;
             case OPERATOR_LESS_THAN:
+            case OPERATOR_BEFORE:
                 body = Expression.LessThan(property, constant);
                 break;
             case OPERATOR_LESS_THAN_OR_EQUAL:
                 body = Expression.LessThanOrEqual(property, constant);
                 break;
             case OPERATOR_GREATER_THAN:
+            case OPERATOR_AFTER:
                 body = Expression.GreaterThan(property, constant);
                 break;
             case OPERATOR_GREATER_THAN_OR_EQUAL:

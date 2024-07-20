@@ -72,9 +72,16 @@ public abstract class Table
         return new TableRowActions(item, RowActionOptions);
     }
 
-    public TableColumnData FindColumn(string propertyName)
+    public TableColumnData? FindColumn(string propertyName, bool strict = true)
     {
-        return ColumnDatas.Where(cd => cd.PropertyName == propertyName).FirstOrDefault() ?? throw new Exception($"No '{propertyName}' column was defined!");
+        TableColumnData? colData = ColumnDatas.Where(cd => cd.PropertyName == propertyName).FirstOrDefault();
+
+        if (colData == null && strict)
+        {
+            throw new Exception($"No '{propertyName}' column was defined!");
+        }
+
+        return colData;
     }
 
     public object? GetPropertyValue(PropertyInfo property, object obj)

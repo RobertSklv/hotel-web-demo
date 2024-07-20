@@ -59,7 +59,7 @@ public class Customer : BaseEntity
     public string? CustomerAccount_Email => CustomerAccount?.Email;
 
     [TableColumn(Name = "Citizenship", DefaultValue = "Not specified.")]
-    public Country? CustomerIdentity_Citizenship_Name => CustomerIdentity?.Citizenship;
+    public Country? CustomerIdentity_Citizenship => CustomerIdentity?.Citizenship;
 
     [TableColumn(Name = "Address", DefaultValue = "Not specified.")]
     public string? CustomerAccount_Address_StreetLine1

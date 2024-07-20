@@ -2,6 +2,7 @@
 using System.Reflection;
 using HotelWebDemo.Services;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using HotelWebDemo.Models.Database;
 
 namespace HotelWebDemo.Models.Components;
 
@@ -13,16 +14,24 @@ public class FilterContext
 
     public List<ActiveFilter> ActiveFilters { get; set; }
 
-    public readonly List<FilterOperatorOption> TextOperatorOptions;
+    public List<TableFilterControls> FilterControls { get; set; }
 
-    public readonly List<FilterOperatorOption> NumericOperatorOptions;
+    public List<FilterOperatorOption> TextOperatorOptions { get; set; }
+
+    public List<FilterOperatorOption> NumericOperatorOptions { get; set; }
+
+    public List<FilterOperatorOption> DateOperatorOptions { get; set; }
+
+    public List<FilterOperatorOption> ObjectOperatorOptions { get; set; }
 
     public FilterContext(Table table, List<TableColumnData> columnDatas)
     {
         Table = table;
         ColumnDatas = columnDatas;
-        FindActiveFilters();
+    }
 
+    public void Init()
+    {
         TextOperatorOptions = new()
         {
             CreateOperatorOption(FilterService.OPERATOR_EQUAL),
@@ -40,9 +49,70 @@ public class FilterContext
             CreateOperatorOption(FilterService.OPERATOR_GREATER_THAN_OR_EQUAL),
             CreateOperatorOption(FilterService.BETWEEN),
         };
+
+        DateOperatorOptions = new()
+        {
+            CreateOperatorOption(FilterService.OPERATOR_EQUAL),
+            CreateOperatorOption(FilterService.OPERATOR_NOT_EQUAL),
+            CreateOperatorOption(FilterService.OPERATOR_BEFORE),
+            CreateOperatorOption(FilterService.OPERATOR_AFTER),
+            CreateOperatorOption(FilterService.BETWEEN),
+        };
+
+        ObjectOperatorOptions = new()
+        {
+            CreateOperatorOption(FilterService.OPERATOR_EQUAL),
+            CreateOperatorOption(FilterService.OPERATOR_NOT_EQUAL),
+        };
+
+        FindActiveFilters();
+        GenerateFilterControls();
     }
 
-    public List<TableFilterControls> GenerateFilterControls()
+    protected void FindActiveFilters()
+    {
+        List<ActiveFilter> filters = new();
+
+        if (Table.TableContext.Filter != null)
+        {
+            foreach (var filter in Table.TableContext.Filter)
+            {
+                if (filter.Value == null || string.IsNullOrEmpty(filter.Value.Value))
+                {
+                    continue;
+                }
+
+                TableColumnData? colData = Table.FindColumn(filter.Key, strict: false);
+
+                if (colData == null)
+                {
+                    continue;
+                }
+
+                if (filter.Value.Value == "0" && colData.PropertyType.IsSubclassOf(typeof(BaseEntity)))
+                {
+                    continue;
+                }
+
+                ActiveFilter activeFilter = new()
+                {
+                    Name = colData.Name,
+                    PropertyName = colData.PropertyName,
+                    RawOperator = filter.Value.Operator,
+                    Operator = GetOperatorLabel(filter.Value.Operator),
+                    Value = GetOptionLabel(colData.SelectableDataSource, filter.Value.Value) ?? filter.Value.Value,
+                    RawValue = filter.Value.Value,
+                    SecondaryValue = filter.Value.SecondaryValue,
+                };
+
+                filters.Add(activeFilter);
+            }
+        }
+
+        ActiveFilters = filters;
+    }
+
+    public void GenerateFilterControls()
     {
         List<TableFilterControls> controlsList = new();
 
@@ -61,7 +131,7 @@ public class FilterContext
                 Name = colData.Name,
                 PropertyName = colData.PropertyName,
                 SelectedOperator = activeFilter?.RawOperator ?? string.Empty,
-                Value = activeFilter?.Value,
+                Value = activeFilter?.RawValue,
                 SecondaryValue = activeFilter?.SecondaryValue,
                 InputType = GetFilterInputType(propType),
                 OperatorOptions = GetOperatorOptions(propType),
@@ -72,7 +142,7 @@ public class FilterContext
             controlsList.Add(controls);
         }
 
-        return controlsList;
+        FilterControls = controlsList;
     }
 
     protected string GetFilterInputType(Type type)
@@ -133,48 +203,38 @@ public class FilterContext
         return options;
     }
 
+    protected string? GetOptionLabel(dynamic selectableDataSource, object? value)
+    {
+        if (selectableDataSource != null)
+        {
+            foreach (object item in selectableDataSource)
+            {
+                SelectOptionAttribute? selectOptionAttribute = item.GetType().GetCustomAttribute<SelectOptionAttribute>();
+
+                if (selectOptionAttribute == null || item.GetType().GetProperty(selectOptionAttribute.IdentityProperty)?.GetValue(item)?.ToString() != value?.ToString())
+                {
+                    continue;
+                }
+
+                return item.GetType().GetProperty(selectOptionAttribute.LabelProperty)?.GetValue(item) as string;
+            }
+        }
+
+        return null;
+    }
+
     protected List<FilterOperatorOption> GetOperatorOptions(Type type)
     {
         if (type.Equals(typeof(string))) return TextOperatorOptions;
+        if (type.Equals(typeof(DateTime))) return DateOperatorOptions;
+        else if (type.IsValueType) return NumericOperatorOptions;
 
-        return NumericOperatorOptions;
+        return ObjectOperatorOptions;
     }
 
     protected FilterOperatorOption CreateOperatorOption(string @operator)
     {
         return new FilterOperatorOption(@operator, GetOperatorLabel(@operator));
-    }
-
-    protected void FindActiveFilters()
-    {
-        List<ActiveFilter> filters = new();
-
-        if (Table.TableContext.Filter != null)
-        {
-            foreach (var filter in Table.TableContext.Filter)
-            {
-                if (filter.Value == null || string.IsNullOrEmpty(filter.Value.Value))
-                {
-                    continue;
-                }
-
-                TableColumnData colData = Table.FindColumn(filter.Key);
-
-                ActiveFilter activeFilter = new()
-                {
-                    Name = colData.Name,
-                    PropertyName = colData.PropertyName,
-                    RawOperator = filter.Value.Operator,
-                    Operator = GetOperatorLabel(filter.Value.Operator),
-                    Value = filter.Value.Value,
-                    SecondaryValue = filter.Value.SecondaryValue,
-                };
-
-                filters.Add(activeFilter);
-            }
-        }
-
-        ActiveFilters = filters;
     }
 
     public string GetOperatorLabel(string @operator)

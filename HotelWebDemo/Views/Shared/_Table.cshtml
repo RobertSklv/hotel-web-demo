@@ -4,6 +4,7 @@
 @model Table
 
 @{
+    Model.FilterContext.Init();
 }
 
 @if (Model.HasCreateAction)
@@ -30,7 +31,7 @@
                         <div class="toast-body">
                             <strong>@(filter.Name):</strong>
                             <span>@filter.Operator</span>
-                            <strong>@filter.Value</strong>
+                            <strong>@(filter.Value ?? filter.RawValue)</strong>
                             @if (filter.SecondaryValue != null)
                             {
                                 <span>and</span>
@@ -56,16 +57,16 @@
         <div class="card card-body mb-4">
             <form method="GET" class="grid-filters-form">
                 <div class="row">
-                    @foreach (TableFilterControls controls in Model.FilterContext.GenerateFilterControls())
+                    @foreach (TableFilterControls controls in Model.FilterContext.FilterControls)
                     {
                         <div class="col-12 col-md-6 col-lg-4 mb-4">
                             <label class="fw-bold mb-2">@controls.Name</label>
                             <div id="filter-@(controls.PropertyName)" class="filter" data-filter="@(controls.PropertyName)">
                                 <div class="row">
                                     <div class="col">
-                                        <select
-                                            data-name="Filters.@(controls.PropertyName).Operator"
-                                            class="form-select d-inline-block">
+                                        <select data-name="Filters.@(controls.PropertyName).Operator"
+                                                data-filter-operator-for="@controls.PropertyName"
+                                                class="form-select d-inline-block filter-operator">
                                             @foreach (FilterOperatorOption op in controls.OperatorOptions)
                                             {
                                                 bool selected = controls.SelectedOperator == op.Value;
@@ -78,11 +79,13 @@
                                         {
                                             <select data-name="Filters.@(controls.PropertyName).Value"
                                                     value="@controls.Value"
-                                                    class="form-select d-inline-block filter-value">
+                                                    class="form-select filter-value"
+                                                    data-filter-value-for="@controls.PropertyName">
                                                 <option value="0">-- Please select --</option>
                                                 @foreach (Option op in controls.SelectableOptions)
                                                 {
-                                                    <option value="@op.Value">@op.Label</option>
+                                                    bool selected = (int)op.Value == int.Parse(controls.Value ?? "0");
+                                                    <option value="@op.Value" selected=@selected>@op.Label</option>
                                                 }
                                             </select>
                                         }
@@ -91,7 +94,15 @@
                                             <input data-name="Filters.@(controls.PropertyName).Value"
                                                    type="@controls.InputType"
                                                    value="@controls.Value"
-                                                   class="form-control d-inline-block filter-value" />
+                                                   data-filter-value-for="@controls.PropertyName"
+                                                   class="form-control filter-value" />
+
+                                            <input data-name="Filters.@(controls.PropertyName).SecondaryValue"
+                                                   type="@controls.InputType"
+                                                   value="@controls.SecondaryValue"
+                                                   data-filter-secondary-value-for="@controls.PropertyName"
+                                                   class="form-control filter-secondary-value mt-1"
+                                                   style="display: @(controls.SelectedOperator == "btw" ? "block" : "none") !important;" />
                                         }
                                     </div>
                                 </div>
@@ -99,31 +110,8 @@
                         </div>
                     }
                 </div>
-                <button id="applyFiltersButton" type="submit" class="btn btn-secondary px-4 py-2">Apply filters</button>
+                <button id="applyFiltersButton" type="submit" class="btn btn-secondary px-4 py-2 fw-bold">Apply filters</button>
             </form>
-            <script>
-                $(function () {
-                    $('.active-filter').find('button[data-bs-dismiss="toast"]').click(function () {
-                        var propertyName = $(this).data('remove-filter');
-                        $('.grid-filters-form').find(`[data-filter="${propertyName}"] .filter-value`).val('');
-                        $('#applyFiltersButton').click();
-                    });
-                    $('.grid-filters-form').submit(function () {
-                        var filters = $(this).find('.filter');
-                        $.each(filters, function (i, e) {
-                            var $e = $(e);
-                            var operatorEl = $e.find('[data-name*=".Operator"]');
-                            var valueEl = $e.find('[data-name*=".Value"]');
-                            var secondaryValueEl = $e.find('[data-name*=".SecondaryValue"]');
-                            if (valueEl.val()) {
-                                operatorEl.attr('name', operatorEl.data('name'));
-                                valueEl.attr('name', valueEl.data('name'));
-                                secondaryValueEl.attr('name', secondaryValueEl.data('name'));
-                            }
-                        });
-                    })
-                })
-            </script>
         </div>
     </div>
 }
