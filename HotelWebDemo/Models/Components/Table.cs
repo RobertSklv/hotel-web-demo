@@ -165,30 +165,52 @@ public abstract class Table
         ColumnDatas.Sort((d1, d2) => d1.SortOrder - d2.SortOrder);
     }
 
-    public List<Element> GenerateHeadingElements()
+    public List<TableHeadingCell> GenerateHeadingCells()
     {
-        List<Element> headingElements = new();
+        List<TableHeadingCell> headingCells = new();
 
         foreach (TableColumnData colData in ColumnDatas)
         {
-            Element headingElement;
+            TableHeadingCell cell;
 
             if (IsOrderable && colData.Orderable)
             {
-                headingElement = TableContext.CreateLink(colData.Name).SetOrder(colData.PropertyName);
+                cell = new TableHeadingCell()
+                {
+                    Element = TableContext.CreateLink(colData.Name).SetOrder(colData.PropertyName),
+                    State = GetHeadingFilterState(colData.PropertyName)
+                };
             }
             else
             {
-                headingElement = new Element()
+                cell = new TableHeadingCell()
                 {
-                    Content = colData.Name
+                    Element = new Element()
+                    {
+                        Content = colData.Name
+                    }
                 };
             }
 
-            headingElements.Add(headingElement);
+            headingCells.Add(cell);
         }
 
-        return headingElements;
+        return headingCells;
+    }
+
+    public HeadingFilterState GetHeadingFilterState(string propertyName)
+    {
+        if (TableContext.OrderBy == propertyName)
+        {
+            if (TableContext.Direction == "desc")
+            {
+                return HeadingFilterState.Descending;
+            }
+
+            return HeadingFilterState.Ascending;
+        }
+
+        return HeadingFilterState.None;
     }
 }
 

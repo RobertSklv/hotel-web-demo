@@ -4,7 +4,6 @@
 @model Table
 
 @{
-    Model.FilterContext.Init();
 }
 
 @if (Model.HasCreateAction)
@@ -16,121 +15,36 @@
 
 @if (Model.IsFilterable)
 {
-    <div>
-        <h2 class="h3">Active filters:</h2>
-        <div class="d-flex flex-wrap gap-1 mb-3">
-            @foreach (ActiveFilter filter in Model.FilterContext.ActiveFilters)
-            {
-                <div id="activeFilter-@(filter.PropertyName)"
-                     class="active-filter toast align-items-center text-bg-dark border-0 w-auto show"
-                     data-active-filter="@(filter.PropertyName)"
-                     role="alert"
-                     aria-live="assertive"
-                     aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <strong>@(filter.Name):</strong>
-                            <span>@filter.Operator</span>
-                            <strong>@(filter.Value ?? filter.RawValue)</strong>
-                            @if (filter.SecondaryValue != null)
-                            {
-                                <span>and</span>
-                                <strong>@filter.SecondaryValue</strong>
-                            }
-                        </div>
-                        <button type="button"
-                                class="btn-close me-2 m-auto"
-                                data-remove-filter="@(filter.PropertyName)"
-                                data-bs-dismiss="toast"
-                                aria-label="Close"></button>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-    <p class="d-inline-flex gap-1 mb-3">
-        <a class="btn btn-outline-secondary px-4 py-2" data-bs-toggle="collapse" href="#filtersCollapse" role="button" aria-expanded="false" aria-controls="filtersCollapse">
-            Filters
-        </a>
-    </p>
-    <div class="collapse" id="filtersCollapse">
-        <div class="card card-body mb-4">
-            <form method="GET" class="grid-filters-form">
-                <div class="row">
-                    @foreach (TableFilterControls controls in Model.FilterContext.FilterControls)
-                    {
-                        <div class="col-12 col-md-6 col-lg-4 mb-4">
-                            <label class="fw-bold mb-2">@controls.Name</label>
-                            <div id="filter-@(controls.PropertyName)" class="filter" data-filter="@(controls.PropertyName)">
-                                <div class="row">
-                                    <div class="col">
-                                        <select data-name="Filters.@(controls.PropertyName).Operator"
-                                                data-filter-operator-for="@controls.PropertyName"
-                                                class="form-select d-inline-block filter-operator">
-                                            @foreach (FilterOperatorOption op in controls.OperatorOptions)
-                                            {
-                                                bool selected = controls.SelectedOperator == op.Value;
-                                                <option value="@op.Value" selected=@selected>@op.Label</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        @if (controls.IsSelectableFilter)
-                                        {
-                                            <select data-name="Filters.@(controls.PropertyName).Value"
-                                                    value="@controls.Value"
-                                                    class="form-select filter-value"
-                                                    data-filter-value-for="@controls.PropertyName">
-                                                <option value="0">-- Please select --</option>
-                                                @foreach (Option op in controls.SelectableOptions)
-                                                {
-                                                    bool selected = (int)op.Value == int.Parse(controls.Value ?? "0");
-                                                    <option value="@op.Value" selected=@selected>@op.Label</option>
-                                                }
-                                            </select>
-                                        }
-                                        else
-                                        {
-                                            <input data-name="Filters.@(controls.PropertyName).Value"
-                                                   type="@controls.InputType"
-                                                   value="@controls.Value"
-                                                   data-filter-value-for="@controls.PropertyName"
-                                                   class="form-control filter-value" />
-
-                                            <input data-name="Filters.@(controls.PropertyName).SecondaryValue"
-                                                   type="@controls.InputType"
-                                                   value="@controls.SecondaryValue"
-                                                   data-filter-secondary-value-for="@controls.PropertyName"
-                                                   class="form-control filter-secondary-value mt-1"
-                                                   style="display: @(controls.SelectedOperator == "btw" ? "block" : "none") !important;" />
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-                <button id="applyFiltersButton" type="submit" class="btn btn-secondary px-4 py-2 fw-bold">Apply filters</button>
-            </form>
-        </div>
-    </div>
+    <partial name="_TableFilters" model="@Model.FilterContext" />
 }
 
 <div class="table-responsive-lg">
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                @foreach (Element heading in Model.GenerateHeadingElements())
+                @foreach (TableHeadingCell heading in Model.GenerateHeadingCells())
                 {
-                    if (heading is TableLink link)
+                    if (heading.Element is TableLink link)
                     {
                         <th>
-                            <partial name="_TableLink" model="@heading" />
+                            <partial name="_TableLink" model="@heading.Element" />
+                            @if (heading.State == HeadingFilterState.Descending)
+                            {
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                                </svg>
+                            }
+                            else if (heading.State == HeadingFilterState.Ascending)
+                            {
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                                    <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                                </svg>
+                            }
                         </th>
                     }
                     else
                     {
-                        <th>@heading.Content</th>
+                        <th>@heading.Element.Content</th>
                     }
                 }
                 @if (Model.RowActionOptions != null)
