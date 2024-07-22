@@ -1,7 +1,12 @@
 $(function () {
-    $('.active-filter').find('button[data-bs-dismiss="toast"]').click(function () {
+    $('.btn-remove-filter').click(function () {
         var propertyName = $(this).data('remove-filter');
-        $('.grid-filters-form').find(`[data-filter="${propertyName}"] .filter-value`).val('');
+
+        if (propertyName == '__all') {
+            $('.grid-filters-form').find(`[data-filter] .filter-value`).val('');
+        } else {
+            $('.grid-filters-form').find(`[data-filter="${propertyName}"] .filter-value`).val('');
+        }
 
         $('#applyFiltersButton').click();
     });

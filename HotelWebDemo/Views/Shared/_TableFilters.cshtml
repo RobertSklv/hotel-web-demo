@@ -5,38 +5,51 @@
 @{
     Model.Init();
 }
-<div>
-    <h2 class="h3">Active filters:</h2>
-    <div class="d-flex flex-wrap gap-1 mb-3">
-        @foreach (ActiveFilter filter in Model.ActiveFilters)
-        {
-            <div id="activeFilter-@(filter.PropertyName)"
-                 class="active-filter toast align-items-center text-bg-dark border-0 w-auto show"
-                 data-active-filter="@(filter.PropertyName)"
-                 role="alert"
-                 aria-live="assertive"
-                 aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <strong>@(filter.Name):</strong>
-                        <span>@filter.Operator</span>
-                        <strong>@(filter.Value ?? filter.RawValue)</strong>
-                        @if (filter.SecondaryValue != null)
-                        {
-                            <span>and</span>
-                            <strong>@filter.SecondaryValue</strong>
-                        }
+@if (Model.ActiveFilters.Count > 0)
+{
+    <div>
+        <div class="d-flex">
+            <h2 class="h3 flex-shrink-0 me-3">Active filters:</h2>
+            <div class="d-flex flex-wrap gap-1 mb-3">
+                @foreach (ActiveFilter filter in Model.ActiveFilters)
+                {
+                    <div id="activeFilter-@(filter.PropertyName)"
+                         class="active-filter toast align-items-center text-bg-dark border-0 w-auto show"
+                         data-active-filter="@(filter.PropertyName)"
+                         role="alert"
+                         aria-live="assertive"
+                         aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <strong>@(filter.Name):</strong>
+                                <span>@filter.Operator</span>
+                                <strong>@(filter.Value ?? filter.RawValue)</strong>
+                                @if (filter.SecondaryValue != null)
+                                {
+                                    <span>and</span>
+                                    <strong>@filter.SecondaryValue</strong>
+                                }
+                            </div>
+                            <button type="button"
+                                    class="btn-close btn-remove-filter me-2 m-auto"
+                                    data-remove-filter="@(filter.PropertyName)"
+                                    data-bs-dismiss="toast"
+                                    aria-label="Close"></button>
+                        </div>
                     </div>
+                }
+                @if (Model.ActiveFilters.Count > 1)
+                {
                     <button type="button"
-                            class="btn-close me-2 m-auto"
-                            data-remove-filter="@(filter.PropertyName)"
-                            data-bs-dismiss="toast"
-                            aria-label="Close"></button>
-                </div>
+                            class="btn-remove-filter btn-link bg-transparent border-0"
+                            data-remove-filter="__all">
+                        Clear all
+                    </button>
+                }
             </div>
-        }
+        </div>
     </div>
-</div>
+}
 <p class="d-inline-flex gap-1 mb-3">
     <a class="btn btn-outline-secondary px-4 py-2" data-bs-toggle="collapse" href="#filtersCollapse" role="button" aria-expanded="false" aria-controls="filtersCollapse">
         Filters
