@@ -47,6 +47,7 @@ builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddScoped<IFilterService, FilterService>();
+builder.Services.AddScoped<IAdminPageService, AdminPageService>();
 
 var app = builder.Build();
 

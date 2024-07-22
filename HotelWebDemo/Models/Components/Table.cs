@@ -55,13 +55,6 @@ public abstract class Table
         return this;
     }
 
-    public Table IncludeCreateAction(bool createAction)
-    {
-        HasCreateAction = createAction;
-
-        return this;
-    }
-
     public TableRowActions GenerateRowActions(BaseEntity item)
     {
         if (RowActionOptions == null)
@@ -323,10 +316,5 @@ public class Table<T> : Table
     public new Table<T> SetFilterable(bool filterable)
     {
         return (Table<T>)base.SetFilterable(filterable);
-    }
-
-    public new Table<T> IncludeCreateAction(bool createAction)
-    {
-        return (Table<T>)base.IncludeCreateAction(createAction);
     }
 }

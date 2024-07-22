@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Models.Components;
+using HotelWebDemo.Models.Components.Admin.Pages;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
@@ -11,11 +12,13 @@ public class CustomerController : AdminController
 {
     private readonly ICustomerService service;
     private readonly ICountryService countryService;
+    private readonly IAdminPageService adminPageService;
 
-    public CustomerController(ICustomerService service, ICountryService countryService)
+    public CustomerController(ICustomerService service, ICountryService countryService, IAdminPageService adminPageService)
     {
         this.service = service;
         this.countryService = countryService;
+        this.adminPageService = adminPageService;
     }
 
     public async Task<IActionResult> Index(string orderBy = "Id", string direction = "desc", int page = 1, Dictionary<string, TableFilter>? filters = null)
@@ -40,6 +43,10 @@ public class CustomerController : AdminController
         };
 
         ViewData["Countries"] = countryService.GetAll();
+        ViewData["PageActions"] = new List<PageActionButton>()
+        {
+            adminPageService.CreateBackAction(this)
+        };
 
         return View("Upsert", customer);
     }
@@ -59,6 +66,10 @@ public class CustomerController : AdminController
         }
 
         ViewData["Countries"] = countryService.GetAll();
+        ViewData["PageActions"] = new List<PageActionButton>()
+        {
+            adminPageService.CreateBackAction(this)
+        };
 
         return View("Upsert", customer);
     }

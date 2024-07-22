@@ -1,0 +1,31 @@
+﻿@using HotelWebDemo.Models.Components.Admin.Pages
+
+@model PageActionButton
+
+@{
+    string _class = $"btn btn-lg btn-{Model.ColorClass}";
+}
+
+<div class="admin-page-action @(@Model.AlignToLeft ? "me-auto" : "")">
+    @if (Model.IsLink)
+    {
+        <a asp-area="@Model.Area" asp-controller="@Model.Controller" asp-action="@Model.Action" class="@_class">
+            @Html.Raw(Model.Content)
+        </a>
+    }
+    else
+    {
+        <form asp-area="@Model.Area" asp-controller="@Model.Controller" asp-action="@Model.Action">
+            @if (Model.RequestParameters != null)
+            {
+                foreach (KeyValuePair<string, object> kvp in Model.RequestParameters)
+                {
+                    <input type="hidden" id="@kvp.Key" value="@kvp.Value" />
+                }
+                <button type="submit" class="@_class">
+                    @Html.Raw(Model.Content)
+                </button>
+            }
+        </form>
+    }
+</div>

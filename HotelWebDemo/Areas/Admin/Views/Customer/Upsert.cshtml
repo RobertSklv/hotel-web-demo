@@ -1,23 +1,32 @@
-﻿@using HotelWebDemo.Models.Database
+﻿@using HotelWebDemo.Models.Components.Admin.Pages
+@using HotelWebDemo.Models.Components.Common
+@using HotelWebDemo.Models.Database
 
 @model Customer
 
 @{
+    Layout = "_AdminPageLayout";
     bool isCreate = Model.Id == 0;
-}
 
-<h1 class="mt-4 mb-5">
-    @(isCreate ? "New Customer" : $"Customer: {Model.FullName}")
-</h1>
+    List<PageActionButton> actions = (ViewData["PageActions"] as List<PageActionButton>) ?? new();
 
-@if (!isCreate)
-{
-    <div class="actions mb-4">
-        <form asp-action="ResetPassword">
-            <input type="hidden" asp-for=@Model.Id />
-            <button type="submit" class="btn btn-warning p-2">Reset password</button>
-        </form>
-    </div>
+    if (!isCreate)
+    {
+        actions.Add(new()
+        {
+            Content = "Reset password",
+            Controller = "Customer",
+            Action = "ResetPassword",
+            Color = ColorClass.Warning,
+            RequestParameters = new()
+            {
+                { "Id", Model.Id }
+            }
+        });
+    }
+
+    ViewData["PageActions"] = actions;
+    ViewData["PageHeading"] = isCreate ? "New Customer" : $"Customer: {Model.FullName}";
 }
 
 <form asp-action="Upsert" method="@(isCreate ? "POST" : "PUT")">
@@ -30,5 +39,5 @@
     <partial name="_IdentityFieldset" model="@Model" />
     <partial name="_AddressFieldset" model="@Model" />
 
-    <button type="submit" class="btn btn-lg btn-primary mt-4 px-4">Save</button>
+    <button type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Save</button>
 </form>
