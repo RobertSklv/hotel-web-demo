@@ -5,15 +5,11 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HotelWebDemo.Services;
 
-public interface ICustomerService
+public interface ICustomerService : ICrudService<Customer>
 {
     Customer? GetFull(int id);
 
     Task Upsert(Customer customer, ModelStateDictionary modelState);
-
-    Task<int> Delete(int id);
-
-    Task<PaginatedList<Customer>> GetCustomers(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters);
 
     bool CompareResetPasswordToken(Customer customer, string token);
 

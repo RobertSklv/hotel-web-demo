@@ -37,6 +37,8 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+builder.Services.AddScoped<IHotelService, HotelService>();
+builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 
 builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
 builder.Services.AddTransient<IMailingService, MailingService>();
@@ -46,8 +48,10 @@ builder.Services.AddScoped<ILinkGeneratorSerivce, LinkGeneratorService>();
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-builder.Services.AddScoped<IFilterService, FilterService>();
+builder.Services.AddScoped<IEntityFilterService, EntityFilterService>();
+builder.Services.AddScoped<IEntitySortService, EntitySortService>();
 builder.Services.AddScoped<IAdminPageService, AdminPageService>();
+builder.Services.AddScoped<IEntityHelperService, EntityHelperService>();
 
 var app = builder.Build();
 

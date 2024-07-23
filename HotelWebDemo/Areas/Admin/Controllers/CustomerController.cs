@@ -29,7 +29,7 @@ public class CustomerController : AdminController
         ViewData["Filter"] = filters;
         ViewData["Countries"] = countryService.GetAll();
 
-        PaginatedList<Customer> customers = await service.GetCustomers(orderBy, direction, page, 10, filters);
+        PaginatedList<Customer> customers = await service.List(orderBy, direction, page, 10, filters);
 
         return View(customers);
     }

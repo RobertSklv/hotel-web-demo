@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HotelWebDemo.Services;
 
-public class CustomerService : ICustomerService
+public class CustomerService : CrudService<Customer>, ICustomerService
 {
     private readonly ICustomerRepository repository;
     private readonly IAuthService authService;
@@ -20,6 +20,7 @@ public class CustomerService : ICustomerService
         IAuthService authService,
         IMailingService mailingService,
         ILinkGeneratorSerivce linkGeneratorSerivce)
+        : base(repository)
     {
         this.repository = repository;
         this.authService = authService;
@@ -30,11 +31,6 @@ public class CustomerService : ICustomerService
     public Customer? GetFull(int id)
     {
         return repository.GetFull(id);
-    }
-
-    public Customer? Get(int id)
-    {
-        return repository.Get(id);
     }
 
     public async Task Upsert(Customer customer, ModelStateDictionary modelState)
@@ -65,18 +61,6 @@ public class CustomerService : ICustomerService
         {
             modelState.AddModelError(string.Empty, "Something went wrong while resetting the password for the customer.");
         }
-    }
-
-    public async Task<int> Delete(int id)
-    {
-        return await repository.Delete(id);
-    }
-
-    public async Task<PaginatedList<Customer>> GetCustomers(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
-    {
-        bool desc = direction == "desc";
-
-        return await repository.GetCustomers(orderBy, desc, page, pageSize, filters);
     }
 
     public bool CompareResetPasswordToken(Customer customer, string token)
@@ -203,7 +187,7 @@ public class CustomerService : ICustomerService
             customer!.CustomerAccount.PasswordResetToken = null;
             customer!.CustomerAccount.PasswordResetStart = null;
 
-            int result = await repository.Save(customer);
+            int result = await repository.Update(customer);
 
             if (result == 0)
             {

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace HotelWebDemo.Services;
 
-public interface IFilterService
+public interface IEntityFilterService
 {
     object? ParseValue(Type type, string value);
 

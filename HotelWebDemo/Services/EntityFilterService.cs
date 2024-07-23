@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace HotelWebDemo.Services;
 
-public class FilterService : IFilterService
+public class EntityFilterService : IEntityFilterService
 {
     public const string OPERATOR_EQUAL = "eq";
     public const string OPERATOR_NOT_EQUAL = "neq";
@@ -33,6 +33,13 @@ public class FilterService : IFilterService
         { OPERATOR_AFTER, "After" },
         { BETWEEN, "Between" },
     };
+
+    private readonly IEntityHelperService helper;
+
+    public EntityFilterService(IEntityHelperService helper)
+    {
+        this.helper = helper;
+    }
 
     public object? ParseValue(Type type, string value)
     {
@@ -61,7 +68,7 @@ public class FilterService : IFilterService
         {
             TableColumnAttribute? colAttr = property.GetCustomAttribute<TableColumnAttribute>();
 
-            if (colAttr == null)
+            if (colAttr == null || !colAttr.Filterable)
             {
                 continue;
             }
@@ -110,8 +117,6 @@ public class FilterService : IFilterService
                 }
                 catch (Exception)
                 {
-                    //throw new Exception($"Failed to filter property: {prop.Name}", e);
-
                     continue;
                 }
             }
@@ -123,7 +128,7 @@ public class FilterService : IFilterService
     public Expression<Func<T, bool>> BuildFilterPredicate<T>(string propertyName, string @operator, dynamic value, dynamic? secondaryValue = null)
     {
         ParameterExpression param = Expression.Parameter(typeof(T));
-        MemberExpression property = ParseMemberExpression(param, SplitHierarchicalPropertyName(propertyName));
+        MemberExpression property = helper.ParseMemberExpression(param, propertyName);
         Expression constant = Expression.Constant(value);
         Expression? secondaryConstant = null;
 
@@ -175,35 +180,5 @@ public class FilterService : IFilterService
         }
 
         return Expression.Lambda<Func<T, bool>>(body, param);
-    }
-
-    public string[] SplitHierarchicalPropertyName(string propertyName)
-    {
-        return propertyName.Split('_');
-    }
-
-    public MemberExpression ParseMemberExpression(ParameterExpression param, params string[] propertyName)
-    {
-        if (propertyName.Length > 1)
-        {
-            string bottom = propertyName[^1];
-            string[] parentHierarchy = new string[propertyName.Length - 1];
-            Array.Copy(propertyName, 0, parentHierarchy, 0, parentHierarchy.Length);
-
-            MemberExpression parentHierarchyExpression = ParseMemberExpression(param, parentHierarchy);
-
-            if (string.IsNullOrEmpty(bottom))
-            {
-                return parentHierarchyExpression;
-            }
-
-            return Expression.Property(parentHierarchyExpression, bottom);
-        }
-        else if (propertyName.Length == 1)
-        {
-            return Expression.Property(param, propertyName[0]);
-        }
-
-        throw new Exception($"Failed to parse an empty property name!");
     }
 }

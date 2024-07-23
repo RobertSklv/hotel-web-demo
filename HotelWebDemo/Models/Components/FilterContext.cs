@@ -34,35 +34,35 @@ public class FilterContext
     {
         TextOperatorOptions = new()
         {
-            CreateOperatorOption(FilterService.OPERATOR_EQUAL),
-            CreateOperatorOption(FilterService.OPERATOR_NOT_EQUAL),
-            CreateOperatorOption(FilterService.OPERATOR_CONTAINS),
+            CreateOperatorOption(EntityFilterService.OPERATOR_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_NOT_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_CONTAINS),
         };
 
         NumericOperatorOptions = new()
         {
-            CreateOperatorOption(FilterService.OPERATOR_EQUAL),
-            CreateOperatorOption(FilterService.OPERATOR_NOT_EQUAL),
-            CreateOperatorOption(FilterService.OPERATOR_LESS_THAN),
-            CreateOperatorOption(FilterService.OPERATOR_LESS_THAN_OR_EQUAL),
-            CreateOperatorOption(FilterService.OPERATOR_GREATER_THAN),
-            CreateOperatorOption(FilterService.OPERATOR_GREATER_THAN_OR_EQUAL),
-            CreateOperatorOption(FilterService.BETWEEN),
+            CreateOperatorOption(EntityFilterService.OPERATOR_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_NOT_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_LESS_THAN),
+            CreateOperatorOption(EntityFilterService.OPERATOR_LESS_THAN_OR_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_GREATER_THAN),
+            CreateOperatorOption(EntityFilterService.OPERATOR_GREATER_THAN_OR_EQUAL),
+            CreateOperatorOption(EntityFilterService.BETWEEN),
         };
 
         DateOperatorOptions = new()
         {
-            CreateOperatorOption(FilterService.OPERATOR_EQUAL),
-            CreateOperatorOption(FilterService.OPERATOR_NOT_EQUAL),
-            CreateOperatorOption(FilterService.OPERATOR_BEFORE),
-            CreateOperatorOption(FilterService.OPERATOR_AFTER),
-            CreateOperatorOption(FilterService.BETWEEN),
+            CreateOperatorOption(EntityFilterService.OPERATOR_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_NOT_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_BEFORE),
+            CreateOperatorOption(EntityFilterService.OPERATOR_AFTER),
+            CreateOperatorOption(EntityFilterService.BETWEEN),
         };
 
         ObjectOperatorOptions = new()
         {
-            CreateOperatorOption(FilterService.OPERATOR_EQUAL),
-            CreateOperatorOption(FilterService.OPERATOR_NOT_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_NOT_EQUAL),
         };
 
         FindActiveFilters();
@@ -244,6 +244,6 @@ public class FilterContext
             return @operator;
         }
 
-        return FilterService.OperatorLabelMap[@operator];
+        return EntityFilterService.OperatorLabelMap[@operator];
     }
 }
