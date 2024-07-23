@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Models.Database;
 
@@ -23,6 +24,7 @@ public class Address : BaseEntity
     [Display(Name = "Street line 3")]
     public string? StreetLine3 { get; set; }
 
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Country Country { get; set; }
 
     [Display(Name = "Country")]

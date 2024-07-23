@@ -40,8 +40,6 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        ConfigureDeleteBehavior(modelBuilder);
-
         SeedDefaultData(modelBuilder);
         SeedSampleData(modelBuilder);
 
@@ -56,69 +54,6 @@ public class AppDbContext : DbContext
 
     protected void SeedSampleData(ModelBuilder modelBuilder)
     {
-    }
-
-    protected void ConfigureDeleteBehavior(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<BookingCustomer>()
-            .HasOne(e => e.Customer)
-            .WithMany(e => e.BookingCustomers)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<BookingCustomer>()
-            .HasOne(e => e.Booking)
-            .WithMany(e => e.BookingCustomers)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<RoomFeatureRoom>()
-            .HasOne(e => e.Room)
-            .WithMany(e => e.RoomFeatureRooms)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<RoomFeatureRoom>()
-            .HasOne(e => e.RoomFeature)
-            .WithMany(e => e.RoomFeatureRooms)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<BookingItem>()
-            .HasOne(e => e.Booking)
-            .WithMany(e => e.BookingItems)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<BookingItemRoomFeature>()
-            .HasOne(e => e.BookingItem)
-            .WithMany(e => e.DesiredFeatures)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<BookingItemRoomFeature>()
-            .HasOne(e => e.RoomFeature)
-            .WithMany(e => e.BookedFeatures)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<Review>()
-            .HasOne(e => e.Author)
-            .WithMany(e => e.Reviews)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<AdminUser>()
-            .HasOne(e => e.Hotel)
-            .WithMany(e => e.AdminUsers)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<CustomerAccount>()
-            .HasOne(e => e.Address)
-            .WithOne(e => e.CustomerAccount)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<Address>()
-            .HasOne(e => e.Country)
-            .WithMany(e => e.Addresses)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        modelBuilder.Entity<CustomerIdentity>()
-            .HasOne(e => e.Citizenship)
-            .WithMany(e => e.Citizenships)
-            .OnDelete(DeleteBehavior.NoAction);
     }
 
     protected void SetTimestamps()

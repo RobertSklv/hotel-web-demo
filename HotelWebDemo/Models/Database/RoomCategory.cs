@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Models.Database;
 
@@ -14,6 +15,11 @@ public class RoomCategory : BaseEntity
 
     [MaxLength(1024)]
     public string? LongDescription { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public Hotel Hotel { get; set; }
+
+    public int HotelId { get; set; }
 
     [Column(TypeName = "decimal(19, 4)")]
     public decimal Price { get; set; }

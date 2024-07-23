@@ -15,7 +15,12 @@ public class Hotel : BaseEntity
     [MaxLength(1024)]
     public string? LongDescription { get; set; }
 
+    [Range(1, 5)]
+    public int Stars { get; set; }
+
     public List<Room> Rooms { get; set; }
 
     public List<AdminUser> AdminUsers { get; set; }
+
+    public List<RoomCategory> Categories { get; set; }
 }

@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Models.Database;
 
 [Table("CustomerAccounts")]
 public class CustomerAccount : BaseEntity
 {
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Customer Customer { get; set; }
 
     public int CustomerId { get; set; }
@@ -27,6 +29,7 @@ public class CustomerAccount : BaseEntity
     public DateTime DateOfBirth { get; set; }
 
     [ForeignKey(nameof(AddressId))]
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Address Address { get; set; }
 
     public int AddressId { get; set; }

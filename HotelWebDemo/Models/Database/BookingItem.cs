@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Models.Database;
 
 [Table("BookingItems")]
 public class BookingItem : BaseEntity
 {
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Booking Booking { get; set; }
 
     public int BookingId { get; set; }

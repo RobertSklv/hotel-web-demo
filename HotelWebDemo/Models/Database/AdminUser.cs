@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Models.Database;
 
@@ -28,6 +29,7 @@ public class AdminUser : BaseEntity
     public int RoleId { get; set; }
 
     [Display(Name = "Workplace")]
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Hotel? Hotel { get; set; }
 
     public int? HotelId { get; set; }
