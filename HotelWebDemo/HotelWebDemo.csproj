@@ -4,6 +4,16 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+  
+    <PostBuildEvent Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      echo Compiling SASS...
+      sass $(SolutionDir)HotelWebDemo/wwwroot/sass/core/main_admin.scss $(SolutionDir)HotelWebDemo/wwwroot/css/main_admin.css
+    </PostBuildEvent>
+  
+    <PostBuildEvent Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      echo Compiling SASS...
+      sass $(SolutionDir)HotelWebDemo/wwwroot/sass/core/main_admin.scss $(SolutionDir)HotelWebDemo/wwwroot/css/main_admin.css
+    </PostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +34,7 @@
     <Folder Include="Data\Seeding\SampleData\" />
     <Folder Include="Extensions\" />
     <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
+    <Folder Include="wwwroot\sass\abstracts\" />
   </ItemGroup>
 
 </Project>

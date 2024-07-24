@@ -13,8 +13,21 @@ public class HotelRepository : CrudRepository<Hotel>, IHotelRepository
     {
     }
 
+    public Hotel? GetFull(int id)
+    {
+        return DbSet
+            .Where(x => x.Id == id)
+            .Include(e => e.Rooms)
+            .Include(e => e.AdminUsers)
+            .Include(e => e.Categories)
+            .FirstOrDefault();
+    }
+
     public override IQueryable<Hotel> List(DbSet<Hotel> dbSet)
     {
-        return dbSet;
+        return dbSet
+            .Include(e => e.Rooms)
+            .Include(e => e.AdminUsers)
+            .Include(e => e.Categories);
     }
 }

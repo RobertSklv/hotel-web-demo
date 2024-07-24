@@ -81,7 +81,7 @@ public class CustomerService : CrudService<Customer>, ICustomerService
             .SetOrderable(true)
             .SetFilterable(true)
             .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship), countries)
-            .AddRowActions("Customer", options => options.IncludesDelete(false))
+            .AddRowActions(null, options => options.IncludesDelete(false))
             .AddPagination(items);
 
         model.Table = table;

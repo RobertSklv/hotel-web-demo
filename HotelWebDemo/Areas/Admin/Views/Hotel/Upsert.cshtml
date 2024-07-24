@@ -1,0 +1,23 @@
+﻿@using HotelWebDemo.Models.Components.Admin.Pages
+@using HotelWebDemo.Models.Components.Common
+@using HotelWebDemo.Models.Database
+
+@model Hotel
+
+@{
+    Layout = "_AdminPageLayout";
+    bool isCreate = Model.Id == 0;
+
+    ViewData["PageHeading"] = isCreate ? "New Hotel" : $"Hotel: {Model.Name}";
+}
+
+<form asp-action="Upsert" method="@(isCreate ? "POST" : "PUT")">
+    @if (!isCreate)
+    {
+        <input type="hidden" asp-for=@Model.Id />
+    }
+
+    <partial name="_UpsertFieldset" model="@Model" />
+
+    <button type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Save</button>
+</form>

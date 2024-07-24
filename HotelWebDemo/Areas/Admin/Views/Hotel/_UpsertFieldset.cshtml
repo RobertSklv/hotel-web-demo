@@ -1,0 +1,45 @@
+﻿@using HotelWebDemo.Models.Database
+
+@model Hotel
+
+@{
+    Layout = "_FieldsetLayout";
+    ViewData["Legend"] = "General";
+}
+
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Name></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.Name class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.Name class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.ShortDescription></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.ShortDescription class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.ShortDescription class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.LongDescription></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.LongDescription class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.LongDescription class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Stars></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.Stars class="form-control d-block w-100" min="1" max="5" />
+        <span asp-validation-for=@Model.Stars class="text-danger"></span>
+    </div>
+</div>

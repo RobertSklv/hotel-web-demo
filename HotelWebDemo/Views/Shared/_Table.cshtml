@@ -55,7 +55,7 @@
                         @foreach (object? cellData in Model.GetRowData(item))
                         {
                             <td>
-                                @cellData
+                                <span>@cellData</span>
                             </td>
                         }
                         @if (Model.RowActionOptions != null)

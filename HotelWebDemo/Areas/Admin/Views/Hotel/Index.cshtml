@@ -1,0 +1,32 @@
+﻿@using HotelWebDemo.Models.Components.Admin.Pages
+@using HotelWebDemo.Models.Components.Common
+@using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
+
+@model ListingModel<Hotel>
+
+@{
+}
+
+@{
+    Layout = "_AdminPageLayout";
+    ViewData["Title"] = "All Hotels";
+
+    var totalPages = ViewData["TotalPages"] as int?;
+
+    List<PageActionButton> actions = (ViewData["PageActions"] as List<PageActionButton>) ?? new();
+
+    actions.Add(new()
+    {
+        Content = "Create New",
+        Controller = "Hotel",
+        Action = "Create",
+        Color = ColorClass.Primary,
+        IsLink = true
+    });
+
+    ViewData["PageActions"] = actions;
+    ViewData["PageHeading"] = "All Hotels";
+}
+
+<partial name="_Table" model="@Model.Table" />

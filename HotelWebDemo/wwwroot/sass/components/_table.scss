@@ -1,0 +1,9 @@
+
+
+td > span {
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 170px;
+}

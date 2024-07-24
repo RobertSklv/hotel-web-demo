@@ -309,10 +309,10 @@ public class Table<T> : Table
         return this;
     }
 
-    public Table<T> AddRowActions(string controller, Func<TableRowActionsOptions, TableRowActionsOptions> options)
+    public Table<T> AddRowActions(string? controller = null, Func<TableRowActionsOptions, TableRowActionsOptions>? options = null)
     {
-        TableRowActionsOptions opt = new(controller);
-        RowActionOptions = options(opt);
+        TableRowActionsOptions opt = new(controller ?? typeof(T).Name);
+        RowActionOptions = options != null ? options(opt) : opt;
 
         return this;
     }

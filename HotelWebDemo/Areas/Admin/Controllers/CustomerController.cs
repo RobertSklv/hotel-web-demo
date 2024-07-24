@@ -62,21 +62,29 @@ public class CustomerController : AdminController
         }
 
         ViewData["Countries"] = countryService.GetAll();
-        ViewData["PageActions"] = new List<PageActionButton>()
-        {
-            adminPageService.CreateBackAction(this)
-        };
+        AddBackAction();
 
         return View("Upsert", customer);
     }
 
+    [HttpPost]
     public async Task<IActionResult> Upsert(Customer customer)
     {
+        bool isCreate = customer.Id == 0;
+
         await service.Upsert(customer, ModelState);
+
+        if (isCreate)
+        {
+            return RedirectToAction("Index");
+        }
+
+        AddBackAction();
 
         return RedirectToAction("Edit", new { customer.Id });
     }
 
+    [HttpDelete]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -109,5 +117,13 @@ public class CustomerController : AdminController
         }
 
         return RedirectToAction("Edit", new { id });
+    }
+
+    private void AddBackAction()
+    {
+        ViewData["PageActions"] = new List<PageActionButton>()
+        {
+            adminPageService.CreateBackAction(this)
+        };
     }
 }
