@@ -73,9 +73,9 @@ public class FilterContext
     {
         List<ActiveFilter> filters = new();
 
-        if (Table.TableContext.Filter != null)
+        if (Table.ListingModel.Filter != null)
         {
-            foreach (var filter in Table.TableContext.Filter)
+            foreach (var filter in Table.ListingModel.Filter)
             {
                 if (filter.Value == null || string.IsNullOrEmpty(filter.Value.Value))
                 {

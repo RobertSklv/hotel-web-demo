@@ -4,22 +4,13 @@
 @using HotelWebDemo.Models.Database
 @using HotelWebDemo.Models.ViewModels
 
-@model PaginatedList<Customer>
+@model CustomerListingModel
 
 @{
     Layout = "_AdminPageLayout";
     ViewData["Title"] = "All Customers";
 
     var totalPages = ViewData["TotalPages"] as int?;
-    TableContext tableContext = new("Index", ViewData);
-
-    Table table = new Table<Customer>(tableContext, items: Model)
-        .OverrideColumnName(nameof(Customer.CreatedAt), "Registration date")
-        .SetOrderable(true)
-        .SetFilterable(true)
-        .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship), ViewData["Countries"] as List<Country> ?? throw new Exception($"Countries not loaded."))
-        .AddRowActions("Customer", options => options.IncludesDelete(false))
-        .AddPagination(Model);
 
 
     List<PageActionButton> actions = (ViewData["PageActions"] as List<PageActionButton>) ?? new();
@@ -37,4 +28,4 @@
     ViewData["PageHeading"] = "All customers";
 }
 
-<partial name="_Table" model="@table" />
+<partial name="_Table" model="@Model.Table" />

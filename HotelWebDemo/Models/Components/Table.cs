@@ -8,9 +8,9 @@ namespace HotelWebDemo.Models.Components;
 
 public abstract class Table
 {
-    public TableContext TableContext { get; }
+    public IListingModel ListingModel { get; set; }
 
-    public Type ModelType { get; }
+    public Type ModelType { get; set; }
 
     public List<TableColumnData> ColumnDatas { get; private set; }
 
@@ -28,9 +28,9 @@ public abstract class Table
 
     public FilterContext FilterContext { get; set; }
 
-    public Table(TableContext tableContext, Type modelType)
+    public Table(IListingModel listingModel, Type modelType)
     {
-        TableContext = tableContext;
+        ListingModel = listingModel;
         ModelType = modelType;
 
         GenerateTableColumnDatas();
@@ -170,7 +170,7 @@ public abstract class Table
             {
                 cell = new TableHeadingCell()
                 {
-                    Element = TableContext.CreateLink(colData.Name).SetOrder(colData.PropertyName),
+                    Element = CreateLink(colData.Name).SetOrder(colData.PropertyName),
                     State = GetHeadingFilterState(colData.PropertyName)
                 };
             }
@@ -193,9 +193,9 @@ public abstract class Table
 
     public HeadingFilterState GetHeadingFilterState(string propertyName)
     {
-        if (TableContext.OrderBy == propertyName)
+        if (ListingModel.OrderBy == propertyName)
         {
-            if (TableContext.Direction == "desc")
+            if (ListingModel.Direction == "desc")
             {
                 return HeadingFilterState.Descending;
             }
@@ -204,6 +204,17 @@ public abstract class Table
         }
 
         return HeadingFilterState.None;
+    }
+
+    public TableLink CreateLink(string content)
+    {
+        return new(ListingModel.ActionName, content)
+        {
+            OrderBy = ListingModel.OrderBy,
+            Direction = ListingModel.Direction,
+            Page = ListingModel.Page,
+            Filter = ListingModel.Filter,
+        };
     }
 }
 
@@ -216,8 +227,8 @@ public class Table<T> : Table
 
     public override bool HasItems => Items.Count > 0;
 
-    public Table(TableContext tableContext, List<T> items)
-        : base(tableContext, typeof(T))
+    public Table(IListingModel listingModel, List<T> items)
+        : base(listingModel, typeof(T))
     {
         Items = items;
     }
@@ -249,6 +260,11 @@ public class Table<T> : Table
         }
 
         return rowData;
+    }
+
+    public Pagination CreatePagination(PaginatedList<T> paginatedList)
+    {
+        return new(paginatedList.PageIndex, paginatedList.TotalPages, this);
     }
 
     public Table<T> OverrideColumnName(string propertyName, string columnName)
@@ -288,7 +304,7 @@ public class Table<T> : Table
 
     public Table<T> AddPagination(PaginatedList<T> paginatedList)
     {
-        Pagination = TableContext.CreatePagination(paginatedList);
+        Pagination = CreatePagination(paginatedList);
 
         return this;
     }

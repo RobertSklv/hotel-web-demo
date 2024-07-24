@@ -1,11 +1,9 @@
-﻿namespace HotelWebDemo.Models.Components;
+﻿using HotelWebDemo.Models.ViewModels;
+
+namespace HotelWebDemo.Models.Components;
 
 public class TableLink : Link
 {
-    public const string DEFAULT_ORDER_BY = "Id";
-    public const string DEFAULT_DIRECTION = "desc";
-    public const int DEFAULT_PAGE = 1;
-
     public const string PAGINATION_LINK_CLASS = "page-link";
 
     public string ActionName { get; set; }
@@ -35,7 +33,7 @@ public class TableLink : Link
 
     public TableLink SetPageOffset(int offset)
     {
-        Page ??= DEFAULT_PAGE;
+        Page ??= ListingModel.DEFAULT_PAGE;
         Page += offset;
         CheckDefaultPage();
         ClassList.Add(PAGINATION_LINK_CLASS);
@@ -46,11 +44,12 @@ public class TableLink : Link
     public TableLink SetOrder(string? propertyName = null)
     {
         propertyName ??= Content;
-        bool propertyIsDefaultOrder = propertyName == DEFAULT_ORDER_BY;
+        bool propertyIsDefaultOrder = propertyName == ListingModel.DEFAULT_ORDER_BY;
 
         OrderBy = propertyIsDefaultOrder ? null : propertyName;
         Direction = GetOppositeDirection();
 
+        CheckDefaultPage();
         CheckDefaultOrderBy();
         CheckDefaultDirection();
 
@@ -90,7 +89,7 @@ public class TableLink : Link
 
     private void CheckDefaultPage()
     {
-        if (Page == DEFAULT_PAGE)
+        if (Page == ListingModel.DEFAULT_PAGE)
         {
             Page = null;
         }
@@ -98,7 +97,7 @@ public class TableLink : Link
 
     private void CheckDefaultOrderBy()
     {
-        if (OrderBy == DEFAULT_ORDER_BY)
+        if (OrderBy == ListingModel.DEFAULT_ORDER_BY)
         {
             OrderBy = null;
         }
@@ -106,7 +105,7 @@ public class TableLink : Link
 
     private void CheckDefaultDirection()
     {
-        if (Direction == DEFAULT_DIRECTION)
+        if (Direction == ListingModel.DEFAULT_DIRECTION)
         {
             Direction = null;
         }

@@ -2,6 +2,7 @@
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HotelWebDemo.Services;
 
@@ -10,6 +11,8 @@ public interface ICustomerService : ICrudService<Customer>
     Customer? GetFull(int id);
 
     Task Upsert(Customer customer, ModelStateDictionary modelState);
+
+    Task<CustomerListingModel> CreateCustomerListingModel(ViewDataDictionary viewData);
 
     bool CompareResetPasswordToken(Customer customer, string token);
 

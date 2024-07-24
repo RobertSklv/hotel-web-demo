@@ -5,24 +5,29 @@ using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.Mailing;
 using HotelWebDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using StarExplorerMainServer.Areas.Admin.Services;
 
 namespace HotelWebDemo.Services;
 
 public class CustomerService : CrudService<Customer>, ICustomerService
 {
     private readonly ICustomerRepository repository;
+    private readonly ICountryService countryService;
     private readonly IAuthService authService;
     private readonly IMailingService mailingService;
     private readonly ILinkGeneratorSerivce linkGeneratorSerivce;
 
     public CustomerService(
         ICustomerRepository repository,
+        ICountryService countryService,
         IAuthService authService,
         IMailingService mailingService,
         ILinkGeneratorSerivce linkGeneratorSerivce)
         : base(repository)
     {
         this.repository = repository;
+        this.countryService = countryService;
         this.authService = authService;
         this.mailingService = mailingService;
         this.linkGeneratorSerivce = linkGeneratorSerivce;
@@ -61,6 +66,27 @@ public class CustomerService : CrudService<Customer>, ICustomerService
         {
             modelState.AddModelError(string.Empty, "Something went wrong while resetting the password for the customer.");
         }
+    }
+
+    public async Task<CustomerListingModel> CreateCustomerListingModel(ViewDataDictionary viewData)
+    {
+        CustomerListingModel model = new();
+        InitializeListingModel(model, viewData);
+
+        List<Country> countries = countryService.GetAll();
+
+        PaginatedList<Customer> items = await List(model);
+        Table<Customer> table = new Table<Customer>(model, items)
+            .OverrideColumnName(nameof(Customer.CreatedAt), "Registration date")
+            .SetOrderable(true)
+            .SetFilterable(true)
+            .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship), countries)
+            .AddRowActions("Customer", options => options.IncludesDelete(false))
+            .AddPagination(items);
+
+        model.Table = table;
+
+        return model;
     }
 
     public bool CompareResetPasswordToken(Customer customer, string token)

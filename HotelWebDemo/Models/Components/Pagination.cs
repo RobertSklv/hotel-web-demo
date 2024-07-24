@@ -9,19 +9,19 @@ public class Pagination
 
     public int TotalPages { get; set; }
 
-    public TableContext TableContext { get; }
+    public Table Table { get; }
 
-    public Pagination(int currentPage, int totalPages, TableContext tableContext)
+    public Pagination(int currentPage, int totalPages, Table table)
     {
         CurrentPage = currentPage;
         TotalPages = totalPages;
-        TableContext = tableContext;
+        Table = table;
     }
 
     public List<TableLink> GeneratePaginationLinks()
     {
         List<TableLink> pageLinks = new();
-        TableLink previous = TableContext.CreateLink("Previous").SetPageOffset(-1);
+        TableLink previous = Table.CreateLink("Previous").SetPageOffset(-1);
         pageLinks.Add(previous);
 
         if (CurrentPage - 1 <= 0)
@@ -47,7 +47,7 @@ public class Pagination
             pageLinks.Add(pageLink);
         }
 
-        TableLink next = TableContext.CreateLink("Next").SetPageOffset(1);
+        TableLink next = Table.CreateLink("Next").SetPageOffset(1);
         pageLinks.Add(next);
 
         if (CurrentPage + 1 > TotalPages)
@@ -97,6 +97,6 @@ public class Pagination
 
     private TableLink CreateLink(int page, string? content = null)
     {
-        return TableContext.CreateLink(content ?? page.ToString()).SetPage(page);
+        return Table.CreateLink(content ?? page.ToString()).SetPage(page);
     }
 }

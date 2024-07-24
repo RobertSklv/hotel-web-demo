@@ -1,7 +1,6 @@
 ﻿using HotelWebDemo.Models.Components;
 using HotelWebDemo.Models.Components.Admin.Pages;
 using HotelWebDemo.Models.Database;
-using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc;
 using StarExplorerMainServer.Areas.Admin.Services;
@@ -27,11 +26,8 @@ public class CustomerController : AdminController
         ViewData["Direction"] = direction;
         ViewData["Page"] = page;
         ViewData["Filter"] = filters;
-        ViewData["Countries"] = countryService.GetAll();
 
-        PaginatedList<Customer> customers = await service.List(orderBy, direction, page, 10, filters);
-
-        return View(customers);
+        return View(await service.CreateCustomerListingModel(ViewData));
     }
 
     public IActionResult Create()
