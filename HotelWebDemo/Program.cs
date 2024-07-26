@@ -2,6 +2,7 @@ using HotelWebDemo.Configuration;
 using HotelWebDemo.Data;
 using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Services;
+using HotelWebDemo.Services.Crons;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using StarExplorerMainServer.Areas.Admin.Services;
@@ -52,6 +53,8 @@ builder.Services.AddScoped<IEntityFilterService, EntityFilterService>();
 builder.Services.AddScoped<IEntitySortService, EntitySortService>();
 builder.Services.AddScoped<IAdminPageService, AdminPageService>();
 builder.Services.AddScoped<IEntityHelperService, EntityHelperService>();
+
+builder.Services.AddHostedService<IndexerService>();
 
 var app = builder.Build();
 

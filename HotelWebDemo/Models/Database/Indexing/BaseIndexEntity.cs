@@ -1,13 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using HotelWebDemo.Models.Attributes;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using HotelWebDemo.Models.Attributes;
 
-namespace HotelWebDemo.Models.Database;
+namespace HotelWebDemo.Models.Database.Indexing;
 
-public abstract class BaseEntity : IBaseEntity
+public class BaseIndexEntity : IBaseEntity
 {
     [Column(Order = 0)]
     [TableColumn(Name = "#", SortOrder = -10)]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public int Id { get; set; }
 
     [TableColumn(SortOrder = 998)]

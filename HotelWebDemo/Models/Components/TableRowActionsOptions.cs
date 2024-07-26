@@ -12,7 +12,7 @@ public class TableRowActionsOptions
 
     public bool Delete { get; set; } = true;
 
-    public Func<BaseEntity, string> DeleteConfirmMessageCallback { get; set; } = m => $"Are you sure you want to delete item of type {m.GetType().Name} and ID {m.Id}?";
+    public Func<IBaseEntity, string> DeleteConfirmMessageCallback { get; set; } = m => $"Are you sure you want to delete item of type {m.GetType().Name} and ID {m.Id}?";
 
     public TableRowActionsOptions(string controller, bool confirmDelete = true)
     {
@@ -20,7 +20,7 @@ public class TableRowActionsOptions
         ConfirmDelete = confirmDelete;
     }
 
-    public TableRowActionsOptions SetDeleteConfirmationMessage(Func<BaseEntity, string> deleteConfirmMessageCallback)
+    public TableRowActionsOptions SetDeleteConfirmationMessage(Func<IBaseEntity, string> deleteConfirmMessageCallback)
     {
         ConfirmDelete = true;
         DeleteConfirmMessageCallback = deleteConfirmMessageCallback;
@@ -29,7 +29,7 @@ public class TableRowActionsOptions
     }
 
     public TableRowActionsOptions SetDeleteConfirmationMessage<T>(Func<T, string> deleteConfirmMessageCallback)
-        where T : BaseEntity
+        where T : IBaseEntity
     {
         ConfirmDelete = true;
         DeleteConfirmMessageCallback = m => deleteConfirmMessageCallback((T)m);

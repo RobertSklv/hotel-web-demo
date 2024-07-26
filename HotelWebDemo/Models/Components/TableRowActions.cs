@@ -4,7 +4,7 @@ namespace HotelWebDemo.Models.Components;
 
 public class TableRowActions
 {
-    public BaseEntity Item { get; }
+    public IBaseEntity Item { get; }
 
     public TableRowActionsOptions Options { get; }
 
@@ -14,7 +14,7 @@ public class TableRowActions
 
     public string ConfirmModalLabelId => $"delete{Options.Controller}ModalLabel-{Item.Id}";
 
-    public TableRowActions(BaseEntity item, TableRowActionsOptions options)
+    public TableRowActions(IBaseEntity item, TableRowActionsOptions options)
     {
         Item = item;
         Options = options;

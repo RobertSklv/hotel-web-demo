@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HotelWebDemo.Services;
 
-public abstract class CrudService<TEntity> : ICrudService<TEntity>
-    where TEntity : BaseEntity
+public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntity, TIndexedEntity>
+    where TEntity : class, IBaseEntity
+    where TIndexedEntity : class, IBaseEntity
 {
-    private readonly ICrudService<TEntity> repository;
+    private readonly ICrudService<TEntity, TIndexedEntity> repository;
 
-    public CrudService(ICrudService<TEntity> repository)
+    public CrudService(ICrudService<TEntity, TIndexedEntity> repository)
     {
         this.repository = repository;
     }
@@ -25,12 +26,12 @@ public abstract class CrudService<TEntity> : ICrudService<TEntity>
         return repository.Get(id);
     }
 
-    public async Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
+    public async Task<PaginatedList<TIndexedEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
     {
         return await repository.List(orderBy, direction, page, pageSize, filters);
     }
 
-    public async Task<PaginatedList<TEntity>> List(ListingModel<TEntity> listingModel)
+    public async Task<PaginatedList<TIndexedEntity>> List(ListingModel<TIndexedEntity> listingModel)
     {
         return await repository.List(
             listingModel.OrderBy ?? ListingModel.DEFAULT_ORDER_BY,
@@ -40,7 +41,7 @@ public abstract class CrudService<TEntity> : ICrudService<TEntity>
             listingModel.Filter);
     }
 
-    public void InitializeListingModel(ListingModel<TEntity> listingModel, ViewDataDictionary viewData)
+    public void InitializeListingModel(ListingModel<TIndexedEntity> listingModel, ViewDataDictionary viewData)
     {
         listingModel.ActionName = "Index";
         listingModel.OrderBy = (string?)viewData["OrderBy"];
@@ -57,5 +58,14 @@ public abstract class CrudService<TEntity> : ICrudService<TEntity>
     public async Task<int> Upsert(TEntity entity)
     {
         return await repository.Upsert(entity);
+    }
+}
+
+public abstract class CrudService<TEntity> : CrudService<TEntity, TEntity>
+    where TEntity : class, IBaseEntity
+{
+    protected CrudService(ICrudService<TEntity, TEntity> repository)
+        : base(repository)
+    {
     }
 }

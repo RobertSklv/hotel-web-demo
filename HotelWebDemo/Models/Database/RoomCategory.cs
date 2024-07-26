@@ -22,6 +22,7 @@ public class RoomCategory : BaseEntity
     public int HotelId { get; set; }
 
     [Column(TypeName = "decimal(19, 4)")]
+    [DataType(DataType.Currency)]
     public decimal Price { get; set; }
 
     public List<Room> Rooms { get; set; }

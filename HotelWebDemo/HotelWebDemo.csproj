@@ -32,7 +32,6 @@
   <ItemGroup>
     <Folder Include="Data\Seeding\DefaultData\" />
     <Folder Include="Data\Seeding\SampleData\" />
-    <Folder Include="Extensions\" />
     <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
     <Folder Include="wwwroot\sass\abstracts\" />
   </ItemGroup>

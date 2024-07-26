@@ -49,7 +49,7 @@
         <tbody>
             @if (Model.HasItems)
             {
-                foreach (BaseEntity item in Model.GetItems())
+                foreach (IBaseEntity item in Model.GetItems())
                 {
                     <tr>
                         @foreach (object? cellData in Model.GetRowData(item))

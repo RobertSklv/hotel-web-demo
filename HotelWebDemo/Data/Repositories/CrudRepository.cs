@@ -6,10 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
 
-public abstract class CrudRepository<TEntity> : ICrudService<TEntity>
-    where TEntity : BaseEntity
+public abstract class CrudRepository<TEntity, TIndexedEntity> : ICrudService<TEntity, TIndexedEntity>
+    where TEntity : class, IBaseEntity
+    where TIndexedEntity : class, IBaseEntity
 {
     public abstract DbSet<TEntity> DbSet { get; }
+
+    public abstract DbSet<TIndexedEntity> IndexedDbSet { get; }
 
     protected readonly AppDbContext db;
     protected readonly IEntityFilterService filterService;
@@ -22,7 +25,10 @@ public abstract class CrudRepository<TEntity> : ICrudService<TEntity>
         this.sortService = sortService;
     }
 
-    public abstract IQueryable<TEntity> List(DbSet<TEntity> dbSet);
+    public virtual IQueryable<TIndexedEntity> List(DbSet<TIndexedEntity> dbSet)
+    {
+        return dbSet;
+    }
 
     public virtual TEntity? Get(int id)
     {
@@ -58,16 +64,25 @@ public abstract class CrudRepository<TEntity> : ICrudService<TEntity>
         return await db.SaveChangesAsync();
     }
 
-    public virtual async Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
+    public virtual async Task<PaginatedList<TIndexedEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
     {
-        IQueryable<TEntity> entities = List(DbSet);
+        IQueryable<TIndexedEntity> entities = List(IndexedDbSet);
         bool desc = direction == "desc";
 
         entities = sortService.OrderBy(entities, orderBy, desc);
         entities = filterService.FilterBy(entities, filters);
 
-        PaginatedList<TEntity> paginatedList = await PaginatedList<TEntity>.CreateAsync(entities, page, pageSize);
+        PaginatedList<TIndexedEntity> paginatedList = await PaginatedList<TIndexedEntity>.CreateAsync(entities, page, pageSize);
 
         return paginatedList;
+    }
+}
+
+public abstract class CrudRepository<TEntity> : CrudRepository<TEntity, TEntity>
+    where TEntity : class, IBaseEntity
+{
+    protected CrudRepository(AppDbContext db, IEntityFilterService filterService, IEntitySortService sortService)
+        : base(db, filterService, sortService)
+    {
     }
 }

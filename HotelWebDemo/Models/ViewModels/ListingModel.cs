@@ -12,7 +12,7 @@ public abstract class ListingModel
 }
 
 public class ListingModel<T> : ListingModel, IListingModel
-    where T : BaseEntity
+    where T : IBaseEntity
 {
     public string ActionName { get; set; }
 

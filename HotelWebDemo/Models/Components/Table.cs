@@ -37,9 +37,9 @@ public abstract class Table
         FilterContext = new(this, ColumnDatas!);
     }
 
-    public abstract List<object?> GetRowData(BaseEntity item);
+    public abstract List<object?> GetRowData(IBaseEntity item);
 
-    public abstract List<BaseEntity> GetItems();
+    public abstract List<IBaseEntity> GetItems();
 
     public Table SetOrderable(bool orderable)
     {
@@ -55,7 +55,7 @@ public abstract class Table
         return this;
     }
 
-    public TableRowActions GenerateRowActions(BaseEntity item)
+    public TableRowActions GenerateRowActions(IBaseEntity item)
     {
         if (RowActionOptions == null)
         {
@@ -219,7 +219,7 @@ public abstract class Table
 }
 
 public class Table<T> : Table
-    where T : BaseEntity
+    where T : IBaseEntity
 {
     public delegate object? ColumnValueOverrider(T model, object? originalValue);
 
@@ -233,14 +233,14 @@ public class Table<T> : Table
         Items = items;
     }
 
-    public override List<object?> GetRowData(BaseEntity item)
+    public override List<object?> GetRowData(IBaseEntity item)
     {
         return GetRowData((T)item);
     }
 
-    public override List<BaseEntity> GetItems()
+    public override List<IBaseEntity> GetItems()
     {
-        List<BaseEntity> items = new();
+        List<IBaseEntity> items = new();
 
         foreach (T item in Items)
         {
