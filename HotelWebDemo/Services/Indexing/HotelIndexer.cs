@@ -15,8 +15,11 @@ public class HotelIndexer : Indexer<Hotel, HotelIndex>, IHotelIndexer
 
     private List<AdminUser> AdminUsers { get; set; }
 
-    public HotelIndexer(AppDbContext db) : base(db)
+    private readonly AppDbContext db;
+
+    public HotelIndexer(AppDbContext db)
     {
+        this.db = db;
     }
 
     protected override void Init()
@@ -25,20 +28,23 @@ public class HotelIndexer : Indexer<Hotel, HotelIndex>, IHotelIndexer
         AdminUsers = db.AdminUsers.ToList();
     }
 
-    protected override HotelIndex Process(Hotel entity)
+    protected override void LoadRelated(Hotel entity)
     {
-        List<Room> rooms = Rooms.Where(e => e.HotelId == entity.Id).ToList();
-        List<AdminUser> adminUsers = AdminUsers.Where(e => e.HotelId == entity.Id).ToList();
+        entity.Rooms = Rooms.Where(e => e.HotelId == entity.Id).ToList();
+        entity.AdminUsers = AdminUsers.Where(e => e.HotelId == entity.Id).ToList();
+    }
 
+    public override HotelIndex Process(Hotel entity)
+    {
         return new()
         {
             Name = entity.Name,
             ShortDescription = entity.ShortDescription,
             LongDescription = entity.LongDescription,
             Stars = entity.Stars,
-            RoomCount = rooms.Count,
-            TotalCapacity = rooms.Sum(r => r.Capacity),
-            AdminUsersCount = adminUsers.Count,
+            RoomCount = entity.Rooms.Count,
+            TotalCapacity = entity.Rooms.Sum(r => r.Capacity),
+            AdminUsersCount = entity.AdminUsers.Count,
         };
     }
 }

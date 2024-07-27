@@ -1,5 +1,8 @@
-﻿namespace HotelWebDemo.Services.Indexing;
+﻿using HotelWebDemo.Models.Database;
+using HotelWebDemo.Models.Database.Indexing;
 
-public interface IHotelIndexer : IIndexer
+namespace HotelWebDemo.Services.Indexing;
+
+public interface IHotelIndexer : IIndexer<Hotel, HotelIndex>
 {
 }

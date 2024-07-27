@@ -1,6 +1,7 @@
 ﻿using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.Database.Indexing;
 using HotelWebDemo.Services;
+using HotelWebDemo.Services.Indexing;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
@@ -11,8 +12,12 @@ public class HotelRepository : CrudRepository<Hotel, HotelIndex>, IHotelReposito
 
     public override DbSet<HotelIndex> IndexedDbSet => db.Indexed_Hotels;
 
-    public HotelRepository(AppDbContext db, IEntityFilterService filterService, IEntitySortService sortService)
-        : base(db, filterService, sortService)
+    public HotelRepository(
+        AppDbContext db,
+        IEntityFilterService filterService,
+        IEntitySortService sortService,
+        IHotelIndexer hotelIndexer)
+        : base(db, filterService, sortService, hotelIndexer)
     {
     }
 

@@ -16,7 +16,7 @@ public class IndexerService : BackgroundService
     {
         using IServiceScope scope = scopeFactory.CreateScope();
         using AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        using PeriodicTimer timer = new(TimeSpan.FromSeconds(15));
+        using PeriodicTimer timer = new(TimeSpan.FromMinutes(5));
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {

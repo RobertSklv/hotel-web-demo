@@ -1,11 +1,10 @@
-﻿using HotelWebDemo.Data;
-using HotelWebDemo.Extensions;
+﻿using HotelWebDemo.Extensions;
 using HotelWebDemo.Models.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Services.Indexing;
 
-public abstract class Indexer<TEntity, TIndexEntity> : IIndexer
+public abstract class Indexer<TEntity, TIndexEntity> : IIndexer<TEntity, TIndexEntity>
     where TEntity : class, IBaseEntity
     where TIndexEntity : class, IBaseEntity
 {
@@ -13,16 +12,11 @@ public abstract class Indexer<TEntity, TIndexEntity> : IIndexer
 
     protected abstract DbSet<TIndexEntity> IndexedDbSet { get; }
 
-    protected readonly AppDbContext db;
-
-    public Indexer(AppDbContext db)
-    {
-        this.db = db;
-    }
-
     protected abstract void Init();
 
-    protected abstract TIndexEntity Process(TEntity entity);
+    protected abstract void LoadRelated(TEntity entity);
+
+    public abstract TIndexEntity Process(TEntity entity);
 
     protected virtual IQueryable<TEntity> GetAll() => DbSet;
 
@@ -43,12 +37,31 @@ public abstract class Indexer<TEntity, TIndexEntity> : IIndexer
 
         foreach (TEntity entity in entities)
         {
+            LoadRelated(entity);
             TIndexEntity entityIndex = Process(entity);
             ProcessBaseEntityProperties(entity, entityIndex);
             indexedEntities.Add(entityIndex);
         }
 
         return indexedEntities;
+    }
+
+    public void ProcessInsert(TEntity entity)
+    {
+        IndexedDbSet.Add(Process(entity));
+    }
+
+    public void ProcessUpdate(TEntity entity)
+    {
+        IndexedDbSet.Update(Process(entity));
+    }
+
+    public void ProcessDelete(int id)
+    {
+        IndexedDbSet
+            .Where(e => e.Id == id)
+            .Take(1)
+            .ExecuteDelete();
     }
 
     protected void ProcessBaseEntityProperties(TEntity entity, TIndexEntity entityIndex)
