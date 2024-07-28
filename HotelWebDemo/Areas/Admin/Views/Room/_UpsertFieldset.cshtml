@@ -1,0 +1,80 @@
+﻿@using HotelWebDemo.Models.Database
+
+@model Room
+
+@{
+    Layout = "_FieldsetLayout";
+    ViewData["Legend"] = "General";
+
+    List<Hotel> hotels = ViewData["Hotels"] as List<Hotel> ?? new();
+    List<RoomCategory> roomCategories = ViewData["RoomCategories"] as List<RoomCategory> ?? new();
+}
+
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Hotel></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <select asp-for=@Model.HotelId
+                class="form-select d-block w-100"
+                asp-items="new SelectList(
+                                hotels,
+                                nameof(Hotel.Id),
+                                nameof(Hotel.Name))">
+            <option value="0">-- Please select --</option>
+        </select>
+        <span asp-validation-for=@Model.Hotel class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Category></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <select asp-for=@Model.CategoryId
+                class="form-select d-block w-100"
+                asp-items="new SelectList(
+                                roomCategories,
+                                nameof(RoomCategory.Id),
+                                nameof(RoomCategory.Name))">
+            <option value="0">-- Please select --</option>
+        </select>
+        <span asp-validation-for=@Model.Category class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Number></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.Number class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.Number class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Floor></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.Floor class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.Floor class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Area></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.Area class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.Area class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Capacity></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.Capacity class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.Capacity class="text-danger"></span>
+    </div>
+</div>

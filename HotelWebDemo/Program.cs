@@ -49,6 +49,8 @@ builder.Services.AddScoped<IRoomFeatureService, RoomFeatureService>();
 builder.Services.AddScoped<IRoomFeatureRepository, RoomFeatureRepository>();
 builder.Services.AddScoped<IRoomCategoryService, RoomCategoryService>();
 builder.Services.AddScoped<IRoomCategoryRepository, RoomCategoryRepository>();
+builder.Services.AddScoped<IRoomService, RoomService>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 
 builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
 builder.Services.AddTransient<IMailingService, MailingService>();
