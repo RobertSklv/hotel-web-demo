@@ -1,107 +1,53 @@
-﻿using HotelWebDemo.Models.Components;
-using HotelWebDemo.Models.Components.Admin.Pages;
-using HotelWebDemo.Models.Database;
+﻿using HotelWebDemo.Models.Database;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc;
 using StarExplorerMainServer.Areas.Admin.Services;
 
 namespace HotelWebDemo.Areas.Admin.Controllers;
 
-public class CustomerController : AdminController
+public class CustomerController : CrudController<Customer>
 {
-    private readonly ICustomerService service;
+    private readonly new ICustomerService service;
     private readonly ICountryService countryService;
-    private readonly IAdminPageService adminPageService;
 
     public CustomerController(ICustomerService service, ICountryService countryService, IAdminPageService adminPageService)
+        : base(service, adminPageService)
     {
         this.service = service;
         this.countryService = countryService;
-        this.adminPageService = adminPageService;
+
+        ListingTitle = "All customers";
     }
 
-    public async Task<IActionResult> Index(string orderBy = "Id", string direction = "desc", int page = 1, Dictionary<string, TableFilter>? filters = null)
+    protected override Customer InitializeNew()
     {
-        ViewData["OrderBy"] = orderBy;
-        ViewData["Direction"] = direction;
-        ViewData["Page"] = page;
-        ViewData["Filter"] = filters;
-
-        return View(await service.CreateListingModel(ViewData));
-    }
-
-    public IActionResult Create()
-    {
-        Customer customer = new()
+        return new()
         {
             CustomerIdentity = new(),
-            CustomerAccount = new(),
+            CustomerAccount = new()
+            {
+                Address = new()
+            },
         };
+    }
 
+    protected override Customer? GetEntity(int id)
+    {
+        return service.GetFull(id);
+    }
+
+    public override IActionResult Create()
+    {
         ViewData["Countries"] = countryService.GetAll();
-        ViewData["PageActions"] = new List<PageActionButton>()
-        {
-            adminPageService.CreateBackAction(this)
-        };
 
-        return View("Upsert", customer);
+        return base.Create();
     }
 
-    public IActionResult Edit(int? id)
+    public override IActionResult Edit(int? id)
     {
-        if (id == null)
-        {
-            return RedirectToAction("Index");
-        }
-
-        Customer? customer = service.GetFull((int)id);
-
-        if (customer == null)
-        {
-            return NotFound($"Customer with ID {id} doesn't exist.");
-        }
-
         ViewData["Countries"] = countryService.GetAll();
-        AddBackAction();
 
-        return View("Upsert", customer);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Upsert(Customer customer)
-    {
-        bool isCreate = customer.Id == 0;
-
-        await service.Upsert(customer, ModelState);
-
-        if (isCreate)
-        {
-            return RedirectToAction("Index");
-        }
-
-        AddBackAction();
-
-        return RedirectToAction("Edit", new { customer.Id });
-    }
-
-    [HttpDelete]
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
-        {
-            return RedirectToAction("Index");
-        }
-
-        Customer? customer = service.GetFull((int)id);
-
-        if (customer == null)
-        {
-            return NotFound($"Customer with ID {id} doesn't exist.");
-        }
-
-        await service.Delete((int)id);
-
-        return RedirectToAction("Index");
+        return base.Edit(id);
     }
 
     [HttpPost]
@@ -117,13 +63,5 @@ public class CustomerController : AdminController
         }
 
         return RedirectToAction("Edit", new { id });
-    }
-
-    private void AddBackAction()
-    {
-        ViewData["PageActions"] = new List<PageActionButton>()
-        {
-            adminPageService.CreateBackAction(this)
-        };
     }
 }

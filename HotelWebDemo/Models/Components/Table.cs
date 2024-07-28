@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
+using HotelWebDemo.Models.Database.Indexing;
 
 namespace HotelWebDemo.Models.Components;
 
@@ -311,7 +312,15 @@ public class Table<T> : Table
 
     public Table<T> AddRowActions(string? controller = null, Func<TableRowActionsOptions, TableRowActionsOptions>? options = null)
     {
-        TableRowActionsOptions opt = new(controller ?? typeof(T).Name);
+        Type entityType = typeof(T);
+        string controllerName = controller ?? entityType.Name;
+
+        if (entityType.IsSubclassOf(typeof(BaseIndexEntity)) && entityType.Name.EndsWith("Index"))
+        {
+            controllerName = entityType.Name[..^5];
+        }
+
+        TableRowActionsOptions opt = new(controllerName);
         RowActionOptions = options != null ? options(opt) : opt;
 
         return this;

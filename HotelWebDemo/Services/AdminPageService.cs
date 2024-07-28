@@ -6,7 +6,7 @@ namespace HotelWebDemo.Services;
 
 public class AdminPageService : IAdminPageService
 {
-    public PageActionButton CreateBackAction(string? controller, string? area = "Admin", string? action = "Index")
+    public PageActionButton BackAction(string? controller, string? area = "Admin", string? action = "Index")
     {
         return new()
         {
@@ -21,11 +21,30 @@ public class AdminPageService : IAdminPageService
         };
     }
 
-    public PageActionButton CreateBackAction(Controller controller, string? action = "Index")
+    public PageActionButton BackAction(Controller controller, string? action = "Index")
     {
         string? area = controller.ControllerContext.RouteData.Values["area"] as string;
         string? controllerName = controller.ControllerContext.ActionDescriptor.ControllerName;
 
-        return CreateBackAction(controllerName, area, action);
+        return BackAction(controllerName, area, action);
+    }
+
+    public PageActionButton CreateAction(string? controller, string action = "Create")
+    {
+        return new()
+        {
+            Content = "Create New",
+            Controller = controller,
+            Action = action,
+            Color = ColorClass.Primary,
+            IsLink = true
+        };
+    }
+
+    public PageActionButton CreateAction(Controller controller, string action = "Create")
+    {
+        string? controllerName = controller.ControllerContext.ActionDescriptor.ControllerName;
+
+        return CreateAction(controllerName, action);
     }
 }

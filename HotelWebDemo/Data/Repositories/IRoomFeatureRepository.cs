@@ -4,6 +4,6 @@ using HotelWebDemo.Services;
 
 namespace HotelWebDemo.Data.Repositories;
 
-public interface IRoomFeatureRepository : ICrudService<RoomFeature, RoomFeatureIndex>
+public interface IRoomFeatureRepository : ICrudRepository<RoomFeature, RoomFeatureIndex>
 {
 }

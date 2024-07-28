@@ -45,6 +45,21 @@ public class CustomerRepository : CrudRepository<Customer>, ICustomerRepository
             .FirstOrDefault();
     }
 
+    public override async Task<int> Update(Customer entity)
+    {
+        DbSet.Update(entity);
+
+        if (entity.CustomerAccount != null)
+        {
+            db.Entry(entity.CustomerAccount).Property(e => e.PasswordHash).IsModified = false;
+            db.Entry(entity.CustomerAccount).Property(e => e.PasswordHashSalt).IsModified = false;
+        }
+
+        indexer?.ProcessUpdate(entity);
+
+        return await db.SaveChangesAsync();
+    }
+
     public CustomerAccount GetOrLoadCustomerAccount(Customer customer)
     {
         CustomerAccount? account = customer.CustomerAccount;

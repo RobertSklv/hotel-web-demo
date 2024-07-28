@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
 
-public abstract class CrudRepository<TEntity, TIndexedEntity> : ICrudService<TEntity, TIndexedEntity>
+public abstract class CrudRepository<TEntity, TIndexedEntity> : ICrudRepository<TEntity, TIndexedEntity>
     where TEntity : class, IBaseEntity
     where TIndexedEntity : class, IBaseEntity
 {

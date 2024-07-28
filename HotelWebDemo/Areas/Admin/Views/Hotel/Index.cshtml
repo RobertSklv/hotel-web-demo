@@ -10,23 +10,6 @@
 
 @{
     Layout = "_AdminPageLayout";
-    ViewData["Title"] = "All Hotels";
-
-    var totalPages = ViewData["TotalPages"] as int?;
-
-    List<PageActionButton> actions = (ViewData["PageActions"] as List<PageActionButton>) ?? new();
-
-    actions.Add(new()
-    {
-        Content = "Create New",
-        Controller = "Hotel",
-        Action = "Create",
-        Color = ColorClass.Primary,
-        IsLink = true
-    });
-
-    ViewData["PageActions"] = actions;
-    ViewData["PageHeading"] = "All Hotels";
 }
 
 <partial name="_Table" model="@Model.Table" />

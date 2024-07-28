@@ -59,11 +59,14 @@ public class CustomerService : CrudService<Customer>, ICustomerService
             modelState.AddModelError(string.Empty, "Something went wrong while saving the customer");
         }
 
-        bool resetPasswordResult = await InitiateResetPasswordNewAccountAndNotify(customer);
-
-        if (!resetPasswordResult)
+        if (newCustomer)
         {
-            modelState.AddModelError(string.Empty, "Something went wrong while resetting the password for the customer.");
+            bool resetPasswordResult = await InitiateResetPasswordNewAccountAndNotify(customer);
+
+            if (!resetPasswordResult)
+            {
+                modelState.AddModelError(string.Empty, "Something went wrong while resetting the password for the customer.");
+            }
         }
     }
 

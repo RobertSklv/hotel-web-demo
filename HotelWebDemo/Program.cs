@@ -41,6 +41,8 @@ builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
+builder.Services.AddScoped<IRoomFeatureService, RoomFeatureService>();
+builder.Services.AddScoped<IRoomFeatureRepository, RoomFeatureRepository>();
 
 builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
 builder.Services.AddTransient<IMailingService, MailingService>();
@@ -57,6 +59,7 @@ builder.Services.AddScoped<IEntityHelperService, EntityHelperService>();
 
 builder.Services.AddHostedService<IndexerService>();
 builder.Services.AddScoped<IHotelIndexer, HotelIndexer>();
+builder.Services.AddScoped<IRoomFeatureIndexer, RoomFeatureIndexer>();
 
 var app = builder.Build();
 

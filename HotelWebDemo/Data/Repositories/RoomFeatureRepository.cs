@@ -16,7 +16,7 @@ public class RoomFeatureRepository : CrudRepository<RoomFeature, RoomFeatureInde
         AppDbContext db,
         IEntityFilterService filterService,
         IEntitySortService sortService,
-        IIndexer<RoomFeature, RoomFeatureIndex>? indexer)
+        IRoomFeatureIndexer? indexer)
         : base(db, filterService, sortService, indexer)
     {
     }
