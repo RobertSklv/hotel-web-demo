@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HotelWebDemo.Models.Database;
 
 [Table("RoomCategories")]
-[SelectOption]
+[SelectOption(LabelProperty = "SelectLabel")]
 public class RoomCategory : BaseEntity
 {
     [StringLength(32, MinimumLength = 1)]
@@ -35,4 +35,6 @@ public class RoomCategory : BaseEntity
     public decimal Price { get; set; }
 
     public List<Room> Rooms { get; set; }
+
+    public string SelectLabel => $"{Name} ({Hotel?.Name})";
 }

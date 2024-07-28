@@ -38,22 +38,29 @@ public abstract class Indexer<TEntity, TIndexEntity> : IIndexer<TEntity, TIndexE
         foreach (TEntity entity in entities)
         {
             LoadRelated(entity);
-            TIndexEntity entityIndex = Process(entity);
-            ProcessBaseEntityProperties(entity, entityIndex);
+            TIndexEntity entityIndex = ProcessOne(entity);
             indexedEntities.Add(entityIndex);
         }
 
         return indexedEntities;
     }
 
+    protected TIndexEntity ProcessOne(TEntity entity)
+    {
+        TIndexEntity entityIndex = Process(entity);
+        ProcessBaseEntityProperties(entity, entityIndex);
+
+        return entityIndex;
+    }
+
     public void ProcessInsert(TEntity entity)
     {
-        IndexedDbSet.Add(Process(entity));
+        IndexedDbSet.Add(ProcessOne(entity));
     }
 
     public void ProcessUpdate(TEntity entity)
     {
-        IndexedDbSet.Update(Process(entity));
+        IndexedDbSet.Update(ProcessOne(entity));
     }
 
     public void ProcessDelete(int id)

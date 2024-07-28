@@ -2,13 +2,13 @@
 @using HotelWebDemo.Models.Components.Common
 @using HotelWebDemo.Models.Database
 
-@model Room
+@model RoomFeature
 
 @{
     Layout = "_AdminPageLayout";
     bool isCreate = Model.Id == 0;
 
-    ViewData["PageHeading"] = isCreate ? "New Room" : $"Room: {Model.Number}";
+    ViewData["PageHeading"] = isCreate ? "New Room Feature" : $"Room Feature: {Model.Name}";
 }
 
 <form asp-action="Upsert">
@@ -21,8 +21,3 @@
 
     <button type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Save</button>
 </form>
-
-@section Scripts
-{
-    <script src="~/js/Room/upsert.js"></script>
-}

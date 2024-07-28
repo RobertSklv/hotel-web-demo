@@ -12,4 +12,9 @@ public class RoomCategoryRepository : CrudRepository<RoomCategory>, IRoomCategor
         : base(db, filterService, sortService)
     {
     }
+
+    public List<RoomCategory> GetAll(int hotelId)
+    {
+        return db.RoomCategories.Where(e => e.HotelId == hotelId).ToList();
+    }
 }

@@ -84,7 +84,6 @@ public abstract class CrudController<TEntity, TIndexedEntity> : AdminController
         return RedirectToAction("Edit", new { entity.Id });
     }
 
-    [HttpDelete]
     public virtual async Task<IActionResult> Delete(int? id)
     {
         if (id == null)

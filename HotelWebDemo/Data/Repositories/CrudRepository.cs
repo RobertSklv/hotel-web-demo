@@ -56,7 +56,11 @@ public abstract class CrudRepository<TEntity, TIndexedEntity> : ICrudRepository<
 
         await DbSet.AddAsync(entity);
 
-        indexer?.ProcessInsert(entity);
+        if (indexer != null)
+        {
+            await db.SaveChangesAsync();
+            indexer.ProcessInsert(entity);
+        }
 
         return await db.SaveChangesAsync();
     }

@@ -43,8 +43,8 @@ public class RoomFeatureIndexer : Indexer<RoomFeature, RoomFeatureIndex>, IRoomF
             Price = entity.Price,
             Hotel = entity.Hotel,
             HotelId = entity.HotelId,
-            TimesUsed = entity.RoomFeatureRooms.Count,
-            TimesBooked = entity.BookedFeatures.Count,
+            TimesUsed = entity.RoomFeatureRooms?.Count ?? 0,
+            TimesBooked = entity.BookedFeatures?.Count ?? 0,
         };
     }
 }
