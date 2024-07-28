@@ -2,13 +2,13 @@
 @using HotelWebDemo.Models.Components.Common
 @using HotelWebDemo.Models.Database
 
-@model Hotel
+@model RoomCategory
 
 @{
     Layout = "_AdminPageLayout";
     bool isCreate = Model.Id == 0;
 
-    ViewData["PageHeading"] = isCreate ? "New Hotel" : $"Hotel: {Model.Name}";
+    ViewData["PageHeading"] = isCreate ? "New Room Category" : $"Room Category: {Model.Name}";
 }
 
 <form asp-action="Upsert">

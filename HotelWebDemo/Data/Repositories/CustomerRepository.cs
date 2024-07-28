@@ -8,8 +8,6 @@ public class CustomerRepository : CrudRepository<Customer>, ICustomerRepository
 {
     public override DbSet<Customer> DbSet => db.Customers;
 
-    public override DbSet<Customer> IndexedDbSet => db.Customers;
-
     public CustomerRepository(AppDbContext db, IEntityFilterService filterService, IEntitySortService sortService)
         : base(db, filterService, sortService)
     {

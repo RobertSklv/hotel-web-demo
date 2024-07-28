@@ -42,6 +42,11 @@ public abstract class CrudRepository<TEntity, TIndexedEntity> : ICrudRepository<
         return DbSet.Where(e => e.Id == id).FirstOrDefault();
     }
 
+    public virtual List<TEntity> GetAll()
+    {
+        return DbSet.ToList();
+    }
+
     public virtual async Task<int> Upsert(TEntity entity)
     {
         if (entity.Id > 0)
@@ -94,6 +99,8 @@ public abstract class CrudRepository<TEntity, TIndexedEntity> : ICrudRepository<
 public abstract class CrudRepository<TEntity> : CrudRepository<TEntity, TEntity>
     where TEntity : class, IBaseEntity
 {
+    public override sealed DbSet<TEntity> IndexedDbSet => DbSet;
+
     protected CrudRepository(
         AppDbContext db,
         IEntityFilterService filterService,

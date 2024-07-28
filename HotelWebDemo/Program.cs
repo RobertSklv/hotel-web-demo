@@ -1,3 +1,4 @@
+using System.Globalization;
 using HotelWebDemo.Configuration;
 using HotelWebDemo.Data;
 using HotelWebDemo.Data.Repositories;
@@ -30,6 +31,9 @@ builder.Services.AddAuthentication()
         options.LoginPath = "/Login";
     });
 
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
@@ -43,6 +47,8 @@ builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IRoomFeatureService, RoomFeatureService>();
 builder.Services.AddScoped<IRoomFeatureRepository, RoomFeatureRepository>();
+builder.Services.AddScoped<IRoomCategoryService, RoomCategoryService>();
+builder.Services.AddScoped<IRoomCategoryRepository, RoomCategoryRepository>();
 
 builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
 builder.Services.AddTransient<IMailingService, MailingService>();

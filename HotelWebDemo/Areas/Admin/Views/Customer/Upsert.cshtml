@@ -29,7 +29,7 @@
     ViewData["PageHeading"] = isCreate ? "New Customer" : $"Customer: {Model.FullName}";
 }
 
-<form asp-action="Upsert" method="@(isCreate ? "POST" : "PUT")">
+<form asp-action="Upsert">
     @if (!isCreate)
     {
         <input type="hidden" asp-for=@Model.Id />

@@ -10,6 +10,8 @@ public interface ICrudRepository<TEntity, TIndexedEntity>
 {
     TEntity? Get(int id);
 
+    List<TEntity> GetAll();
+
     Task<int> Upsert(TEntity entity);
 
     Task<int> Update(TEntity entity);

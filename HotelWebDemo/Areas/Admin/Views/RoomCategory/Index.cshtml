@@ -1,0 +1,15 @@
+﻿@using HotelWebDemo.Models.Components.Admin.Pages
+@using HotelWebDemo.Models.Components.Common
+@using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
+
+@model ListingModel<RoomCategory>
+
+@{
+}
+
+@{
+    Layout = "_AdminPageLayout";
+}
+
+<partial name="_Table" model="@Model.Table" />

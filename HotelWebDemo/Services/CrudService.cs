@@ -27,6 +27,11 @@ public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntit
         return repository.Get(id);
     }
 
+    public List<TEntity> GetAll()
+    {
+        return repository.GetAll();
+    }
+
     public async Task<PaginatedList<TIndexedEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
     {
         return await repository.List(orderBy, direction, page, pageSize, filters);
