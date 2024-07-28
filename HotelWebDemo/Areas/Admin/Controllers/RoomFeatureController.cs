@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelWebDemo.Areas.Admin.Controllers;
 
-public class HotelController : AdminController
+public class RoomFeatureController : AdminController
 {
-    private readonly IHotelService service;
+    private readonly IRoomFeatureService service;
     private readonly IAdminPageService adminPageService;
 
-    public HotelController(IHotelService service, IAdminPageService adminPageService)
+    public RoomFeatureController(IRoomFeatureService service, IAdminPageService adminPageService)
     {
         this.service = service;
         this.adminPageService = adminPageService;
@@ -29,11 +29,11 @@ public class HotelController : AdminController
 
     public IActionResult Create()
     {
-        Hotel hotel = new();
+        RoomFeature roomFeature = new();
 
         AddBackAction();
 
-        return View("Upsert", hotel);
+        return View("Upsert", roomFeature);
     }
 
     public IActionResult Edit(int? id)
@@ -43,31 +43,31 @@ public class HotelController : AdminController
             return RedirectToAction("Index");
         }
 
-        Hotel? hotel = service.Get((int)id);
+        RoomFeature? roomFeature = service.Get((int)id);
 
-        if (hotel == null)
+        if (roomFeature == null)
         {
-            return NotFound($"Hotel with ID {id} doesn't exist.");
+            return NotFound($"Room feature with ID {id} doesn't exist.");
         }
 
         AddBackAction();
 
-        return View("Upsert", hotel);
+        return View("Upsert", roomFeature);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Upsert(Hotel hotel)
+    public async Task<IActionResult> Upsert(RoomFeature roomFeature)
     {
-        bool isCreate = hotel.Id == 0;
+        bool isCreate = roomFeature.Id == 0;
 
-        await service.Upsert(hotel);
+        await service.Upsert(roomFeature);
 
         if (isCreate)
         {
             return RedirectToAction("Index");
         }
 
-        return RedirectToAction("Edit", new { hotel.Id });
+        return RedirectToAction("Edit", new { roomFeature.Id });
     }
 
     [HttpDelete]
@@ -78,11 +78,11 @@ public class HotelController : AdminController
             return RedirectToAction("Index");
         }
 
-        Hotel? hotel = service.Get((int)id);
+        RoomFeature? roomFeature = service.Get((int)id);
 
-        if (hotel == null)
+        if (roomFeature == null)
         {
-            return NotFound($"Hotel with ID {id} doesn't exist.");
+            return NotFound($"Room feature with ID {id} doesn't exist.");
         }
 
         await service.Delete((int)id);

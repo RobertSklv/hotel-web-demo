@@ -36,5 +36,6 @@ public class IndexerService : BackgroundService
     public void Index(AppDbContext db)
     {
         new HotelIndexer(db).Process();
+        new RoomFeatureIndexer(db).Process();
     }
 }

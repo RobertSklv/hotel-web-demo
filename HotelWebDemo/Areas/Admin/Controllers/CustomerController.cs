@@ -27,7 +27,7 @@ public class CustomerController : AdminController
         ViewData["Page"] = page;
         ViewData["Filter"] = filters;
 
-        return View(await service.CreateCustomerListingModel(ViewData));
+        return View(await service.CreateListingModel(ViewData));
     }
 
     public IActionResult Create()

@@ -6,8 +6,6 @@ public interface IIndexer<TEntity, TIndexEntity>
     where TEntity : class, IBaseEntity
     where TIndexEntity : class, IBaseEntity
 {
-    TIndexEntity Process(TEntity entity);
-
     void Process();
 
     void ProcessInsert(TEntity entity);

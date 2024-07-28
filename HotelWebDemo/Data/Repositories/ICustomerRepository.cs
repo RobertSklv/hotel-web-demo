@@ -1,9 +1,8 @@
 ﻿using HotelWebDemo.Models.Database;
-using HotelWebDemo.Services;
 
 namespace HotelWebDemo.Data.Repositories;
 
-public interface ICustomerRepository : ICrudService<Customer>
+public interface ICustomerRepository : ICrudRepository<Customer>
 {
     Customer? GetFull(int id);
 

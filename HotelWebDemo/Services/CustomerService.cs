@@ -5,7 +5,6 @@ using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.Mailing;
 using HotelWebDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using StarExplorerMainServer.Areas.Admin.Services;
 
 namespace HotelWebDemo.Services;
@@ -68,25 +67,14 @@ public class CustomerService : CrudService<Customer>, ICustomerService
         }
     }
 
-    public async Task<CustomerListingModel> CreateCustomerListingModel(ViewDataDictionary viewData)
+    public override Table<Customer> CreateListingTable(ListingModel<Customer> listingModel, PaginatedList<Customer> items)
     {
-        CustomerListingModel model = new();
-        InitializeListingModel(model, viewData);
-
         List<Country> countries = countryService.GetAll();
 
-        PaginatedList<Customer> items = await List(model);
-        Table<Customer> table = new Table<Customer>(model, items)
+        return base.CreateListingTable(listingModel, items)
             .OverrideColumnName(nameof(Customer.CreatedAt), "Registration date")
-            .SetOrderable(true)
-            .SetFilterable(true)
             .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship), countries)
-            .AddRowActions(null, options => options.IncludesDelete(false))
-            .AddPagination(items);
-
-        model.Table = table;
-
-        return model;
+            .AddRowActions(null, options => options.IncludesDelete(false));
     }
 
     public bool CompareResetPasswordToken(Customer customer, string token)

@@ -32,8 +32,9 @@ public class AppDbContext : DbContext
     public DbSet<RoomFeatureRoom> RoomFeatureRooms { get; set; }
 
     public DbSet<HotelIndex> Indexed_Hotels { get; set; }
+    public DbSet<RoomFeatureIndex> Indexed_RoomFeatures { get; set; }
 
-	public AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvider serviceProvider)
+    public AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvider serviceProvider)
         : base(options)
     {
         this.serviceProvider = serviceProvider;

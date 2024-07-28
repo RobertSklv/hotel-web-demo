@@ -34,7 +34,7 @@ public class HotelIndexer : Indexer<Hotel, HotelIndex>, IHotelIndexer
         entity.AdminUsers = AdminUsers.Where(e => e.HotelId == entity.Id).ToList();
     }
 
-    public override HotelIndex Process(Hotel entity)
+    protected override HotelIndex Process(Hotel entity)
     {
         return new()
         {

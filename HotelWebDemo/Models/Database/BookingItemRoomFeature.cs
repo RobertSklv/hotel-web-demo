@@ -14,5 +14,5 @@ public class BookingItemRoomFeature : BaseEntity
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public RoomFeature RoomFeature { get; set; }
 
-    public int RoomFeatureid { get; set; }
+    public int RoomFeatureId { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Models.Components;
+﻿using HotelWebDemo.Data.Repositories;
+using HotelWebDemo.Models.Components;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -9,9 +10,9 @@ public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntit
     where TEntity : class, IBaseEntity
     where TIndexedEntity : class, IBaseEntity
 {
-    private readonly ICrudService<TEntity, TIndexedEntity> repository;
+    private readonly ICrudRepository<TEntity, TIndexedEntity> repository;
 
-    public CrudService(ICrudService<TEntity, TIndexedEntity> repository)
+    public CrudService(ICrudRepository<TEntity, TIndexedEntity> repository)
     {
         this.repository = repository;
     }
@@ -50,6 +51,27 @@ public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntit
         listingModel.Filter = (Dictionary<string, TableFilter>?)viewData["Filter"];
     }
 
+    public virtual Table<TIndexedEntity> CreateListingTable(ListingModel<TIndexedEntity> listingModel, PaginatedList<TIndexedEntity> items)
+    {
+        return new Table<TIndexedEntity>(listingModel, items)
+            .SetOrderable(true)
+            .SetFilterable(true)
+            .AddRowActions()
+            .AddPagination(items);
+    }
+
+    public virtual async Task<ListingModel<TIndexedEntity>> CreateListingModel(ViewDataDictionary viewData)
+    {
+        ListingModel<TIndexedEntity> model = new();
+        InitializeListingModel(model, viewData);
+
+        PaginatedList<TIndexedEntity> items = await List(model);
+
+        model.Table = CreateListingTable(model, items);
+
+        return model;
+    }
+
     public async Task<int> Update(TEntity entity)
     {
         return await repository.Update(entity);
@@ -64,7 +86,7 @@ public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntit
 public abstract class CrudService<TEntity> : CrudService<TEntity, TEntity>
     where TEntity : class, IBaseEntity
 {
-    protected CrudService(ICrudService<TEntity, TEntity> repository)
+    protected CrudService(ICrudRepository<TEntity, TEntity> repository)
         : base(repository)
     {
     }

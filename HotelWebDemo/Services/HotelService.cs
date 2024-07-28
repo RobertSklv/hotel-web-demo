@@ -3,7 +3,6 @@ using HotelWebDemo.Models.Components;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.Database.Indexing;
 using HotelWebDemo.Models.ViewModels;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HotelWebDemo.Services;
 
@@ -14,28 +13,10 @@ public class HotelService : CrudService<Hotel, HotelIndex>, IHotelService
     {
     }
 
-    public async Task<ListingModel<HotelIndex>> CreateHotelListingModel(ViewDataDictionary viewData)
+    public override Table<HotelIndex> CreateListingTable(ListingModel<HotelIndex> listingModel, PaginatedList<HotelIndex> items)
     {
-        ListingModel<HotelIndex> model = new()
-        {
-            ActionName = "Index",
-            OrderBy = (string?)viewData["OrderBy"],
-            Direction = (string?)viewData["Direction"],
-            Page = (int?)viewData["Page"],
-            Filter = (Dictionary<string, TableFilter>?)viewData["Filter"],
-        };
-
-        PaginatedList<HotelIndex> items = await List(model);
-
-        Table<HotelIndex> table = new Table<HotelIndex>(model, items)
-            .SetOrderable(true)
-            .SetFilterable(true)
+        return base.CreateListingTable(listingModel, items)
             .AddRowActions(null, options => options.SetDeleteConfirmationMessage<HotelIndex>(
-                hotel => $"Are you sure you want to remove hotel {hotel.Name}? This action cannot be undone"))
-            .AddPagination(items);
-
-        model.Table = table;
-
-        return model;
+                hotel => $"Are you sure you want to remove hotel {hotel.Name}? This action cannot be undone."));
     }
 }

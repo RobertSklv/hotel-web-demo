@@ -16,7 +16,7 @@ public abstract class Indexer<TEntity, TIndexEntity> : IIndexer<TEntity, TIndexE
 
     protected abstract void LoadRelated(TEntity entity);
 
-    public abstract TIndexEntity Process(TEntity entity);
+    protected abstract TIndexEntity Process(TEntity entity);
 
     protected virtual IQueryable<TEntity> GetAll() => DbSet;
 
