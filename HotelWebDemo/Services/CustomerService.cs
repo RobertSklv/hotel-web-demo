@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 using HotelWebDemo.Data.Repositories;
-using HotelWebDemo.Models.Components;
+using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.Mailing;
 using HotelWebDemo.Models.ViewModels;

@@ -1,4 +1,6 @@
-﻿namespace HotelWebDemo.Models.Components;
+﻿using HotelWebDemo.Models.Components.Common;
+
+namespace HotelWebDemo.Models.Components.Admin.Tables;
 
 public class TableFilterControls
 {

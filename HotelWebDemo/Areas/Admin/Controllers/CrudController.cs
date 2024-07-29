@@ -1,5 +1,5 @@
-﻿using HotelWebDemo.Models.Components;
-using HotelWebDemo.Models.Components.Admin.Pages;
+﻿using HotelWebDemo.Models.Components.Admin.Pages;
+using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿namespace HotelWebDemo.Models.Components;
+﻿namespace HotelWebDemo.Models.Components.Common;
 
 public class Link : Element, IDisableableElement
 {

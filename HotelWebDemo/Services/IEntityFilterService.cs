@@ -1,4 +1,4 @@
-﻿using HotelWebDemo.Models.Components;
+﻿using HotelWebDemo.Models.Components.Admin.Tables;
 using System.Linq.Expressions;
 using System.Reflection;
 

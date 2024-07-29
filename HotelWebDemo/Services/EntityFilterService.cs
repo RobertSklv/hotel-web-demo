@@ -1,5 +1,5 @@
 ﻿using HotelWebDemo.Models.Attributes;
-using HotelWebDemo.Models.Components;
+using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
 using System.Linq.Expressions;
 using System.Reflection;

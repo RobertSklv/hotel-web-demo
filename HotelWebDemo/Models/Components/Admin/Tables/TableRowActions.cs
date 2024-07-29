@@ -1,6 +1,6 @@
 ﻿using HotelWebDemo.Models.Database;
 
-namespace HotelWebDemo.Models.Components;
+namespace HotelWebDemo.Models.Components.Admin.Tables;
 
 public class TableRowActions
 {

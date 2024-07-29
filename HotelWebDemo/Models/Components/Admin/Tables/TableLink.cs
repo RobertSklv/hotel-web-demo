@@ -1,6 +1,7 @@
-﻿using HotelWebDemo.Models.ViewModels;
+﻿using HotelWebDemo.Models.Components.Common;
+using HotelWebDemo.Models.ViewModels;
 
-namespace HotelWebDemo.Models.Components;
+namespace HotelWebDemo.Models.Components.Admin.Tables;
 
 public class TableLink : Link
 {

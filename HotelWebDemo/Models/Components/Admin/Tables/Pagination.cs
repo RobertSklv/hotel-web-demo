@@ -1,4 +1,4 @@
-﻿namespace HotelWebDemo.Models.Components;
+﻿namespace HotelWebDemo.Models.Components.Admin.Tables;
 
 public class Pagination
 {
@@ -38,7 +38,7 @@ public class Pagination
         {
             TableLink pageLink = GenerateLink(i, totalLinks);
 
-            if (pageLink.Page == CurrentPage || (CurrentPage == 1 && pageLink.Page == null))
+            if (pageLink.Page == CurrentPage || CurrentPage == 1 && pageLink.Page == null)
             {
                 pageLink.Disabled = true;
                 pageLink.ClassList.Add("disabled");

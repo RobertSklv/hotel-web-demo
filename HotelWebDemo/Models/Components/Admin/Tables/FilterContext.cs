@@ -3,8 +3,9 @@ using System.Reflection;
 using HotelWebDemo.Services;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using HotelWebDemo.Models.Database;
+using HotelWebDemo.Models.Components.Common;
 
-namespace HotelWebDemo.Models.Components;
+namespace HotelWebDemo.Models.Components.Admin.Tables;
 
 public class FilterContext
 {

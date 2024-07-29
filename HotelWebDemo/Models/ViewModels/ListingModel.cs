@@ -1,4 +1,4 @@
-﻿using HotelWebDemo.Models.Components;
+﻿using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
 
 namespace HotelWebDemo.Models.ViewModels;

@@ -1,5 +1,5 @@
 ﻿using HotelWebDemo.Data.Repositories;
-using HotelWebDemo.Models.Components;
+using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.Json;
 using HotelWebDemo.Models.ViewModels;
