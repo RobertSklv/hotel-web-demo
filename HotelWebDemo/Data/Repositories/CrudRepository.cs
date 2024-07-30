@@ -2,37 +2,30 @@
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
-using HotelWebDemo.Services.Indexing;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
 
-public abstract class CrudRepository<TEntity, TIndexedEntity> : ICrudRepository<TEntity, TIndexedEntity>
+public abstract class CrudRepository<TEntity> : ICrudRepository<TEntity>
     where TEntity : class, IBaseEntity
-    where TIndexedEntity : class, IBaseEntity
 {
     public abstract DbSet<TEntity> DbSet { get; }
-
-    public abstract DbSet<TIndexedEntity> IndexedDbSet { get; }
 
     protected readonly AppDbContext db;
     protected readonly IEntityFilterService filterService;
     protected readonly IEntitySortService sortService;
-    protected readonly IIndexer<TEntity, TIndexedEntity>? indexer;
 
     public CrudRepository(
         AppDbContext db,
         IEntityFilterService filterService,
-        IEntitySortService sortService,
-        IIndexer<TEntity, TIndexedEntity>? indexer)
+        IEntitySortService sortService)
     {
         this.db = db;
         this.filterService = filterService;
         this.sortService = sortService;
-        this.indexer = indexer;
     }
 
-    public virtual IQueryable<TIndexedEntity> List(DbSet<TIndexedEntity> dbSet)
+    public virtual IQueryable<TEntity> List(DbSet<TEntity> dbSet)
     {
         return dbSet;
     }
@@ -56,20 +49,12 @@ public abstract class CrudRepository<TEntity, TIndexedEntity> : ICrudRepository<
 
         await DbSet.AddAsync(entity);
 
-        if (indexer != null)
-        {
-            await db.SaveChangesAsync();
-            indexer.ProcessInsert(entity);
-        }
-
         return await db.SaveChangesAsync();
     }
 
     public virtual async Task<int> Update(TEntity entity)
     {
         DbSet.Update(entity);
-
-        indexer?.ProcessUpdate(entity);
 
         return await db.SaveChangesAsync();
     }
@@ -81,35 +66,19 @@ public abstract class CrudRepository<TEntity, TIndexedEntity> : ICrudRepository<
             .Take(1)
             .ExecuteDelete();
 
-        indexer?.ProcessDelete(id);
-
         return await db.SaveChangesAsync();
     }
 
-    public virtual async Task<PaginatedList<TIndexedEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
+    public virtual async Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
     {
-        IQueryable<TIndexedEntity> entities = List(IndexedDbSet);
+        IQueryable<TEntity> entities = List(DbSet);
         bool desc = direction == "desc";
 
         entities = sortService.OrderBy(entities, orderBy, desc);
         entities = filterService.FilterBy(entities, filters);
 
-        PaginatedList<TIndexedEntity> paginatedList = await PaginatedList<TIndexedEntity>.CreateAsync(entities, page, pageSize);
+        PaginatedList<TEntity> paginatedList = await PaginatedList<TEntity>.CreateAsync(entities, page, pageSize);
 
         return paginatedList;
-    }
-}
-
-public abstract class CrudRepository<TEntity> : CrudRepository<TEntity, TEntity>
-    where TEntity : class, IBaseEntity
-{
-    public override sealed DbSet<TEntity> IndexedDbSet => DbSet;
-
-    protected CrudRepository(
-        AppDbContext db,
-        IEntityFilterService filterService,
-        IEntitySortService sortService)
-        : base(db, filterService, sortService, indexer: null)
-    {
     }
 }

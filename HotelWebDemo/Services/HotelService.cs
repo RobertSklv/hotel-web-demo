@@ -1,22 +1,21 @@
 ﻿using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
-using HotelWebDemo.Models.Database.Indexing;
 using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Services;
 
-public class HotelService : CrudService<Hotel, HotelIndex>, IHotelService
+public class HotelService : CrudService<Hotel>, IHotelService
 {
     public HotelService(IHotelRepository repository)
         : base(repository)
     {
     }
 
-    public override Table<HotelIndex> CreateListingTable(ListingModel<HotelIndex> listingModel, PaginatedList<HotelIndex> items)
+    public override Table<Hotel> CreateListingTable(ListingModel<Hotel> listingModel, PaginatedList<Hotel> items)
     {
         return base.CreateListingTable(listingModel, items)
-            .AddRowActions(null, options => options.SetDeleteConfirmationMessage<HotelIndex>(
+            .AddRowActions(null, options => options.SetDeleteConfirmationMessage<Hotel>(
                 hotel => $"Are you sure you want to remove hotel {hotel.Name}? This action cannot be undone."));
     }
 }

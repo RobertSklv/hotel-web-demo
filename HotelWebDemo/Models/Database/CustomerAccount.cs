@@ -7,7 +7,6 @@ namespace HotelWebDemo.Models.Database;
 [Table("CustomerAccounts")]
 public class CustomerAccount : BaseEntity
 {
-    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Customer Customer { get; set; }
 
     public int CustomerId { get; set; }
@@ -30,7 +29,7 @@ public class CustomerAccount : BaseEntity
 
     [ForeignKey(nameof(AddressId))]
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public Address Address { get; set; }
+    public Address? Address { get; set; }
 
     public int AddressId { get; set; }
 

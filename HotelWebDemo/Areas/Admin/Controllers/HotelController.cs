@@ -1,10 +1,9 @@
 ﻿using HotelWebDemo.Models.Database;
 using HotelWebDemo.Services;
-using HotelWebDemo.Models.Database.Indexing;
 
 namespace HotelWebDemo.Areas.Admin.Controllers;
 
-public class HotelController : CrudController<Hotel, HotelIndex>
+public class HotelController : CrudController<Hotel>
 {
     private readonly new IHotelService service;
 

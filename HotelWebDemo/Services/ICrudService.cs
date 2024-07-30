@@ -6,20 +6,14 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HotelWebDemo.Services;
 
-public interface ICrudService<TEntity, TIndexedEntity> : ICrudRepository<TEntity, TIndexedEntity>
-    where TEntity : class, IBaseEntity
-    where TIndexedEntity : class, IBaseEntity
-{
-    Task<PaginatedList<TIndexedEntity>> List(ListingModel<TIndexedEntity> listingModel);
-
-    void InitializeListingModel(ListingModel<TIndexedEntity> listingModel, ViewDataDictionary viewData);
-
-    Table<TIndexedEntity> CreateListingTable(ListingModel<TIndexedEntity> listingModel, PaginatedList<TIndexedEntity> items);
-
-    Task<ListingModel<TIndexedEntity>> CreateListingModel(ViewDataDictionary viewData);
-}
-
-public interface ICrudService<TEntity> : ICrudService<TEntity, TEntity>
+public interface ICrudService<TEntity> : ICrudRepository<TEntity>
     where TEntity : class, IBaseEntity
 {
+    Task<PaginatedList<TEntity>> List(ListingModel<TEntity> listingModel);
+
+    void InitializeListingModel(ListingModel<TEntity> listingModel, ViewDataDictionary viewData);
+
+    Table<TEntity> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items);
+
+    Task<ListingModel<TEntity>> CreateListingModel(ViewDataDictionary viewData);
 }

@@ -1,23 +1,26 @@
 ﻿using HotelWebDemo.Models.Database;
-using HotelWebDemo.Models.Database.Indexing;
 using HotelWebDemo.Services;
-using HotelWebDemo.Services.Indexing;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
 
-public class RoomFeatureRepository : CrudRepository<RoomFeature, RoomFeatureIndex>, IRoomFeatureRepository
+public class RoomFeatureRepository : CrudRepository<RoomFeature>, IRoomFeatureRepository
 {
     public override DbSet<RoomFeature> DbSet => db.RoomFeatures;
-
-    public override DbSet<RoomFeatureIndex> IndexedDbSet => db.Indexed_RoomFeatures;
 
     public RoomFeatureRepository(
         AppDbContext db,
         IEntityFilterService filterService,
-        IEntitySortService sortService,
-        IRoomFeatureIndexer? indexer)
-        : base(db, filterService, sortService, indexer)
+        IEntitySortService sortService)
+        : base(db, filterService, sortService)
     {
+    }
+
+    public override IQueryable<RoomFeature> List(DbSet<RoomFeature> dbSet)
+    {
+        return base.List(dbSet)
+            .Include(e => e.Hotel)
+            .Include(e => e.Rooms)
+            .Include(e => e.BookedFeatures);
     }
 }

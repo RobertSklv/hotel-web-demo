@@ -53,8 +53,6 @@ public class CustomerRepository : CrudRepository<Customer>, ICustomerRepository
             db.Entry(entity.CustomerAccount).Property(e => e.PasswordHashSalt).IsModified = false;
         }
 
-        indexer?.ProcessUpdate(entity);
-
         return await db.SaveChangesAsync();
     }
 

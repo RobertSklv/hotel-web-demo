@@ -31,4 +31,9 @@ public class Room : BaseEntity
     public int Capacity { get; set; }
 
     public List<RoomFeatureRoom> RoomFeatureRooms { get; set; }
+
+    public List<RoomFeature> Features { get; set; }
+
+    [NotMapped]
+    public List<int> SelectedFeatureIds { get; set; } = new();
 }

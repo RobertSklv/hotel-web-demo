@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using HotelWebDemo.Models.Attributes;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Models.Database;
 
@@ -25,11 +26,13 @@ public class Customer : BaseEntity
     public string LastName { get; set; }
 
     [ForeignKey(nameof(CustomerIdentityId))]
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public CustomerIdentity? CustomerIdentity { get; set; }
 
     public int? CustomerIdentityId { get; set; }
 
     [ForeignKey(nameof(CustomerAccountId))]
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public CustomerAccount? CustomerAccount { get; set; }
 
     public int? CustomerAccountId { get; set; }

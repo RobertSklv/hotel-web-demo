@@ -1,6 +1,5 @@
 ﻿using HotelWebDemo.Data.Seeding;
 using HotelWebDemo.Models.Database;
-using HotelWebDemo.Models.Database.Indexing;
 using HotelWebDemo.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,9 +29,6 @@ public class AppDbContext : DbContext
     public DbSet<RoomCategory> RoomCategories { get; set; }
     public DbSet<RoomFeature> RoomFeatures { get; set; }
     public DbSet<RoomFeatureRoom> RoomFeatureRooms { get; set; }
-
-    public DbSet<HotelIndex> Indexed_Hotels { get; set; }
-    public DbSet<RoomFeatureIndex> Indexed_RoomFeatures { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvider serviceProvider)
         : base(options)

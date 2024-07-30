@@ -7,12 +7,12 @@ namespace HotelWebDemo.Models.Database;
 [Table("BookingItems")]
 public class BookingItem : BaseEntity
 {
-    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Booking Booking { get; set; }
 
     public int BookingId { get; set; }
 
-    public RoomCategory RoomCategory { get; set; }
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public RoomCategory? RoomCategory { get; set; }
 
     public int RoomCategoryId { get; set; }
 

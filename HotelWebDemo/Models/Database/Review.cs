@@ -7,12 +7,10 @@ namespace HotelWebDemo.Models.Database;
 [Table("Reviews")]
 public class Review : BaseEntity
 {
-    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Customer Author { get; set; }
 
     public int AuthorId { get; set; }
 
-    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Booking Booking { get; set; }
 
     public int BookingId { get; set; }

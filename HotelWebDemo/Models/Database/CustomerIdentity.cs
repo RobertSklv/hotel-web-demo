@@ -7,7 +7,6 @@ namespace HotelWebDemo.Models.Database;
 [Table("CustomerIdentities")]
 public class CustomerIdentity : BaseEntity
 {
-    [DeleteBehavior(DeleteBehavior.NoAction)]
     public Customer Customer { get; set; }
 
     public int CustomerId { get; set; }
@@ -19,7 +18,7 @@ public class CustomerIdentity : BaseEntity
     public string? PassportId { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public Country Citizenship { get; set; }
+    public Country? Citizenship { get; set; }
 
     public int CitizenshipId { get; set; }
 }

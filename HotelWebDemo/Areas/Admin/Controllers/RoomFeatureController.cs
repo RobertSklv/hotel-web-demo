@@ -1,11 +1,10 @@
 ﻿using HotelWebDemo.Models.Database;
 using HotelWebDemo.Services;
-using HotelWebDemo.Models.Database.Indexing;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelWebDemo.Areas.Admin.Controllers;
 
-public class RoomFeatureController : CrudController<RoomFeature, RoomFeatureIndex>
+public class RoomFeatureController : CrudController<RoomFeature>
 {
     private readonly IHotelService hotelService;
 

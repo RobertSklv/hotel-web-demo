@@ -6,16 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelWebDemo.Areas.Admin.Controllers;
 
-public abstract class CrudController<TEntity, TIndexedEntity> : AdminController
+public abstract class CrudController<TEntity> : AdminController
     where TEntity : class, IBaseEntity, new()
-    where TIndexedEntity : class, IBaseEntity
 {
-    protected readonly ICrudService<TEntity, TIndexedEntity> service;
+    protected readonly ICrudService<TEntity> service;
     protected readonly IAdminPageService adminPageService;
 
     protected string? ListingTitle { get; set; }
 
-    public CrudController(ICrudService<TEntity, TIndexedEntity> service, IAdminPageService adminPageService)
+    public CrudController(ICrudService<TEntity> service, IAdminPageService adminPageService)
     {
         this.service = service;
         this.adminPageService = adminPageService;
@@ -127,14 +126,5 @@ public abstract class CrudController<TEntity, TIndexedEntity> : AdminController
         {
             adminPageService.CreateAction(this)
         };
-    }
-}
-
-public abstract class CrudController<TEntity> : CrudController<TEntity, TEntity>
-    where TEntity : class, IBaseEntity, new()
-{
-    protected CrudController(ICrudService<TEntity, TEntity> service, IAdminPageService adminPageService)
-        : base(service, adminPageService)
-    {
     }
 }

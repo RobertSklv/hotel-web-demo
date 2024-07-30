@@ -4,9 +4,8 @@ using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Data.Repositories;
 
-public interface ICrudRepository<TEntity, TIndexedEntity>
+public interface ICrudRepository<TEntity>
     where TEntity : class, IBaseEntity
-    where TIndexedEntity : class, IBaseEntity
 {
     TEntity? Get(int id);
 
@@ -18,11 +17,5 @@ public interface ICrudRepository<TEntity, TIndexedEntity>
 
     Task<int> Delete(int id);
 
-    Task<PaginatedList<TIndexedEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters);
-}
-
-public interface ICrudRepository<TEntity> : ICrudRepository<TEntity, TEntity>
-    where TEntity : class, IBaseEntity
-{
-
+    Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters);
 }

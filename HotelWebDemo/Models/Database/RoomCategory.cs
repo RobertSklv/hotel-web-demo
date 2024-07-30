@@ -25,7 +25,7 @@ public class RoomCategory : BaseEntity
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
     [TableColumn]
-    public Hotel Hotel { get; set; }
+    public Hotel? Hotel { get; set; }
 
     public int HotelId { get; set; }
 

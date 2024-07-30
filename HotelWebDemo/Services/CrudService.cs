@@ -6,13 +6,12 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HotelWebDemo.Services;
 
-public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntity, TIndexedEntity>
+public abstract class CrudService<TEntity> : ICrudService<TEntity>
     where TEntity : class, IBaseEntity
-    where TIndexedEntity : class, IBaseEntity
 {
-    private readonly ICrudRepository<TEntity, TIndexedEntity> repository;
+    private readonly ICrudRepository<TEntity> repository;
 
-    public CrudService(ICrudRepository<TEntity, TIndexedEntity> repository)
+    public CrudService(ICrudRepository<TEntity> repository)
     {
         this.repository = repository;
     }
@@ -32,12 +31,12 @@ public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntit
         return repository.GetAll();
     }
 
-    public async Task<PaginatedList<TIndexedEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
+    public async Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
     {
         return await repository.List(orderBy, direction, page, pageSize, filters);
     }
 
-    public async Task<PaginatedList<TIndexedEntity>> List(ListingModel<TIndexedEntity> listingModel)
+    public async Task<PaginatedList<TEntity>> List(ListingModel<TEntity> listingModel)
     {
         return await repository.List(
             listingModel.OrderBy ?? ListingModel.DEFAULT_ORDER_BY,
@@ -47,7 +46,7 @@ public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntit
             listingModel.Filter);
     }
 
-    public void InitializeListingModel(ListingModel<TIndexedEntity> listingModel, ViewDataDictionary viewData)
+    public void InitializeListingModel(ListingModel<TEntity> listingModel, ViewDataDictionary viewData)
     {
         listingModel.ActionName = "Index";
         listingModel.OrderBy = (string?)viewData["OrderBy"];
@@ -56,21 +55,21 @@ public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntit
         listingModel.Filter = (Dictionary<string, TableFilter>?)viewData["Filter"];
     }
 
-    public virtual Table<TIndexedEntity> CreateListingTable(ListingModel<TIndexedEntity> listingModel, PaginatedList<TIndexedEntity> items)
+    public virtual Table<TEntity> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items)
     {
-        return new Table<TIndexedEntity>(listingModel, items)
+        return new Table<TEntity>(listingModel, items)
             .SetOrderable(true)
             .SetFilterable(true)
             .AddRowActions()
             .AddPagination(items);
     }
 
-    public virtual async Task<ListingModel<TIndexedEntity>> CreateListingModel(ViewDataDictionary viewData)
+    public virtual async Task<ListingModel<TEntity>> CreateListingModel(ViewDataDictionary viewData)
     {
-        ListingModel<TIndexedEntity> model = new();
+        ListingModel<TEntity> model = new();
         InitializeListingModel(model, viewData);
 
-        PaginatedList<TIndexedEntity> items = await List(model);
+        PaginatedList<TEntity> items = await List(model);
 
         model.Table = CreateListingTable(model, items);
 
@@ -85,14 +84,5 @@ public abstract class CrudService<TEntity, TIndexedEntity> : ICrudService<TEntit
     public async Task<int> Upsert(TEntity entity)
     {
         return await repository.Upsert(entity);
-    }
-}
-
-public abstract class CrudService<TEntity> : CrudService<TEntity, TEntity>
-    where TEntity : class, IBaseEntity
-{
-    protected CrudService(ICrudRepository<TEntity, TEntity> repository)
-        : base(repository)
-    {
     }
 }

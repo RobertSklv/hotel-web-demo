@@ -25,7 +25,7 @@ public class Address : BaseEntity
     public string? StreetLine3 { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public Country Country { get; set; }
+    public Country? Country { get; set; }
 
     [Display(Name = "Country")]
     public int CountryId { get; set; }
