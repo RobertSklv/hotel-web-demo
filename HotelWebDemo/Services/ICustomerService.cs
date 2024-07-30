@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HotelWebDemo.Services;
 
-public interface ICustomerService : ICrudService<Customer>
+public interface ICustomerService : ICrudService<Customer, CustomerViewModel>
 {
     Customer? GetFull(int id);
 
-    Task Upsert(Customer customer, ModelStateDictionary modelState);
+    Task Upsert(CustomerViewModel customerViewModel, ModelStateDictionary modelState);
 
     bool CompareResetPasswordToken(Customer customer, string token);
 

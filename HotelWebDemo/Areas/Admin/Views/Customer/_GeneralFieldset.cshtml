@@ -1,6 +1,7 @@
 ﻿@using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
 
-@model Customer
+@model CustomerViewModel
 
 @{
     Layout = "_FieldsetLayout";
@@ -36,10 +37,19 @@
 </div>
 <div class="row mb-4">
     <div class="col-12 col-lg-4">
-        <label asp-for=@Model.CustomerAccount.Email></label>
+        <label asp-for=@Model.Email></label>
     </div>
     <div class="col-12 col-lg-8">
-        <input asp-for=@Model.CustomerAccount.Email class="form-control d-block w-100" />
-        <span asp-validation-for=@Model.CustomerAccount.Email class="text-danger"></span>
+        <input asp-for=@Model.Email class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.Email class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.DateOfBirth></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.DateOfBirth class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.DateOfBirth class="text-danger"></span>
     </div>
 </div>

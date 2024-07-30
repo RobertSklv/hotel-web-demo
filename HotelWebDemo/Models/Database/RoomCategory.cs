@@ -34,7 +34,7 @@ public class RoomCategory : BaseEntity
     [TableColumn]
     public decimal Price { get; set; }
 
-    public List<Room> Rooms { get; set; }
+    public List<Room>? Rooms { get; set; }
 
     public string SelectLabel => $"{Name} ({Hotel?.Name})";
 }

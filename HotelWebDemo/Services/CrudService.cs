@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Data.Repositories;
+using HotelWebDemo.Models;
 using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
@@ -6,8 +7,9 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HotelWebDemo.Services;
 
-public abstract class CrudService<TEntity> : ICrudService<TEntity>
+public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, TViewModel>
     where TEntity : class, IBaseEntity
+    where TViewModel : class, IModel
 {
     private readonly ICrudRepository<TEntity> repository;
 
@@ -15,6 +17,10 @@ public abstract class CrudService<TEntity> : ICrudService<TEntity>
     {
         this.repository = repository;
     }
+
+    public abstract TViewModel EntityToViewModel(TEntity entity);
+
+    public abstract TEntity ViewModelToEntity(TViewModel model);
 
     public virtual async Task<int> Delete(int id)
     {
@@ -81,8 +87,27 @@ public abstract class CrudService<TEntity> : ICrudService<TEntity>
         return await repository.Update(entity);
     }
 
-    public virtual async Task<int> Upsert(TEntity entity)
+    public virtual async Task<int> Upsert(TViewModel model)
     {
-        return await repository.Upsert(entity);
+        return await repository.Upsert(ViewModelToEntity(model));
+    }
+}
+
+public abstract class CrudService<TEntity> : CrudService<TEntity, TEntity>
+    where TEntity : class, IBaseEntity
+{
+    protected CrudService(ICrudRepository<TEntity> repository)
+        : base(repository)
+    {
+    }
+
+    public sealed override TEntity ViewModelToEntity(TEntity model)
+    {
+        return model;
+    }
+
+    public sealed override TEntity EntityToViewModel(TEntity entity)
+    {
+        return entity;
     }
 }

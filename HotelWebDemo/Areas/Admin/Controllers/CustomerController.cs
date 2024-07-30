@@ -1,17 +1,23 @@
-﻿using HotelWebDemo.Models.Database;
+﻿using HotelWebDemo.Models.Components.Common;
+using HotelWebDemo.Models.Database;
+using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc;
 using StarExplorerMainServer.Areas.Admin.Services;
 
 namespace HotelWebDemo.Areas.Admin.Controllers;
 
-public class CustomerController : CrudController<Customer>
+public class CustomerController : CrudController<Customer, CustomerViewModel>
 {
     private readonly new ICustomerService service;
     private readonly ICountryService countryService;
 
-    public CustomerController(ICustomerService service, ICountryService countryService, IAdminPageService adminPageService)
-        : base(service, adminPageService)
+    public CustomerController(
+        ICustomerService service,
+        ICountryService countryService,
+        IAdminPageService adminPageService,
+        Serilog.ILogger logger)
+        : base(service, adminPageService, logger)
     {
         this.service = service;
         this.countryService = countryService;
@@ -19,17 +25,7 @@ public class CustomerController : CrudController<Customer>
         ListingTitle = "All customers";
     }
 
-    protected override Customer InitializeNew()
-    {
-        return new()
-        {
-            CustomerIdentity = new(),
-            CustomerAccount = new()
-            {
-                Address = new()
-            },
-        };
-    }
+    public override async Task UpsertMethod(CustomerViewModel model) => await service.Upsert(model, ModelState);
 
     protected override Customer? GetEntity(int id)
     {
@@ -47,6 +43,11 @@ public class CustomerController : CrudController<Customer>
     {
         ViewData["Countries"] = countryService.GetAll();
 
+        if (id != null)
+        {
+            CreateResetPasswordAction((int)id);
+        }
+
         return base.Edit(id);
     }
 
@@ -63,5 +64,20 @@ public class CustomerController : CrudController<Customer>
         }
 
         return RedirectToAction("Edit", new { id });
+    }
+
+    private void CreateResetPasswordAction(int customerId)
+    {
+        GetOrCreatePageActionButtonsList().Add(new()
+        {
+            Content = "Reset password",
+            Controller = "Customer",
+            Action = "ResetPassword",
+            Color = ColorClass.Warning,
+            RequestParameters = new()
+            {
+                { "Id", customerId }
+            }
+        });
     }
 }

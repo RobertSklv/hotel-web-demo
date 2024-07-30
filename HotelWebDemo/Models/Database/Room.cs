@@ -8,12 +8,12 @@ namespace HotelWebDemo.Models.Database;
 public class Room : BaseEntity
 {
     [TableColumn(SortOrder = -3)]
-    public Hotel Hotel { get; set; }
+    public Hotel? Hotel { get; set; }
 
     public int HotelId { get; set; }
 
     [TableColumn(SortOrder = -2)]
-    public RoomCategory Category { get; set; }
+    public RoomCategory? Category { get; set; }
 
     public int CategoryId { get; set; }
 
@@ -30,9 +30,9 @@ public class Room : BaseEntity
     [TableColumn]
     public int Capacity { get; set; }
 
-    public List<RoomFeatureRoom> RoomFeatureRooms { get; set; }
+    public List<RoomFeatureRoom>? RoomFeatureRooms { get; set; }
 
-    public List<RoomFeature> Features { get; set; }
+    public List<RoomFeature>? Features { get; set; }
 
     [NotMapped]
     public List<int> SelectedFeatureIds { get; set; } = new();

@@ -5,6 +5,8 @@ using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 using StarExplorerMainServer.Areas.Admin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,6 +64,26 @@ builder.Services.AddScoped<IEntityFilterService, EntityFilterService>();
 builder.Services.AddScoped<IEntitySortService, EntitySortService>();
 builder.Services.AddScoped<IAdminPageService, AdminPageService>();
 builder.Services.AddScoped<IEntityHelperService, EntityHelperService>();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Logger(l => l
+        .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information)
+        .WriteTo.File(@$"Logs\Info-{DateTime.UtcNow:dd-MM-yyyy}.log"))
+    .WriteTo.Logger(l => l
+        .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug)
+        .WriteTo.File(@$"Logs\Debug-{DateTime.UtcNow:dd-MM-yyyy}.log"))
+    .WriteTo.Logger(l => l
+        .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error || e.Level == LogEventLevel.Fatal)
+        .WriteTo.File(@$"Logs\Error-{DateTime.UtcNow:dd-MM-yyyy}.log"))
+    .WriteTo.Logger(l => l
+        .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Fatal)
+        .WriteTo.File(@$"Logs\Fatal-{DateTime.UtcNow:dd-MM-yyyy}.log"))
+    .CreateLogger();
+
+builder.Services.AddSingleton(Log.Logger);
 
 var app = builder.Build();
 

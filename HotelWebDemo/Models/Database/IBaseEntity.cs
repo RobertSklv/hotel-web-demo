@@ -1,9 +1,7 @@
 ﻿namespace HotelWebDemo.Models.Database;
 
-public interface IBaseEntity
+public interface IBaseEntity : IModel
 {
-    int Id { get; set; }
-
     DateTime CreatedAt { get; set; }
 
     DateTime UpdatedAt { get; set; }

@@ -7,11 +7,12 @@
 @{
     Layout = "_AdminPageLayout";
     bool isCreate = Model.Id == 0;
+    string action = isCreate ? "Create" : "Update";
 
     ViewData["PageHeading"] = isCreate ? "New Room" : $"Room: {Model.Number}";
 }
 
-<form asp-action="Upsert">
+<form asp-action="@action">
     @if (!isCreate)
     {
         <input type="hidden" asp-for=@Model.Id />

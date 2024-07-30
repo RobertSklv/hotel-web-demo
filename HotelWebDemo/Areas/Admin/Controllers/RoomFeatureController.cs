@@ -8,8 +8,12 @@ public class RoomFeatureController : CrudController<RoomFeature>
 {
     private readonly IHotelService hotelService;
 
-    public RoomFeatureController(IRoomFeatureService service, IAdminPageService adminPageService, IHotelService hotelService)
-        : base(service, adminPageService)
+    public RoomFeatureController(
+        IRoomFeatureService service,
+        IAdminPageService adminPageService,
+        IHotelService hotelService,
+        Serilog.ILogger logger)
+        : base(service, adminPageService, logger)
     {
         ListingTitle = "All room features";
         this.hotelService = hotelService;

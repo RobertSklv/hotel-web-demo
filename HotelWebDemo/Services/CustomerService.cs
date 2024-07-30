@@ -9,7 +9,7 @@ using StarExplorerMainServer.Areas.Admin.Services;
 
 namespace HotelWebDemo.Services;
 
-public class CustomerService : CrudService<Customer>, ICustomerService
+public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustomerService
 {
     private readonly ICustomerRepository repository;
     private readonly ICountryService countryService;
@@ -37,9 +37,10 @@ public class CustomerService : CrudService<Customer>, ICustomerService
         return repository.GetFull(id);
     }
 
-    public async Task Upsert(Customer customer, ModelStateDictionary modelState)
+    public async Task Upsert(CustomerViewModel customerViewModel, ModelStateDictionary modelState)
     {
-        bool newCustomer = customer.Id == 0;
+        bool newCustomer = customerViewModel.Id == 0;
+        Customer customer = ViewModelToEntity(customerViewModel);
 
         if (newCustomer)
         {
@@ -68,6 +69,65 @@ public class CustomerService : CrudService<Customer>, ICustomerService
                 modelState.AddModelError(string.Empty, "Something went wrong while resetting the password for the customer.");
             }
         }
+    }
+
+    public override Customer ViewModelToEntity(CustomerViewModel viewModel)
+    {
+        return new Customer()
+        {
+            Id = viewModel.Id,
+            FirstName = viewModel.FirstName,
+            MiddleName = viewModel.MiddleName,
+            LastName = viewModel.LastName,
+            CustomerAccount = new CustomerAccount()
+            {
+                Email = viewModel.Email,
+                DateOfBirth = viewModel.DateOfBirth,
+                Address = new Address()
+                {
+                    StreetLine1 = viewModel.StreetLine1,
+                    StreetLine2 = viewModel.StreetLine2,
+                    StreetLine3 = viewModel.StreetLine3,
+                    Country = viewModel.Country,
+                    CountryId = viewModel.CountryId,
+                    City = viewModel.City,
+                    PostalCode = viewModel.PostalCode,
+                    Phone = viewModel.Phone,
+                }
+            },
+            CustomerIdentity = new CustomerIdentity()
+            {
+                PassportId = viewModel.PassportId,
+                NationalId = viewModel.NationalId,
+                Citizenship = viewModel.Citizenship,
+                CitizenshipId = viewModel.CitizenshipId,
+            }
+        };
+    }
+
+    public override CustomerViewModel EntityToViewModel(Customer customer)
+    {
+        return new CustomerViewModel()
+        {
+            Id = customer.Id,
+            FirstName = customer.FirstName,
+            MiddleName = customer.MiddleName,
+            LastName = customer.LastName,
+            Email = customer.CustomerAccount.Email,
+            DateOfBirth = customer.CustomerAccount.DateOfBirth,
+            PassportId = customer.CustomerIdentity.PassportId,
+            NationalId = customer.CustomerIdentity.NationalId,
+            Citizenship = customer.CustomerIdentity.Citizenship,
+            CitizenshipId = customer.CustomerIdentity.CitizenshipId,
+            StreetLine1 = customer.CustomerAccount.Address.StreetLine1,
+            StreetLine2 = customer.CustomerAccount.Address.StreetLine2,
+            StreetLine3 = customer.CustomerAccount.Address.StreetLine3,
+            Country = customer.CustomerAccount.Address.Country,
+            CountryId = customer.CustomerAccount.Address.CountryId,
+            City = customer.CustomerAccount.Address.City,
+            PostalCode = customer.CustomerAccount.Address.PostalCode,
+            Phone = customer.CustomerAccount.Address.Phone,
+        };
     }
 
     public override Table<Customer> CreateListingTable(ListingModel<Customer> listingModel, PaginatedList<Customer> items)

@@ -26,11 +26,11 @@ public class Hotel : BaseEntity
     [TableColumn]
     public int Stars { get; set; }
 
-    public List<Room> Rooms { get; set; }
+    public List<Room>? Rooms { get; set; }
 
-    public List<AdminUser> AdminUsers { get; set; }
+    public List<AdminUser>? AdminUsers { get; set; }
 
-    public List<RoomCategory> Categories { get; set; }
+    public List<RoomCategory>? Categories { get; set; }
 
     [TableColumn(Name = "Room count")]
     public int RoomCount => Rooms?.Count ?? 0;

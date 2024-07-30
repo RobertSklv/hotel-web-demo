@@ -2,7 +2,7 @@
 
 namespace HotelWebDemo.Models.Components.Admin.Pages;
 
-public class PageActionButton
+public class PageActionButton : Element
 {
     public string? Action { get; set; }
 
@@ -10,13 +10,7 @@ public class PageActionButton
 
     public string Area { get; set; } = "Admin";
 
-    public ColorClass Color { get; set; }
-
     public bool IsLink { get; set; }
-
-    public string ColorClass => Color.ToString().ToLower();
-
-    public string? Content { get; set; }
 
     public bool AlignToLeft { get; set; }
 

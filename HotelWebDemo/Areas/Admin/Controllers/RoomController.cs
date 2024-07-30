@@ -15,8 +15,9 @@ public class RoomController : CrudController<Room>
         IAdminPageService adminPageService,
         IHotelService hotelService,
         IRoomCategoryService roomCategoryService,
-        IRoomFeatureService roomFeatureService)
-        : base(service, adminPageService)
+        IRoomFeatureService roomFeatureService,
+        Serilog.ILogger logger)
+        : base(service, adminPageService, logger)
     {
         this.hotelService = hotelService;
         this.roomCategoryService = roomCategoryService;

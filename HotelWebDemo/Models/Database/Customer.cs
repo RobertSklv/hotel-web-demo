@@ -37,9 +37,9 @@ public class Customer : BaseEntity
 
     public int? CustomerAccountId { get; set; }
 
-    public List<BookingCustomer> BookingCustomers { get; set; }
+    public List<BookingCustomer>? BookingCustomers { get; set; }
 
-    public List<Review> Reviews { get; set; }
+    public List<Review>? Reviews { get; set; }
 
     public string FullName
     {

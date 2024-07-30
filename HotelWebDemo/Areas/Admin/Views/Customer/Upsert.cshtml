@@ -1,35 +1,18 @@
 ﻿@using HotelWebDemo.Models.Components.Admin.Pages
 @using HotelWebDemo.Models.Components.Common
 @using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
 
-@model Customer
+@model CustomerViewModel
 
 @{
     Layout = "_AdminPageLayout";
     bool isCreate = Model.Id == 0;
-
-    List<PageActionButton> actions = (ViewData["PageActions"] as List<PageActionButton>) ?? new();
-
-    if (!isCreate)
-    {
-        actions.Add(new()
-        {
-            Content = "Reset password",
-            Controller = "Customer",
-            Action = "ResetPassword",
-            Color = ColorClass.Warning,
-            RequestParameters = new()
-            {
-                { "Id", Model.Id }
-            }
-        });
-    }
-
-    ViewData["PageActions"] = actions;
-    ViewData["PageHeading"] = isCreate ? "New Customer" : $"Customer: {Model.FullName}";
+    string action = isCreate ? "Create" : "Update";
+    ViewData["PageHeading"] = isCreate ? "New Customer" : $"Customer: {Model.FirstName} {Model.LastName}";
 }
 
-<form asp-action="Upsert">
+<form asp-action="@action">
     @if (!isCreate)
     {
         <input type="hidden" asp-for=@Model.Id />

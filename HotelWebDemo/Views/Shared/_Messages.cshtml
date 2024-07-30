@@ -1,0 +1,13 @@
+﻿@using HotelWebDemo.Models.Components.Common
+
+@model IEnumerable<Message>
+
+@{
+}
+
+@foreach (Message msg in Model)
+{
+    <div class="alert alert-@(msg.ColorClass)" role="alert">
+        @msg.Content
+    </div>
+}

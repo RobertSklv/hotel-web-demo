@@ -10,8 +10,12 @@ public class RoomCategoryController : CrudController<RoomCategory>
     private readonly new IRoomCategoryService service;
     private readonly IHotelService hotelService;
 
-    public RoomCategoryController(IRoomCategoryService service, IAdminPageService adminPageService, IHotelService hotelService)
-        : base(service, adminPageService)
+    public RoomCategoryController(
+        IRoomCategoryService service,
+        IAdminPageService adminPageService,
+        IHotelService hotelService,
+        Serilog.ILogger logger)
+        : base(service, adminPageService, logger)
     {
         ListingTitle = "All room categories";
         this.service = service;

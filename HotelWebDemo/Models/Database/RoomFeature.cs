@@ -21,7 +21,7 @@ public class RoomFeature : BaseEntity
 
     [Column(TypeName = "decimal(19, 4)")]
     [DataType(DataType.Currency)]
-    [TableColumn]
+    [TableColumn(Format = "$#.0#")]
     public decimal Price { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
@@ -30,11 +30,11 @@ public class RoomFeature : BaseEntity
 
     public int HotelId { get; set; }
 
-    public List<Room> Rooms { get; set; }
+    public List<Room>? Rooms { get; set; }
 
-    public List<RoomFeatureRoom> RoomFeatureRooms { get; set; }
+    public List<RoomFeatureRoom>? RoomFeatureRooms { get; set; }
 
-    public List<BookingItemRoomFeature> BookedFeatures { get; set; }
+    public List<BookingItemRoomFeature>? BookedFeatures { get; set; }
 
     [TableColumn(Name = "Times used")]
     public int TimesUsed => Rooms?.Count ?? 0;

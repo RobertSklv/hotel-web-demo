@@ -7,8 +7,8 @@ public class HotelController : CrudController<Hotel>
 {
     private readonly new IHotelService service;
 
-    public HotelController(IHotelService service, IAdminPageService adminPageService)
-        : base(service, adminPageService)
+    public HotelController(IHotelService service, IAdminPageService adminPageService, Serilog.ILogger logger)
+        : base(service, adminPageService, logger)
     {
         this.service = service;
 

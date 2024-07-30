@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Models.Components.Admin.Tables;
+﻿using HotelWebDemo.Models;
+using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
@@ -6,8 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
 
-public abstract class CrudRepository<TEntity> : ICrudRepository<TEntity>
+public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEntity, TViewModel>
     where TEntity : class, IBaseEntity
+    where TViewModel : class, IModel
 {
     public abstract DbSet<TEntity> DbSet { get; }
 
@@ -80,5 +82,14 @@ public abstract class CrudRepository<TEntity> : ICrudRepository<TEntity>
         PaginatedList<TEntity> paginatedList = await PaginatedList<TEntity>.CreateAsync(entities, page, pageSize);
 
         return paginatedList;
+    }
+}
+
+public abstract class CrudRepository<TEntity> : CrudRepository<TEntity, TEntity>
+    where TEntity : class, IBaseEntity
+{
+    protected CrudRepository(AppDbContext db, IEntityFilterService filterService, IEntitySortService sortService)
+        : base(db, filterService, sortService)
+    {
     }
 }

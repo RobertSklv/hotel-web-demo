@@ -7,7 +7,7 @@ namespace HotelWebDemo.Models.Database;
 [Table("Addresses")]
 public class Address : BaseEntity
 {
-    public CustomerAccount CustomerAccount { get; set; }
+    public CustomerAccount? CustomerAccount { get; set; }
 
     public int CustomerAccountId { get; set; }
 
