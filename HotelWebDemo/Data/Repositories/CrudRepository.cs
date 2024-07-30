@@ -61,12 +61,12 @@ public abstract class CrudRepository<TEntity> : ICrudRepository<TEntity>
 
     public virtual async Task<int> Delete(int id)
     {
-        DbSet
+        int deleteResult = await DbSet
             .Where(c => c.Id == id)
             .Take(1)
-            .ExecuteDelete();
+            .ExecuteDeleteAsync();
 
-        return await db.SaveChangesAsync();
+        return deleteResult;
     }
 
     public virtual async Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)

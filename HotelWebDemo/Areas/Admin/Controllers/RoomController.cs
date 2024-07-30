@@ -8,13 +8,19 @@ public class RoomController : CrudController<Room>
 {
     private readonly IHotelService hotelService;
     private readonly IRoomCategoryService roomCategoryService;
+    private readonly IRoomFeatureService roomFeatureService;
 
-    public RoomController(IRoomService service, IAdminPageService adminPageService, IHotelService hotelService, IRoomCategoryService roomCategoryService)
+    public RoomController(
+        IRoomService service,
+        IAdminPageService adminPageService,
+        IHotelService hotelService,
+        IRoomCategoryService roomCategoryService,
+        IRoomFeatureService roomFeatureService)
         : base(service, adminPageService)
     {
         this.hotelService = hotelService;
         this.roomCategoryService = roomCategoryService;
-
+        this.roomFeatureService = roomFeatureService;
         ListingTitle = "All rooms";
     }
 
@@ -22,6 +28,7 @@ public class RoomController : CrudController<Room>
     {
         ViewData["Hotels"] = hotelService.GetAll();
         ViewData["RoomCategories"] = roomCategoryService.GetAll();
+        ViewData["RoomFeatures"] = roomFeatureService.GetAll();
 
         return base.Create();
     }
@@ -30,6 +37,7 @@ public class RoomController : CrudController<Room>
     {
         ViewData["Hotels"] = hotelService.GetAll();
         ViewData["RoomCategories"] = roomCategoryService.GetAll();
+        ViewData["RoomFeatures"] = roomFeatureService.GetAll();
 
         return base.Edit(id);
     }

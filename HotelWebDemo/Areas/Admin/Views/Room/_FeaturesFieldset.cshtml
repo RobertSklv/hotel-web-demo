@@ -1,0 +1,32 @@
+﻿@using HotelWebDemo.Models.Database
+
+@model Room
+
+@{
+    Layout = "_FieldsetLayout";
+    ViewData["Legend"] = "Features";
+
+    List<RoomFeature> roomFeatures = ViewData["RoomFeatures"] as List<RoomFeature> ?? new();
+}
+
+@foreach (RoomFeature feature in roomFeatures)
+{
+    string featureId = $"feature-{feature.Id}";
+    <div class="row mb-4">
+        <div class="col-12 col-lg-4">
+            <label for=@feature.Code>@feature.Name</label>
+        </div>
+        <div class="col-12 col-lg-8">
+            <div class="form-check form-switch">
+                <input
+                    id=@feature.Code
+                    name="@(nameof(Room.SelectedFeatureIds) + "[]")"
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    value=@feature.Id
+                    @(Model.SelectedFeatureIds.Contains(feature.Id) ? "checked" : "")>
+            </div>
+        </div>
+    </div>
+}

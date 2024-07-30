@@ -40,6 +40,13 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Room>()
+            .HasMany(e => e.Features)
+            .WithMany(e => e.Rooms)
+            .UsingEntity<RoomFeatureRoom>(
+                l => l.HasOne(e => e.RoomFeature).WithMany(e => e.RoomFeatureRooms),
+                r => r.HasOne(e => e.Room).WithMany(e => e.RoomFeatureRooms));
+
         SeedDefaultData(modelBuilder);
         SeedSampleData(modelBuilder);
 

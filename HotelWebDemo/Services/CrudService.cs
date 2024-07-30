@@ -16,27 +16,27 @@ public abstract class CrudService<TEntity> : ICrudService<TEntity>
         this.repository = repository;
     }
 
-    public async Task<int> Delete(int id)
+    public virtual async Task<int> Delete(int id)
     {
         return await repository.Delete(id);
     }
 
-    public TEntity? Get(int id)
+    public virtual TEntity? Get(int id)
     {
         return repository.Get(id);
     }
 
-    public List<TEntity> GetAll()
+    public virtual List<TEntity> GetAll()
     {
         return repository.GetAll();
     }
 
-    public async Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
+    public virtual async Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
     {
         return await repository.List(orderBy, direction, page, pageSize, filters);
     }
 
-    public async Task<PaginatedList<TEntity>> List(ListingModel<TEntity> listingModel)
+    public virtual async Task<PaginatedList<TEntity>> List(ListingModel<TEntity> listingModel)
     {
         return await repository.List(
             listingModel.OrderBy ?? ListingModel.DEFAULT_ORDER_BY,
@@ -46,7 +46,7 @@ public abstract class CrudService<TEntity> : ICrudService<TEntity>
             listingModel.Filter);
     }
 
-    public void InitializeListingModel(ListingModel<TEntity> listingModel, ViewDataDictionary viewData)
+    public virtual void InitializeListingModel(ListingModel<TEntity> listingModel, ViewDataDictionary viewData)
     {
         listingModel.ActionName = "Index";
         listingModel.OrderBy = (string?)viewData["OrderBy"];
@@ -76,12 +76,12 @@ public abstract class CrudService<TEntity> : ICrudService<TEntity>
         return model;
     }
 
-    public async Task<int> Update(TEntity entity)
+    public virtual async Task<int> Update(TEntity entity)
     {
         return await repository.Update(entity);
     }
 
-    public async Task<int> Upsert(TEntity entity)
+    public virtual async Task<int> Upsert(TEntity entity)
     {
         return await repository.Upsert(entity);
     }
