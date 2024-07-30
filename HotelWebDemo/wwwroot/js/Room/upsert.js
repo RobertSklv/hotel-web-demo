@@ -48,11 +48,17 @@ $(function () {
             url: `/Admin/RoomCategory/GetHotelRoomCategories?hotelId=${selectedHotelId}`,
             method: 'GET',
             success: function (response) {
-                updateCategories(selectedHotelId, response)
+                updateCategories(selectedHotelId, response);
+                window.hideLoadingMask();
             },
             error: function (response) {
                 console.error(response);
+            },
+            always: function () {
+                window.hideLoadingMask();
             }
         });
+
+        window.showLoadingMask();
     });
 });

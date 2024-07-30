@@ -34,6 +34,7 @@
   <ItemGroup>
     <Folder Include="Data\Seeding\DefaultData\" />
     <Folder Include="Data\Seeding\SampleData\" />
+    <Folder Include="wwwroot\js\Common\" />
     <Folder Include="wwwroot\js\Room\" />
     <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
     <Folder Include="wwwroot\sass\abstracts\" />
