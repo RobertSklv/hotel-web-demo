@@ -21,7 +21,6 @@ public class RoomFeature : BaseEntity
 
     [Column(TypeName = "decimal(19, 4)")]
     [DataType(DataType.Currency)]
-    [TableColumn(Format = "$#.0#")]
     public decimal Price { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
