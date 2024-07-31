@@ -4,8 +4,11 @@
 @model Table
 
 @{
+    string modelTypeName = Model.ModelType.Name;
+    string tableId = $"table-{modelTypeName}";
 }
 
+<div id="@tableId" class="table-wrapper">
 @if (Model.IsFilterable)
 {
     <partial name="_TableFilters" model="@Model.FilterContext" />
@@ -75,6 +78,10 @@
             }
         </tbody>
     </table>
+        <script>
+            window.createTableComponent("@(tableId)");
+        </script>
+    </div>
 </div>
 @if (Model.Pagination != null)
 {

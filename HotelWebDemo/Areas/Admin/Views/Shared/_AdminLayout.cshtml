@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="~/css/main_admin.css" />
 }
 
+@section ScriptsHead
+{
+    <script src="~/js/Table/table.js"></script>
+}
+
 @section Header
 {
     <header>
@@ -102,6 +107,5 @@
 
 @section Scripts
 {
-    <script src="~/js/Table/table.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 }

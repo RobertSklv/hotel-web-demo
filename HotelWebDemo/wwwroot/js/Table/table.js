@@ -1,56 +1,82 @@
-$(function () {
-    $('.btn-remove-filter').click(function () {
-        var propertyName = $(this).data('remove-filter');
 
-        if (propertyName == '__all') {
-            $('.grid-filters-form').find(`[data-filter] .filter-value`).val('');
-        } else {
-            $('.grid-filters-form').find(`[data-filter="${propertyName}"] .filter-value`).val('');
-        }
+window.createTableComponent = function (tableId) {
+    var table = {
+        tableId: tableId,
 
-        $('#applyFiltersButton').click();
-    });
+        initialize: function () {
+            var self = this;
 
-    $('.grid-filters-form').submit(function () {
-        var filters = $(this).find('.filter');
+            $('.btn-remove-filter', '#' + tableId).on('click', function () {
+                self.removeFilter(this);
+            });
 
-        $.each(filters, function (i, e) {
-            var $e = $(e);
-            var operatorEl = $e.find('[data-name*=".Operator"]');
-            var valueEl = $e.find('[data-name*=".Value"]');
-            var secondaryValueEl = $e.find('[data-name*=".SecondaryValue"]');
+            $('.grid-filters-form', '#' + tableId).on('submit', function () {
+                self.applyFilters(this);
+            })
 
-            if (getFieldValue(valueEl)) {
-                operatorEl.attr('name', operatorEl.data('name'));
-                valueEl.attr('name', valueEl.data('name'));
-                secondaryValueEl.attr('name', secondaryValueEl.data('name'));
+            $('.filter-operator', '#' + tableId).on('change', function () {
+                self.onOperatorChange(this);
+            });
+        },
+
+        removeFilter: function (filter) {
+            var propertyName = $(filter).data('remove-filter');
+
+            if (propertyName == '__all') {
+                $('.grid-filters-form').find(`[data-filter] .filter-value`).val('');
+            } else {
+                $('.grid-filters-form').find(`[data-filter="${propertyName}"] .filter-value`).val('');
             }
-        });
-    })
 
-    $('.filter-operator').on('change', function () {
-        let propName = $(this).data('filter-operator-for');
-        let secValue = $(`[data-filter-secondary-value-for="${propName}"]`);
+            $('#applyFiltersButton').click();
+        },
 
-        if ($(this).val() == 'btw') {
-            secValue.show();
-            secValue.prop('disabled', false);
-        } else {
-            secValue.hide();
-            secValue.prop('disabled', true);
-        }
-    });
+        applyFilters: function (filtersForm) {
+            var self = this;
+            var filters = $(filtersForm).find('.filter');
 
-    function getFieldValue(field) {
-        let val = field.val();
+            $.each(filters, function (i, e) {
+                var $e = $(e);
+                var operatorEl = $e.find('[data-name*=".Operator"]');
+                var valueEl = $e.find('[data-name*=".Value"]');
+                var secondaryValueEl = $e.find('[data-name*=".SecondaryValue"]');
 
-        if (field.is('select')) {
+                if (self.getFieldValue(valueEl)) {
+                    operatorEl.attr('name', operatorEl.data('name'));
+                    valueEl.attr('name', valueEl.data('name'));
+                    secondaryValueEl.attr('name', secondaryValueEl.data('name'));
+                }
+            });
+        },
 
-            if (val == 0) {
-                return null;
+        onOperatorChange: function (operator) {
+            let propName = $(operator).data('filter-operator-for');
+            let secValue = $(`[data-filter-secondary-value-for="${propName}"]`);
+
+            if ($(operator).val() == 'btw') {
+                secValue.show();
+                secValue.prop('disabled', false);
+            } else {
+                secValue.hide();
+                secValue.prop('disabled', true);
             }
-        }
+        },
 
-        return val;
-    }
-})
+        getFieldValue: function (field) {
+            let val = field.val();
+
+            if (field.is('select')) {
+
+                if (val == 0) {
+                    return null;
+                }
+            }
+
+            return val;
+        }
+    };
+
+    table.initialize();
+
+    return table;
+};
