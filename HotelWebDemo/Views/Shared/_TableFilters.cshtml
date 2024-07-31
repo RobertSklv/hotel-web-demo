@@ -51,12 +51,12 @@
         </div>
     </div>
 }
-<p class="d-inline-flex gap-1 mb-3">
-    <a class="btn btn-outline-secondary px-4 py-2" data-bs-toggle="collapse" href="#filtersCollapse" role="button" aria-expanded="false" aria-controls="filtersCollapse">
+<p class="float-start gap-1 mb-3">
+    <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#filtersCollapse" role="button" aria-expanded="false" aria-controls="filtersCollapse">
         Filters
     </a>
 </p>
-<div class="collapse" id="filtersCollapse">
+<div class="float-end collapse" id="filtersCollapse">
     <div class="card card-body mb-4">
         <form method="GET" class="grid-filters-form">
             <div class="row">
@@ -69,7 +69,7 @@
                                 <div class="col">
                                     <select data-name="Filters.@(controls.PropertyName).Operator"
                                             data-filter-operator-for="@controls.PropertyName"
-                                            class="form-select d-inline-block filter-operator">
+                                            class="form-select form-select-sm d-inline-block filter-operator">
                                         @foreach (FilterOperatorOption op in controls.OperatorOptions)
                                         {
                                             bool selected = controls.SelectedOperator == op.Value;
@@ -83,7 +83,7 @@
                                         <select data-name="Filters.@(controls.PropertyName).Value"
                                                 value="@controls.Value"
                                                 data-filter-value-for="@controls.PropertyName"
-                                                class="form-select filter-value">
+                                                class="form-select form-select-sm filter-value">
                                             <option value="0">-- Please select --</option>
                                             @foreach (Option op in controls.SelectableOptions)
                                             {
@@ -98,12 +98,12 @@
                                                type="@controls.InputType"
                                                value="@controls.Value"
                                                data-filter-value-for="@controls.PropertyName"
-                                               class="form-control filter-value" />
+                                               class="form-control form-control-sm filter-value" />
                                         <input data-name="Filters.@(controls.PropertyName).SecondaryValue"
                                                type="@controls.InputType"
                                                value="@controls.SecondaryValue"
                                                data-filter-secondary-value-for="@controls.PropertyName"
-                                               class="form-control filter-secondary-value mt-1"
+                                               class="form-control form-control-sm filter-secondary-value mt-1"
                                                style="display: @(controls.SelectedOperator == "btw" ? "block" : "none") !important;" />
                                     }
                                 </div>
@@ -112,7 +112,7 @@
                     </div>
                 }
             </div>
-            <button id="applyFiltersButton" type="submit" class="btn btn-secondary px-4 py-2">Apply filters</button>
+            <button id="applyFiltersButton" type="submit" class="btn btn-secondary fw-bold px-3 py-2">Apply filters</button>
         </form>
     </div>
 </div>
