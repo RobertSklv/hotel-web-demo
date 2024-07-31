@@ -19,6 +19,8 @@ public abstract class Table
 
     public bool IsFilterable { get; set; }
 
+    public bool IsSearchable { get; set; }
+
     public bool HasCreateAction { get; set; } = true;
 
     public abstract bool HasItems { get; }
@@ -70,6 +72,13 @@ public abstract class Table
     public Table SetFilterable(bool filterable)
     {
         IsFilterable = filterable;
+
+        return this;
+    }
+
+    public Table SetSearchable(bool searchable)
+    {
+        IsSearchable = searchable;
 
         return this;
     }
@@ -220,8 +229,13 @@ public abstract class Table
     {
         if (ListingModel.OrderBy == propertyName)
         {
-            if (ListingModel.Direction == "desc")
+            if (ListingModel.Direction == ViewModels.ListingModel.DEFAULT_DIRECTION)
             {
+                if (ListingModel.OrderBy == ViewModels.ListingModel.DEFAULT_ORDER_BY)
+                {
+                    return HeadingFilterState.None;
+                }
+
                 return HeadingFilterState.Descending;
             }
 
@@ -238,7 +252,8 @@ public abstract class Table
             OrderBy = ListingModel.OrderBy,
             Direction = ListingModel.Direction,
             Page = ListingModel.Page,
-            Filter = ListingModel.Filter,
+            Filter = ListingModel.Filters,
+            SearchPhrase = ListingModel.SearchPhrase,
         };
     }
 }
@@ -381,5 +396,10 @@ public class Table<T> : Table
     public new Table<T> SetFilterable(bool filterable)
     {
         return (Table<T>)base.SetFilterable(filterable);
+    }
+
+    public new Table<T> SetSearchable(bool searchable)
+    {
+        return (Table<T>)base.SetSearchable(searchable);
     }
 }

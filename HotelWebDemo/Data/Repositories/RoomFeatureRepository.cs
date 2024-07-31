@@ -11,8 +11,9 @@ public class RoomFeatureRepository : CrudRepository<RoomFeature>, IRoomFeatureRe
     public RoomFeatureRepository(
         AppDbContext db,
         IEntityFilterService filterService,
-        IEntitySortService sortService)
-        : base(db, filterService, sortService)
+        IEntitySortService sortService,
+        IEntitySearchService searchService)
+        : base(db, filterService, sortService, searchService)
     {
     }
 

@@ -3,7 +3,6 @@ using HotelWebDemo.Models;
 using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HotelWebDemo.Services;
 
@@ -37,43 +36,41 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
         return repository.GetAll();
     }
 
-    public virtual async Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
+    public virtual async Task<PaginatedList<TEntity>> List(ListingModel listingModel)
     {
-        return await repository.List(orderBy, direction, page, pageSize, filters);
+        return await repository.List(listingModel);
     }
 
     public virtual async Task<PaginatedList<TEntity>> List(ListingModel<TEntity> listingModel)
     {
-        return await repository.List(
-            listingModel.OrderBy ?? ListingModel.DEFAULT_ORDER_BY,
-            listingModel.Direction ?? ListingModel.DEFAULT_DIRECTION,
-            listingModel.Page ?? ListingModel.DEFAULT_PAGE,
-            listingModel.PageSize,
-            listingModel.Filter);
+        return await repository.List(listingModel);
     }
 
-    public virtual void InitializeListingModel(ListingModel<TEntity> listingModel, ViewDataDictionary viewData)
+    public virtual void InitializeListingModel(ListingModel<TEntity> listingModel, ListingModel listingQuery)
     {
         listingModel.ActionName = "Index";
-        listingModel.OrderBy = (string?)viewData["OrderBy"];
-        listingModel.Direction = (string?)viewData["Direction"];
-        listingModel.Page = (int?)viewData["Page"];
-        listingModel.Filter = (Dictionary<string, TableFilter>?)viewData["Filter"];
+        listingModel.OrderBy = listingQuery?.OrderBy ?? ListingModel.DEFAULT_ORDER_BY;
+        listingModel.Direction = listingQuery?.Direction ?? ListingModel.DEFAULT_DIRECTION;
+        listingModel.Page = listingQuery?.Page ?? ListingModel.DEFAULT_PAGE;
+        listingModel.PageSize = listingQuery?.PageSize ?? ListingModel.DEFAULT_PAGE_SIZE;
+        listingModel.Filters = listingQuery?.Filters;
+        listingModel.SearchPhrase = listingQuery?.SearchPhrase;
     }
 
     public virtual Table<TEntity> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items)
     {
         return new Table<TEntity>(listingModel, items)
+            .SetSearchable(true)
             .SetOrderable(true)
             .SetFilterable(true)
             .AddRowActions()
             .AddPagination(items);
     }
 
-    public virtual async Task<ListingModel<TEntity>> CreateListingModel(ViewDataDictionary viewData)
+    public virtual async Task<ListingModel<TEntity>> CreateListingModel(ListingModel listingQuery)
     {
         ListingModel<TEntity> model = new();
-        InitializeListingModel(model, viewData);
+        InitializeListingModel(model, listingQuery);
 
         PaginatedList<TEntity> items = await List(model);
 

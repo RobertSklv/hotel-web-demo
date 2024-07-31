@@ -1,0 +1,22 @@
+﻿@using HotelWebDemo.Models.Components.Admin.Tables
+@using HotelWebDemo.Models.ViewModels
+
+@model ListingModel
+
+@{
+}
+
+<div class="search-bar-wrapper float-start">
+    <form asp-action="Index" method="get">
+        @if (Model.OrderBy != ListingModel.DEFAULT_ORDER_BY)
+        {
+            <input type="hidden" name="OrderBy" value="@Model.OrderBy" />
+        }
+        <div class="input-group mb-3">
+            <input type="search" class="form-control form-control-sm" name="searchPhrase" value="@Model.SearchPhrase" placeholder="Search..." />
+            <button class="btn btn-sm btn-secondary" type="submit" id="search-button" disabled="@(string.IsNullOrEmpty(Model.SearchPhrase))">
+                Search
+            </button>
+        </div>
+    </form>
+</div>

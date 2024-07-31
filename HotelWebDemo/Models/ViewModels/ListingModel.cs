@@ -3,17 +3,13 @@ using HotelWebDemo.Models.Database;
 
 namespace HotelWebDemo.Models.ViewModels;
 
-public abstract class ListingModel
+public class ListingModel : IListingModel
 {
     public const string DEFAULT_ORDER_BY = "Id";
     public const string DEFAULT_DIRECTION = "desc";
     public const int DEFAULT_PAGE = 1;
     public const int DEFAULT_PAGE_SIZE = 10;
-}
 
-public class ListingModel<T> : ListingModel, IListingModel
-    where T : IBaseEntity
-{
     public string ActionName { get; set; }
 
     public string? OrderBy { get; set; }
@@ -24,7 +20,13 @@ public class ListingModel<T> : ListingModel, IListingModel
 
     public int PageSize { get; set; } = DEFAULT_PAGE_SIZE;
 
-    public Dictionary<string, TableFilter>? Filter { get; set; }
+    public Dictionary<string, TableFilter>? Filters { get; set; }
 
+    public string? SearchPhrase { get; set; }
+}
+
+public class ListingModel<T> : ListingModel
+    where T : IBaseEntity
+{
     public Table<T> Table { get; set; }
 }

@@ -19,7 +19,7 @@ public interface ICrudRepository<TEntity, TViewModel>
 
     Task<int> Delete(int id);
 
-    Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters);
+    Task<PaginatedList<TEntity>> List(ListingModel listingModel);
 }
 
 public interface ICrudRepository<TEntity> : ICrudRepository<TEntity, TEntity>

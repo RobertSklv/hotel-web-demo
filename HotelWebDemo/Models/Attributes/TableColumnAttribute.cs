@@ -16,5 +16,7 @@ public class TableColumnAttribute : Attribute
 
     public bool Filterable { get; set; } = true;
 
+    public bool Searchable { get; set; } = true;
+
     public int SortOrder { get; set; }
 }

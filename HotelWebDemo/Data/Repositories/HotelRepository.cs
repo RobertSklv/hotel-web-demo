@@ -11,8 +11,9 @@ public class HotelRepository : CrudRepository<Hotel>, IHotelRepository
     public HotelRepository(
         AppDbContext db,
         IEntityFilterService filterService,
-        IEntitySortService sortService)
-        : base(db, filterService, sortService)
+        IEntitySortService sortService,
+        IEntitySearchService searchService)
+        : base(db, filterService, sortService, searchService)
     {
     }
 

@@ -8,8 +8,12 @@ public class RoomCategoryRepository : CrudRepository<RoomCategory>, IRoomCategor
 {
     public override DbSet<RoomCategory> DbSet => db.RoomCategories;
 
-    public RoomCategoryRepository(AppDbContext db, IEntityFilterService filterService, IEntitySortService sortService)
-        : base(db, filterService, sortService)
+    public RoomCategoryRepository(
+        AppDbContext db,
+        IEntityFilterService filterService,
+        IEntitySortService sortService,
+        IEntitySearchService searchService)
+        : base(db, filterService, sortService, searchService)
     {
     }
 

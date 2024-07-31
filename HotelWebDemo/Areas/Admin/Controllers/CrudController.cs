@@ -2,9 +2,9 @@
 using HotelWebDemo.Extensions;
 using HotelWebDemo.Models;
 using HotelWebDemo.Models.Components.Admin.Pages;
-using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
+using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -31,12 +31,8 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     }
 
     [HttpGet]
-    public virtual async Task<IActionResult> Index(string orderBy = "Id", string direction = "desc", int page = 1, Dictionary<string, TableFilter>? filters = null)
+    public virtual async Task<IActionResult> Index([FromQuery] ListingModel listingModel)
     {
-        ViewData["OrderBy"] = orderBy;
-        ViewData["Direction"] = direction;
-        ViewData["Page"] = page;
-        ViewData["Filter"] = filters;
         AddCreateAction();
 
         if (ListingTitle != null)
@@ -45,7 +41,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
             ViewData["PageHeading"] = ListingTitle;
         }
 
-        return View(await service.CreateListingModel(ViewData));
+        return View(await service.CreateListingModel(listingModel));
     }
 
     public virtual async Task UpsertMethod(TViewModel model) => await service.Upsert(model);

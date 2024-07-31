@@ -7,6 +7,9 @@ window.createTableComponent = function (tableId) {
         massActionForm: null,
         massActionFormInputsContainer: null,
         massActionButtons: [],
+        searchBarWrapper: null,
+        searchBarWrapperInput: null,
+        searchBarWrapperButton: null,
 
         initialize: function () {
             var self = this;
@@ -38,6 +41,14 @@ window.createTableComponent = function (tableId) {
             });
             this.selectChecks.on('change', function () {
                 self.selectRow(this);
+            });
+
+            this.searchBarWrapper = $('.search-bar-wrapper', idSelector);
+            this.searchBarWrapperInput = $('.search-bar-wrapper input[type=search]', idSelector);
+            this.searchBarWrapperButton = $('.search-bar-wrapper button[type=submit]', idSelector);
+
+            this.searchBarWrapperInput.on('input', function () {
+                self.toggleSearchBarButtonState(this);
             });
         },
 
@@ -136,7 +147,11 @@ window.createTableComponent = function (tableId) {
             let itemId = original.data('select-item');
 
             return $(`<input type="hidden" name="selectedItemIds[]" value="${value}" data-select-item="${itemId}" />`);
-        }
+        },
+
+        toggleSearchBarButtonState: function (searchInput) {
+            this.searchBarWrapperButton.prop('disabled', !$(searchInput).val());
+        },
     };
 
     table.initialize();

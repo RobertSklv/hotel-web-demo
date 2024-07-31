@@ -17,6 +17,8 @@ public class TableLink : Link
 
     public Dictionary<string, TableFilter>? Filter { get; set; }
 
+    public string? SearchPhrase { get; set; }
+
     public TableLink(string actionName, string content)
     {
         ActionName = actionName;

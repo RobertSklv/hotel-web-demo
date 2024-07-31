@@ -62,6 +62,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddScoped<IEntityFilterService, EntityFilterService>();
 builder.Services.AddScoped<IEntitySortService, EntitySortService>();
+builder.Services.AddScoped<IEntitySearchService, EntitySearchService>();
 builder.Services.AddScoped<IAdminPageService, AdminPageService>();
 builder.Services.AddScoped<IEntityHelperService, EntityHelperService>();
 

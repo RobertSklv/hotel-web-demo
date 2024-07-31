@@ -128,7 +128,7 @@ public class EntityFilterService : IEntityFilterService
 
     public Expression<Func<T, bool>> BuildFilterPredicate<T>(string propertyName, string @operator, dynamic value, dynamic? secondaryValue = null)
     {
-        ParameterExpression param = Expression.Parameter(typeof(T));
+        ParameterExpression param = Expression.Parameter(typeof(T), "x");
         MemberExpression property = helper.ParseMemberExpression(param, propertyName);
         Expression constant = Expression.Constant(value);
         Expression? secondaryConstant = null;
@@ -138,35 +138,42 @@ public class EntityFilterService : IEntityFilterService
             secondaryConstant = Expression.Constant(secondaryValue);
         }
 
+        Expression body = BuildFilterPredicate<T>(property, @operator, constant, secondaryConstant);
+
+        return Expression.Lambda<Func<T, bool>>(body, param);
+    }
+
+    public Expression BuildFilterPredicate<T>(Expression subject, string @operator, Expression constant, Expression? secondaryConstant = null)
+    {
         Expression body;
 
         switch (@operator)
         {
             case OPERATOR_EQUAL:
-                body = Expression.Equal(property, constant);
+                body = Expression.Equal(subject, constant);
                 break;
             case OPERATOR_NOT_EQUAL:
-                body = Expression.NotEqual(property, constant);
+                body = Expression.NotEqual(subject, constant);
                 break;
             case OPERATOR_CONTAINS:
-                body = Expression.Call(property, "Contains", null, constant);
+                body = Expression.Call(subject, "Contains", null, constant);
                 break;
             case OPERATOR_LESS_THAN:
             case OPERATOR_BEFORE:
-                body = Expression.LessThan(property, constant);
+                body = Expression.LessThan(subject, constant);
                 break;
             case OPERATOR_LESS_THAN_OR_EQUAL:
-                body = Expression.LessThanOrEqual(property, constant);
+                body = Expression.LessThanOrEqual(subject, constant);
                 break;
             case OPERATOR_GREATER_THAN:
             case OPERATOR_AFTER:
-                body = Expression.GreaterThan(property, constant);
+                body = Expression.GreaterThan(subject, constant);
                 break;
             case OPERATOR_GREATER_THAN_OR_EQUAL:
-                body = Expression.GreaterThanOrEqual(property, constant);
+                body = Expression.GreaterThanOrEqual(subject, constant);
                 break;
             case BETWEEN:
-                Expression greaterThanOrEqual = Expression.GreaterThanOrEqual(property, constant);
+                Expression greaterThanOrEqual = Expression.GreaterThanOrEqual(subject, constant);
 
                 if (secondaryConstant == null)
                 {
@@ -174,12 +181,12 @@ public class EntityFilterService : IEntityFilterService
                     break;
                 }
 
-                Expression lessThanOrEqual = Expression.LessThanOrEqual(property, secondaryConstant);
+                Expression lessThanOrEqual = Expression.LessThanOrEqual(subject, secondaryConstant);
                 body = Expression.AndAlso(greaterThanOrEqual, lessThanOrEqual);
                 break;
             default: throw new InvalidOperationException($"Operator '{@operator}' is not supported!");
         }
 
-        return Expression.Lambda<Func<T, bool>>(body, param);
+        return body;
     }
 }

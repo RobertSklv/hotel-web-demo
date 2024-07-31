@@ -16,15 +16,18 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
     protected readonly AppDbContext db;
     protected readonly IEntityFilterService filterService;
     protected readonly IEntitySortService sortService;
+    private readonly IEntitySearchService searchService;
 
     public CrudRepository(
         AppDbContext db,
         IEntityFilterService filterService,
-        IEntitySortService sortService)
+        IEntitySortService sortService,
+        IEntitySearchService searchService)
     {
         this.db = db;
         this.filterService = filterService;
         this.sortService = sortService;
+        this.searchService = searchService;
     }
 
     public virtual IQueryable<TEntity> List(DbSet<TEntity> dbSet)
@@ -71,15 +74,20 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
         return deleteResult;
     }
 
-    public virtual async Task<PaginatedList<TEntity>> List(string orderBy, string direction, int page, int pageSize, Dictionary<string, TableFilter>? filters)
+    public virtual async Task<PaginatedList<TEntity>> List(ListingModel listingModel)
     {
+        if (listingModel.OrderBy == null) throw new ArgumentException($"The {nameof(ListingModel.OrderBy)} value is required.");
+        if (listingModel.Direction == null) throw new ArgumentException($"The {nameof(ListingModel.Direction)} value is required.");
+        if (listingModel.Page == null) throw new ArgumentException($"The {nameof(ListingModel.Page)} value is required.");
+
         IQueryable<TEntity> entities = List(DbSet);
-        bool desc = direction == "desc";
+        bool desc = listingModel.Direction == ListingModel.DEFAULT_DIRECTION;
 
-        entities = sortService.OrderBy(entities, orderBy, desc);
-        entities = filterService.FilterBy(entities, filters);
+        entities = sortService.OrderBy(entities, listingModel.OrderBy, desc);
+        entities = filterService.FilterBy(entities, listingModel.Filters);
+        entities = searchService.GenerateSearchFilters(entities, listingModel.SearchPhrase);
 
-        PaginatedList<TEntity> paginatedList = await PaginatedList<TEntity>.CreateAsync(entities, page, pageSize);
+        PaginatedList<TEntity> paginatedList = await PaginatedList<TEntity>.CreateAsync(entities, (int)listingModel.Page, listingModel.PageSize);
 
         return paginatedList;
     }
@@ -88,8 +96,12 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
 public abstract class CrudRepository<TEntity> : CrudRepository<TEntity, TEntity>
     where TEntity : class, IBaseEntity
 {
-    protected CrudRepository(AppDbContext db, IEntityFilterService filterService, IEntitySortService sortService)
-        : base(db, filterService, sortService)
+    protected CrudRepository(
+        AppDbContext db,
+        IEntityFilterService filterService,
+        IEntitySortService sortService,
+        IEntitySearchService searchService)
+        : base(db, filterService, sortService, searchService)
     {
     }
 }

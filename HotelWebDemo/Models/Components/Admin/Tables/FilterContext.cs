@@ -82,9 +82,21 @@ public class FilterContext
     {
         List<ActiveFilter> filters = new();
 
-        if (Table.ListingModel.Filter != null)
+        if (Table.ListingModel.SearchPhrase != null)
         {
-            foreach (var filter in Table.ListingModel.Filter)
+            ActiveFilter activeFilter = new()
+            {
+                Name = "Keywords",
+                Value = Table.ListingModel.SearchPhrase,
+                RawValue = Table.ListingModel.SearchPhrase,
+            };
+
+            filters.Add(activeFilter);
+        }
+
+        if (Table.ListingModel.Filters != null)
+        {
+            foreach (var filter in Table.ListingModel.Filters)
             {
                 if (filter.Value == null || string.IsNullOrEmpty(filter.Value.Value))
                 {

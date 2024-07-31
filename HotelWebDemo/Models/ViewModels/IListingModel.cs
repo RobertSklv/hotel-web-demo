@@ -14,5 +14,7 @@ public interface IListingModel
 
     int PageSize { get; set; }
 
-    Dictionary<string, TableFilter>? Filter { get; set; }
+    Dictionary<string, TableFilter>? Filters { get; set; }
+
+    string? SearchPhrase { get; set; }
 }

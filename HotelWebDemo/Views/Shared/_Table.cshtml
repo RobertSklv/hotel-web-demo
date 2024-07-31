@@ -16,6 +16,11 @@
         <partial name="_TableFilters" model="@Model.FilterContext" />
     }
 
+    @if (Model.IsSearchable)
+    {
+        <partial name="_TableSearchBar" model="@Model.ListingModel" />
+    }
+
     @if (hasMassActions)
     {
         <form id="@massActionFormId" method="post">
