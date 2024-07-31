@@ -2,20 +2,42 @@
 window.createTableComponent = function (tableId) {
     var table = {
         tableId: tableId,
+        selectAllCheck: null,
+        selectChecks: [],
+        massActionForm: null,
+        massActionFormInputsContainer: null,
+        massActionButtons: [],
 
         initialize: function () {
             var self = this;
 
-            $('.btn-remove-filter', '#' + tableId).on('click', function () {
+            var idSelector = '#' + tableId;
+
+            $('.btn-remove-filter', idSelector).on('click', function () {
                 self.removeFilter(this);
             });
 
-            $('.grid-filters-form', '#' + tableId).on('submit', function () {
+            $('.grid-filters-form', idSelector).on('submit', function () {
                 self.applyFilters(this);
             })
 
-            $('.filter-operator', '#' + tableId).on('change', function () {
+            $('.filter-operator', idSelector).on('change', function () {
                 self.onOperatorChange(this);
+            });
+
+            var massActionFormIdSelector = '#massActionForm-' + tableId;
+
+            this.selectAllCheck = $('.mass-action-check-all', idSelector);
+            this.selectChecks = $('.mass-action-check', idSelector);
+            this.massActionForm = $(massActionFormIdSelector);
+            this.massActionFormInputsContainer = $('.inputs', massActionFormIdSelector);
+            this.massActionButtons = $('.mass-action-button', massActionFormIdSelector);
+
+            this.selectAllCheck.on('change', function () {
+                self.selectAllRows(this);
+            });
+            this.selectChecks.on('change', function () {
+                self.selectRow(this);
             });
         },
 
@@ -73,6 +95,47 @@ window.createTableComponent = function (tableId) {
             }
 
             return val;
+        },
+
+        selectAllRows: function (checkbox) {
+            checkbox = $(checkbox);
+
+            let isChecked = checkbox.is(':checked');
+            let condSelector = isChecked
+                ? `:not(:checked)`
+                : `:checked`;
+
+            this.selectChecks.filter(condSelector).trigger('click');
+        },
+
+        selectRow: function (checkbox) {
+            checkbox = $(checkbox);
+
+            if (checkbox.is(':checked')) {
+                let dummyInput = this.createDummyInput(checkbox);
+                this.massActionFormInputsContainer.append(dummyInput);
+
+                if (this.selectChecks.filter(':not(:checked)').length == 0) {
+                    this.selectAllCheck.prop('checked', true);
+                }
+
+            } else {
+                let itemId = checkbox.data('select-item');
+                this.massActionFormInputsContainer.find(`input[data-select-item="${itemId}"]`).remove();
+
+                if (this.selectAllCheck.is(':checked')) {
+                    this.selectAllCheck.prop('checked', false);
+                }
+            }
+
+            this.massActionButtons.prop('disabled', this.selectChecks.filter(':checked').length == 0);
+        },
+
+        createDummyInput: function (original) {
+            let value = original.val();
+            let itemId = original.data('select-item');
+
+            return $(`<input type="hidden" name="selectedItemIds[]" value="${value}" data-select-item="${itemId}" />`);
         }
     };
 

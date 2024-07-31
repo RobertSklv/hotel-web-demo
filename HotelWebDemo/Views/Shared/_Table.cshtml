@@ -4,80 +4,102 @@
 @model Table
 
 @{
+    bool hasMassActions = Model.MassActions.Any();
     string modelTypeName = Model.ModelType.Name;
     string tableId = $"table-{modelTypeName}";
+    string massActionFormId = $"massActionForm-{tableId}";
 }
 
 <div id="@tableId" class="table-wrapper">
-@if (Model.IsFilterable)
-{
-    <partial name="_TableFilters" model="@Model.FilterContext" />
-}
+    @if (Model.IsFilterable)
+    {
+        <partial name="_TableFilters" model="@Model.FilterContext" />
+    }
 
-<div class="table-responsive-lg">
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                @foreach (TableHeadingCell heading in Model.GenerateHeadingCells())
-                {
-                    if (heading.Element is TableLink link)
+    @if (hasMassActions)
+    {
+        <form id="@massActionFormId" method="post">
+            <partial name="_MassActions" model="@Model.MassActions" />
+            <div class="inputs"></div>
+        </form>
+    }
+
+    <div class="table-responsive-lg">
+        <table class="table table-bordered table-striped admin-grid-table">
+            <thead>
+                <tr>
+                    @if (hasMassActions)
                     {
                         <th>
-                            <partial name="_TableLink" model="@heading.Element" />
-                            @if (heading.State == HeadingFilterState.Descending)
-                            {
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                                </svg>
-                            }
-                            else if (heading.State == HeadingFilterState.Ascending)
-                            {
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
-                                    <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
-                                </svg>
-                            }
+                            <input class="form-check-input mass-action-check-all" type="checkbox">
                         </th>
                     }
-                    else
+                    @foreach (TableHeadingCell heading in Model.GenerateHeadingCells())
                     {
-                        <th>@heading.Element.Content</th>
+                        if (heading.Element is TableLink link)
+                        {
+                            <th>
+                                <partial name="_TableLink" model="@heading.Element" />
+                                @if (heading.State == HeadingFilterState.Descending)
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                        <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                                    </svg>
+                                }
+                                else if (heading.State == HeadingFilterState.Ascending)
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                                        <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                                    </svg>
+                                }
+                            </th>
+                        }
+                        else
+                        {
+                            <th>@heading.Element.Content</th>
+                        }
+                    }
+                    @if (Model.RowActionOptions != null)
+                    {
+                        <th class="text-center">Actions</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.HasItems)
+                {
+                    foreach (IBaseEntity item in Model.GetItems())
+                    {
+                        <tr>
+                            @if (hasMassActions)
+                            {
+                                <td>
+                                    <input class="form-check-input mass-action-check" type="checkbox" value="@item.Id" data-select-item="@item.Id">
+                                </td>
+                            }
+                            @foreach (object? cellData in Model.GetRowData(item))
+                            {
+                                <td>
+                                    <span>@cellData</span>
+                                </td>
+                            }
+                            @if (Model.RowActionOptions != null)
+                            {
+                                <partial name="_RowActions" model="@Model.GenerateRowActions(item)" />
+                            }
+                        </tr>
                     }
                 }
-                @if (Model.RowActionOptions != null)
-                {
-                    <th class="text-center">Actions</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.HasItems)
-            {
-                foreach (IBaseEntity item in Model.GetItems())
+                else
                 {
                     <tr>
-                        @foreach (object? cellData in Model.GetRowData(item))
-                        {
-                            <td>
-                                <span>@cellData</span>
-                            </td>
-                        }
-                        @if (Model.RowActionOptions != null)
-                        {
-                            <partial name="_RowActions" model="@Model.GenerateRowActions(item)" />
-                        }
+                        <td colspan="@(Model.ColumnDatas.Count + (Model.RowActionOptions != null ? 1 : 0) + 1)">
+                            No results were found.
+                        </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="@(Model.ColumnDatas.Count + (Model.RowActionOptions != null ? 1 : 0))">
-                        No results were found.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
         <script>
             window.createTableComponent("@(tableId)");
         </script>

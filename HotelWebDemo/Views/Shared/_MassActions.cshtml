@@ -1,0 +1,24 @@
+﻿@using HotelWebDemo.Models.Components.Admin.Tables
+
+@model List<MassAction>
+
+@{
+    Model.Sort((a1, a2) => a1.SortOrder - a2.SortOrder);
+}
+
+<div class="d-flex gap-2 justify-content-end mb-3">
+    @foreach (MassAction action in Model)
+    {
+        <button
+            id="massAction-@(action.Action)"
+            asp-controller="@action.Controller"
+            asp-action="@action.Action"
+            type="submit"
+            class="btn btn-sm btn-outline-@(action.ColorClass) fw-bold mass-action-button"
+            title="@action.Label"
+            disabled
+        >
+            @action.Label
+        </button>
+    }
+</div>

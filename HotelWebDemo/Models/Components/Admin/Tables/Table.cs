@@ -29,6 +29,8 @@ public abstract class Table
 
     public FilterContext FilterContext { get; set; }
 
+    public List<MassAction> MassActions { get; set; } = new();
+
     public List<Option> YesNoOptions { get; set; }
 
     public Table(IListingModel listingModel, Type modelType)
@@ -339,6 +341,29 @@ public class Table<T> : Table
         RowActionOptions = options != null ? options(opt) : opt;
 
         return this;
+    }
+
+    public Table<T> AddMassAction(string action, string label, ColorClass color = ColorClass.Primary, string? controller = null)
+    {
+        Type entityType = typeof(T);
+        string controllerName = controller ?? entityType.Name;
+
+        MassAction massAction = new()
+        {
+            Action = action,
+            Label = label,
+            Controller = controllerName,
+            Color = color,
+        };
+
+        MassActions.Add(massAction);
+
+        return this;
+    }
+
+    public Table<T> AddMassDeleteAction(string? controller = null)
+    {
+        return AddMassAction("MassDelete", "Delete selected", ColorClass.Danger, controller);
     }
 
     public Table<T> SetSelectableOptionsSource(string propertyName, dynamic dataSource)

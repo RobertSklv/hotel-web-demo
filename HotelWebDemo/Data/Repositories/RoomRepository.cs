@@ -61,4 +61,11 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
             }
         }
     }
+
+    public async Task<int> MassEnableToggle(List<int> selectedItemIds, bool enable)
+    {
+        return await db.Rooms
+            .Where(e => selectedItemIds.Contains(e.Id))
+            .ExecuteUpdateAsync(e => e.SetProperty(e => e.Enabled, enable));
+    }
 }
