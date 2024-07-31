@@ -25,6 +25,8 @@ public class FilterContext
 
     public List<FilterOperatorOption> ObjectOperatorOptions { get; set; }
 
+    public List<FilterOperatorOption> BooleanOperatorOptions { get; set; }
+
     public FilterContext(Table table, List<TableColumnData> columnDatas)
     {
         Table = table;
@@ -58,6 +60,12 @@ public class FilterContext
             CreateOperatorOption(EntityFilterService.OPERATOR_BEFORE),
             CreateOperatorOption(EntityFilterService.OPERATOR_AFTER),
             CreateOperatorOption(EntityFilterService.BETWEEN),
+        };
+
+        BooleanOperatorOptions= new()
+        {
+            CreateOperatorOption(EntityFilterService.OPERATOR_EQUAL),
+            CreateOperatorOption(EntityFilterService.OPERATOR_NOT_EQUAL),
         };
 
         ObjectOperatorOptions = new()
@@ -184,6 +192,13 @@ public class FilterContext
         {
             foreach (object item in selectableDataSource)
             {
+                if (item is Option opt)
+                {
+                    options.Add(opt);
+
+                    continue;
+                }
+
                 SelectOptionAttribute? selectOptionAttribute = item.GetType().GetCustomAttribute<SelectOptionAttribute>();
 
                 if (selectOptionAttribute == null)
@@ -194,7 +209,7 @@ public class FilterContext
                 Option option = new()
                 {
                     Value = item.GetType().GetProperty(selectOptionAttribute.IdentityProperty).GetValue(item),
-                    Label = item.GetType().GetProperty(selectOptionAttribute.LabelProperty).GetValue(item) as string,
+                    Content = item.GetType().GetProperty(selectOptionAttribute.LabelProperty).GetValue(item) as string,
                 };
 
                 options.Add(option);
@@ -210,6 +225,11 @@ public class FilterContext
         {
             foreach (object item in selectableDataSource)
             {
+                if (item is Option option)
+                {
+                    return option.Content;
+                }
+
                 SelectOptionAttribute? selectOptionAttribute = item.GetType().GetCustomAttribute<SelectOptionAttribute>();
 
                 if (selectOptionAttribute == null || item.GetType().GetProperty(selectOptionAttribute.IdentityProperty)?.GetValue(item)?.ToString() != value?.ToString())
@@ -228,6 +248,7 @@ public class FilterContext
     {
         if (type.Equals(typeof(string))) return TextOperatorOptions;
         if (type.Equals(typeof(DateTime))) return DateOperatorOptions;
+        if (type.Equals(typeof(bool))) return BooleanOperatorOptions;
         else if (type.IsValueType) return NumericOperatorOptions;
 
         return ObjectOperatorOptions;

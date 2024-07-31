@@ -29,10 +29,26 @@ public abstract class Table
 
     public FilterContext FilterContext { get; set; }
 
+    public List<Option> YesNoOptions { get; set; }
+
     public Table(IListingModel listingModel, Type modelType)
     {
         ListingModel = listingModel;
         ModelType = modelType;
+
+        YesNoOptions = new()
+        {
+            new Option()
+            {
+                Value = "false",
+                Content = "No"
+            },
+            new Option()
+            {
+                Value = "true",
+                Content = "Yes"
+            },
+        };
 
         GenerateTableColumnDatas();
         FilterContext = new(this, ColumnDatas!);
@@ -152,6 +168,12 @@ public abstract class Table
                 IsSelectable = property.PropertyType.IsSubclassOf(typeof(BaseEntity)) && property.PropertyType.GetCustomAttribute<SelectOptionAttribute>() != null
             };
             colData.ValueCallback = (obj) => GetPropertyValue(property, obj) ?? colData.DefaultValue;
+
+            if (property.PropertyType.IsValueType && property.PropertyType.Equals(typeof(bool)))
+            {
+                colData.IsSelectable = true;
+                colData.SelectableDataSource = YesNoOptions;
+            }
 
             ColumnDatas.Add(colData);
         }

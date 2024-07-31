@@ -7,21 +7,24 @@ namespace HotelWebDemo.Models.Database;
 [Table("Rooms")]
 public class Room : BaseEntity
 {
-    [TableColumn(SortOrder = -3)]
+    [TableColumn]
+    public bool Enabled { get; set; } = true;
+
+    [TableColumn]
     public Hotel? Hotel { get; set; }
 
     public int HotelId { get; set; }
 
-    [TableColumn(SortOrder = -2)]
+    [TableColumn]
     public RoomCategory? Category { get; set; }
 
     public int CategoryId { get; set; }
 
     [TableColumn]
-    public int Floor { get; set; }
-
-    [TableColumn(SortOrder = -1)]
     public int Number { get; set; }
+
+    [TableColumn]
+    public int Floor { get; set; }
 
     [TableColumn]
     public float Area { get; set; }

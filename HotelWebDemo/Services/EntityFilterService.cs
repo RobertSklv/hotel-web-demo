@@ -56,6 +56,7 @@ public class EntityFilterService : IEntityFilterService
         else if (type.Equals(typeof(float))) return float.Parse(value);
         else if (type.Equals(typeof(decimal))) return decimal.Parse(value);
         else if (type.Equals(typeof(DateTime))) return DateTime.Parse(value);
+        else if (type.Equals(typeof(bool))) return bool.Parse(value);
         else if (type.IsSubclassOf(typeof(BaseEntity))) return int.TryParse(value, out int modelId) && modelId > 0 ? modelId : null;
         else return value;
     }
