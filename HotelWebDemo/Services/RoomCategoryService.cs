@@ -21,6 +21,7 @@ public class RoomCategoryService : CrudService<RoomCategory>, IRoomCategoryServi
     public override Table<RoomCategory> CreateListingTable(ListingModel<RoomCategory> listingModel, PaginatedList<RoomCategory> items)
     {
         return base.CreateListingTable(listingModel, items)
+            .SetSearchable(false)
             .SetSelectableOptionsSource("Hotel", hotelService.GetAll());
     }
 

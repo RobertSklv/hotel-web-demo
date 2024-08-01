@@ -18,6 +18,7 @@ public class RoomFeatureService : CrudService<RoomFeature>, IRoomFeatureService
     public override Table<RoomFeature> CreateListingTable(ListingModel<RoomFeature> listingModel, PaginatedList<RoomFeature> items)
     {
         return base.CreateListingTable(listingModel, items)
+            .SetSearchable(false)
             .SetSelectableOptionsSource(nameof(RoomFeature.Hotel), hotelService.GetAll())
             .AddRowActions(null, options => options.SetDeleteConfirmationMessage<RoomFeature>(
                 roomFeature => $"Are you sure you want to remove room feature {roomFeature.Code}? This action cannot be undone."));

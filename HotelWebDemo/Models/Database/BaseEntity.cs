@@ -7,7 +7,7 @@ namespace HotelWebDemo.Models.Database;
 public abstract class BaseEntity : IBaseEntity
 {
     [Column(Order = 0)]
-    [TableColumn(Name = "#", SortOrder = -10)]
+    [TableColumn(Name = "#", SortOrder = -10, Searchable = false)]
     public int Id { get; set; }
 
     [TableColumn(SortOrder = 998)]
