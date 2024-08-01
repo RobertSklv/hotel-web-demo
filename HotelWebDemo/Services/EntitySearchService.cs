@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Models.Attributes;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -19,23 +20,30 @@ public class EntitySearchService : IEntitySearchService
     {
         if (searchPhrase != null)
         {
-            List<Expression<Func<T, bool>>> expressions = new();
+            List<Expression> expressions = new();
             string[] tokens = searchPhrase.Split();
+            ParameterExpression param = Expression.Parameter(typeof(T), "x");
 
             foreach (PropertyInfo propInfo in GetSearchableProperties(typeof(T)))
             {
+                if (propInfo.PropertyType.IsClass)
+                {
+                    //Temporary solution
+                    continue;
+                }
+
                 try
                 {
-                    ParameterExpression param = Expression.Parameter(typeof(T), "x");
                     MemberExpression property = helper.ParseMemberExpression(param, propInfo.Name);
-                    Expression propertyAsString = PropertyToString<T>(param, property);
+                    Expression propertyAsString = property.Type == typeof(string)
+                        ? property
+                        : PropertyToString<T>(property, propInfo.PropertyType);
 
                     foreach (string token in tokens)
                     {
                         Expression constant = Expression.Constant(token);
                         Expression exprBody = filterService.BuildFilterPredicate<T>(propertyAsString, EntityFilterService.OPERATOR_CONTAINS, constant);
-                        Expression<Func<T, bool>> expr = Expression.Lambda<Func<T, bool>>(exprBody, param);
-                        expressions.Add(expr);
+                        expressions.Add(exprBody);
                     }
                 }
                 catch (Exception e)
@@ -44,37 +52,34 @@ public class EntitySearchService : IEntitySearchService
                 }
             }
 
-            queryable = JoinExpressions(queryable, expressions);
+            queryable = JoinExpressions(queryable, expressions, param);
         }
 
         return queryable;
     }
 
-    public MethodCallExpression PropertyToString<T>(ParameterExpression param, MemberExpression property)
+    public MethodCallExpression PropertyToString<T>(MemberExpression property, Type propertyType)
     {
         MethodCallExpression castExpression = Expression.Call(
-            Expression.Convert(property, typeof(object)),
-            typeof(object).GetMethod("ToString")
+            property,
+            propertyType.GetMethod("ToString", BindingFlags.Public | BindingFlags.Instance, Type.EmptyTypes)
+                ?? throw new Exception($"Type '{propertyType.ShortDisplayName()}' has no 'ToString' method defined.")
         );
 
         return castExpression;
     }
 
-    public IQueryable<T> JoinExpressions<T>(IQueryable<T> queryable, List<Expression<Func<T, bool>>> expressions)
+    public IQueryable<T> JoinExpressions<T>(IQueryable<T> queryable, List<Expression> expressions, ParameterExpression param)
     {
         if (expressions.Count > 0)
         {
-            ParameterExpression param = Expression.Parameter(typeof(T), "x");
             Expression body = expressions.First();
 
             for (int i = 1; i < expressions.Count; i++)
             {
-                Expression<Func<T, bool>> expr = expressions[i];
+                Expression expr = expressions[i];
 
-                body = Expression.OrElse(
-                    Expression.Invoke(body, param),
-                    Expression.Invoke(expr, param)
-                );
+                body = Expression.OrElse(body, expr);
             }
 
             Expression<Func<T, bool>> combinedExpression = Expression.Lambda<Func<T, bool>>(body, param);

@@ -60,7 +60,7 @@ public class EntitySortService : IEntitySortService
     {
         Type sourceType = typeof(T);
         Type keySelectorType = typeof(Func<,>).MakeGenericType(sourceType, propertyType);
-        ParameterExpression param = Expression.Parameter(typeof(T));
+        ParameterExpression param = Expression.Parameter(typeof(T), "x");
         MemberExpression property = helper.ParseMemberExpression(param, propertyName);
         LambdaExpression selector = Expression.Lambda(keySelectorType, property, param);
 
