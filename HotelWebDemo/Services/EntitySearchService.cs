@@ -1,5 +1,7 @@
 ﻿using HotelWebDemo.Models.Attributes;
+using HotelWebDemo.Models.Database;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -20,21 +22,30 @@ public class EntitySearchService : IEntitySearchService
     {
         if (searchPhrase != null)
         {
+            Type entityType = typeof(T);
             List<Expression> expressions = new();
             string[] tokens = searchPhrase.Split();
-            ParameterExpression param = Expression.Parameter(typeof(T), "x");
+            ParameterExpression param = Expression.Parameter(entityType, "x");
 
-            foreach (PropertyInfo propInfo in GetSearchableProperties(typeof(T)))
+            foreach (PropertyInfo propInfo in GetSearchableProperties(entityType))
             {
-                if (propInfo.PropertyType.IsClass)
+                if (!CanPropertyBeMapped(helper.GetHierarchicalProperty(entityType, propInfo)))
                 {
-                    //Temporary solution
                     continue;
+                }
+
+                string propertyName = propInfo.Name;
+
+                SelectOptionAttribute? selectOptionAttr = propInfo.PropertyType.GetCustomAttribute<SelectOptionAttribute>();
+
+                if (selectOptionAttr != null)
+                {
+                    propertyName += '_' + selectOptionAttr.LabelProperty;
                 }
 
                 try
                 {
-                    MemberExpression property = helper.ParseMemberExpression(param, propInfo.Name);
+                    MemberExpression property = helper.ParseMemberExpression(param, propertyName);
                     Expression propertyAsString = property.Type == typeof(string)
                         ? property
                         : PropertyToString<T>(property, propInfo.PropertyType);
@@ -106,5 +117,40 @@ public class EntitySearchService : IEntitySearchService
         }
 
         return properties;
+    }
+
+    public bool CanPropertyBeMapped(PropertyInfo property)
+    {
+        if (property.GetMethod == null
+            || property.GetMethod.IsAbstract
+            || !property.GetMethod.IsPublic
+            || property.GetMethod.IsStatic)
+        {
+            return false;
+        }
+        else if (property.SetMethod == null
+            || property.SetMethod.IsAbstract
+            || !property.SetMethod.IsPublic
+            || property.SetMethod.IsStatic)
+        {
+            return false;
+        }
+        else if (property.GetCustomAttribute<NotMappedAttribute>() != null)
+        {
+            return false;
+        }
+        else if (!property.PropertyType.IsPrimitive && !(
+            property.PropertyType == typeof(string)
+            || property.PropertyType == typeof(DateTime)
+            || property.PropertyType.IsSubclassOf(typeof(BaseEntity))))
+        {
+            return false;
+        }
+        else if (property.PropertyType.IsGenericType)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
