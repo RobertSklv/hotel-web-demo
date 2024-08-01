@@ -15,7 +15,7 @@
         <div class="input-group mb-3">
             <input type="search" class="form-control form-control-sm" name="searchPhrase" value="@Model.SearchPhrase" placeholder="Search..." />
             <button class="btn btn-sm btn-secondary" type="submit" id="search-button" disabled="@(string.IsNullOrEmpty(Model.SearchPhrase))">
-                Search
+                <i class="bi bi-search me-1"></i>Search
             </button>
         </div>
     </form>

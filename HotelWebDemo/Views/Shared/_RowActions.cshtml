@@ -8,18 +8,24 @@
 <td class="text-center">
     @if (Model.Options.Edit)
     {
-        <a asp-action="Edit" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" class="btn btn-sm mx-2 btn-primary text-decoration-none">Edit</a>
+        <a asp-action="Edit" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" class="btn btn-sm mx-2 btn-primary text-decoration-none">
+            <i class="bi bi-pencil-fill me-1"></i>Edit
+        </a>
     }
     @if (Model.Options.Delete)
     {
         if (Model.Options.ConfirmDelete)
         {
-        <button type="button" data-bs-toggle="modal" data-bs-target="#@Model.ConfirmModalId" class="btn btn-sm mx-2 btn-danger">Delete</button>
+        <button type="button" data-bs-toggle="modal" data-bs-target="#@Model.ConfirmModalId" class="btn btn-sm mx-2 btn-danger">
+            <i class="bi bi-trash-fill me-1"></i>Delete
+        </button>
         }
         else
         {
         <form asp-action="Delete" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" method="DELETE">
-            <button type="submit" class="btn btn-sm mx-2 btn-danger">Delete</button>
+            <button type="submit" class="btn btn-sm mx-2 btn-danger">
+                <i class="bi bi-trash-fill me-1"></i>Delete
+            </button>
         </form>
         }
         <div class="modal fade" id="@Model.ConfirmModalId" tabindex="-1" aria-labelledby="@Model.ConfirmModalLabelId" aria-hidden="true">
@@ -35,7 +41,9 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <form asp-action="Delete" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" method="DELETE">
-                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash-fill me-1"></i>Delete
+                            </button>
                         </form>
                     </div>
                 </div>
