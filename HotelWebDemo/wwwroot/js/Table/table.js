@@ -20,11 +20,11 @@ window.createTableComponent = function (tableId) {
                 self.removeFilter(this);
             });
 
-            $('.grid-filters-form', idSelector).on('submit', function () {
+            $('.filters-form', idSelector).on('submit', function () {
                 self.applyFilters(this);
             })
 
-            $('.filter-operator', idSelector).on('change', function () {
+            $('.filters-form .filter-operator', idSelector).on('change', function () {
                 self.onOperatorChange(this);
             });
 
@@ -56,9 +56,9 @@ window.createTableComponent = function (tableId) {
             var propertyName = $(filter).data('remove-filter');
 
             if (propertyName == '__all') {
-                $('.grid-filters-form').find(`[data-filter] .filter-value`).val('');
+                $('.filters-form').find(`[data-filter] .filter-value`).val('');
             } else {
-                $('.grid-filters-form').find(`[data-filter="${propertyName}"] .filter-value`).val('');
+                $('.filters-form').find(`[data-filter="${propertyName}"] .filter-value`).val('');
             }
 
             $('#applyFiltersButton').click();

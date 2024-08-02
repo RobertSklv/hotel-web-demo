@@ -17,4 +17,6 @@ public interface IListingModel
     Dictionary<string, TableFilter>? Filters { get; set; }
 
     string? SearchPhrase { get; set; }
+
+    Dictionary<string, string?> GenerateListingQuery();
 }

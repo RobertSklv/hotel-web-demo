@@ -31,7 +31,7 @@ public abstract class Table
 
     public FilterContext FilterContext { get; set; }
 
-    public List<MassAction> MassActions { get; set; } = new();
+    public MassActionContext MassActionContext { get; set; }
 
     public List<Option> YesNoOptions { get; set; }
 
@@ -56,6 +56,11 @@ public abstract class Table
 
         GenerateTableColumnDatas();
         FilterContext = new(this, ColumnDatas!);
+
+        MassActionContext = new()
+        {
+            ListingModel = ListingModel
+        };
     }
 
     public abstract List<object?> GetRowData(IBaseEntity item);
@@ -227,11 +232,11 @@ public abstract class Table
 
     public HeadingFilterState GetHeadingFilterState(string propertyName)
     {
-        if (ListingModel.OrderBy == propertyName)
+        if ((ListingModel.OrderBy == null && propertyName == ViewModels.ListingModel.DEFAULT_ORDER_BY) || ListingModel.OrderBy == propertyName)
         {
-            if (ListingModel.Direction == ViewModels.ListingModel.DEFAULT_DIRECTION)
+            if (ListingModel.Direction == null || ListingModel.Direction == ViewModels.ListingModel.DEFAULT_DIRECTION)
             {
-                if (ListingModel.OrderBy == ViewModels.ListingModel.DEFAULT_ORDER_BY)
+                if (propertyName == ViewModels.ListingModel.DEFAULT_ORDER_BY)
                 {
                     return HeadingFilterState.None;
                 }
@@ -252,7 +257,7 @@ public abstract class Table
             OrderBy = ListingModel.OrderBy,
             Direction = ListingModel.Direction,
             Page = ListingModel.Page,
-            Filter = ListingModel.Filters,
+            Filters = ListingModel.Filters,
             SearchPhrase = ListingModel.SearchPhrase,
         };
     }
@@ -358,20 +363,20 @@ public class Table<T> : Table
         return this;
     }
 
-    public Table<T> AddMassAction(string action, string label, ColorClass color = ColorClass.Primary, string? controller = null)
+    public Table<T> AddMassAction(string actionId, string label, ColorClass color = ColorClass.Primary, string? controller = null)
     {
         Type entityType = typeof(T);
         string controllerName = controller ?? entityType.Name;
 
         MassAction massAction = new()
         {
-            Action = action,
+            ActionId = actionId,
             Label = label,
             Controller = controllerName,
-            Color = color,
+            Color = color
         };
 
-        MassActions.Add(massAction);
+        MassActionContext.Actions.Add(massAction);
 
         return this;
     }

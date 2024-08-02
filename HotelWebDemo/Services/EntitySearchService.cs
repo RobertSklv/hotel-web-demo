@@ -29,18 +29,22 @@ public class EntitySearchService : IEntitySearchService
 
             foreach (PropertyInfo propInfo in GetSearchableProperties(entityType))
             {
-                if (!CanPropertyBeMapped(helper.GetHierarchicalProperty(entityType, propInfo)))
-                {
-                    continue;
-                }
-
                 string propertyName = propInfo.Name;
 
                 SelectOptionAttribute? selectOptionAttr = propInfo.PropertyType.GetCustomAttribute<SelectOptionAttribute>();
 
-                if (selectOptionAttr != null)
+                if (selectOptionAttr != null && CanPropertyBeMapped(helper.GetHierarchicalProperty(entityType, propertyName + '_' + selectOptionAttr.LabelProperty)))
                 {
                     propertyName += '_' + selectOptionAttr.LabelProperty;
+                }
+                else if (entityType.GetProperty("Name") != null)
+                {
+                    propertyName += '_' + "Name";
+                }
+
+                if (!CanPropertyBeMapped(helper.GetHierarchicalProperty(entityType, propertyName)))
+                {
+                    continue;
                 }
 
                 try
@@ -141,8 +145,7 @@ public class EntitySearchService : IEntitySearchService
         }
         else if (!property.PropertyType.IsPrimitive && !(
             property.PropertyType == typeof(string)
-            || property.PropertyType == typeof(DateTime)
-            || property.PropertyType.IsSubclassOf(typeof(BaseEntity))))
+            || property.PropertyType == typeof(DateTime)))
         {
             return false;
         }

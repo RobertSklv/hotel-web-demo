@@ -46,29 +46,24 @@ public class RoomController : CrudController<Room>
         return base.Edit(id);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> MassEnable(List<int> selectedItemIds)
+    protected override async Task<string> MassAction(string massAction, List<int> selectedItemIds)
     {
         if (selectedItemIds.Count != 0)
         {
-            await service.MassEnableToggle(selectedItemIds, enable: true);
+            if (massAction == "MassEnable")
+            {
+                await service.MassEnableToggle(selectedItemIds, enable: true);
 
-            AddMessage($"Successfully enabled {selectedItemIds.Count} rooms.", ColorClass.Success);
+                AddMessage($"Successfully enabled {selectedItemIds.Count} room(s).", ColorClass.Success);
+            }
+            else if (massAction == "MassDisable")
+            {
+                await service.MassEnableToggle(selectedItemIds, enable: false);
+
+                AddMessage($"Successfully disabled {selectedItemIds.Count} room(s).", ColorClass.Success);
+            }
         }
 
-        return RedirectToAction("Index");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> MassDisable(List<int> selectedItemIds)
-    {
-        if (selectedItemIds.Count != 0)
-        {
-            await service.MassEnableToggle(selectedItemIds, enable: false);
-
-            AddMessage($"Successfully disabled {selectedItemIds.Count} rooms.", ColorClass.Success);
-        }
-
-        return RedirectToAction("Index");
+        return await base.MassAction(massAction, selectedItemIds);
     }
 }

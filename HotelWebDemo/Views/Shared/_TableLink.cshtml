@@ -5,12 +5,8 @@
 @{
 }
 
-<a asp-all-route-data=@Model.GetFilterQueryParameters()
+<a asp-all-route-data=@Model.GetListingModel().GenerateListingQuery()
    asp-action=@Model.ActionName
-   asp-route-orderBy="@Model.OrderBy"
-   asp-route-direction="@Model.Direction"
-   asp-route-page="@Model.Page"
-   asp-route-searchPhrase="@Model.SearchPhrase"
    title="@Model.Content"
    class="@Model.Class"
    disabled="@Model.Disabled">

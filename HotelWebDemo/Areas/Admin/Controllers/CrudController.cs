@@ -46,6 +46,8 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
 
     public virtual async Task UpsertMethod(TViewModel model) => await service.Upsert(model);
 
+    protected virtual Task<string> MassAction(string massAction, List<int> selectedItemIds) => Task.FromResult("Index");
+
     [HttpGet]
     public virtual IActionResult Create()
     {
@@ -163,6 +165,14 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         }
 
         return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Mass(List<int> selectedItemIds, [FromQuery] string massAction, [FromQuery] ListingModel? listingModel = null)
+    {
+        string backAction = await MassAction(massAction, selectedItemIds);
+
+        return RedirectToAction(backAction, listingModel?.GenerateListingQuery());
     }
 
     protected virtual bool GetEntity(int id, [NotNullWhen(true)] out TViewModel? model)

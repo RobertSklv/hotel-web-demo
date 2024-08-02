@@ -23,6 +23,75 @@ public class ListingModel : IListingModel
     public Dictionary<string, TableFilter>? Filters { get; set; }
 
     public string? SearchPhrase { get; set; }
+
+    public Dictionary<string, string?> GenerateListingQuery()
+    {
+        Dictionary<string, string?> query = new();
+
+        CheckDefaultPage();
+        CheckDefaultOrderBy();
+        CheckDefaultDirection();
+
+        if (OrderBy != null)
+        {
+            query.Add("OrderBy", OrderBy);
+        }
+
+        if (Direction != null)
+        {
+            query.Add("Direction", Direction);
+        }
+
+        if (Page != null)
+        {
+            query.Add("Page", Page.ToString());
+        }
+
+        if (SearchPhrase != null)
+        {
+            query.Add("SearchPhrase", SearchPhrase);
+        }
+
+        if (Filters != null)
+        {
+            foreach (var kvp in Filters)
+            {
+                if (kvp.Value == null) continue;
+
+                string operatorParamName = $"Filters.{kvp.Key}.Operator";
+                string valueParamName = $"Filters.{kvp.Key}.Value";
+
+                query.Add(operatorParamName, kvp.Value.Operator);
+                query.Add(valueParamName, kvp.Value.Value);
+            }
+        }
+
+        return query;
+    }
+
+    private void CheckDefaultPage()
+    {
+        if (Page == DEFAULT_PAGE)
+        {
+            Page = null;
+        }
+    }
+
+    private void CheckDefaultOrderBy()
+    {
+        if (OrderBy == DEFAULT_ORDER_BY)
+        {
+            OrderBy = null;
+        }
+    }
+
+    private void CheckDefaultDirection()
+    {
+        if (Direction == DEFAULT_DIRECTION)
+        {
+            Direction = null;
+        }
+    }
 }
 
 public class ListingModel<T> : ListingModel

@@ -15,7 +15,7 @@ public class TableLink : Link
 
     public int? Page { get; set; }
 
-    public Dictionary<string, TableFilter>? Filter { get; set; }
+    public Dictionary<string, TableFilter>? Filters { get; set; }
 
     public string? SearchPhrase { get; set; }
 
@@ -28,7 +28,6 @@ public class TableLink : Link
     public TableLink SetPage(int page)
     {
         Page = page;
-        CheckDefaultPage();
         ClassList.Add(PAGINATION_LINK_CLASS);
 
         return this;
@@ -38,7 +37,6 @@ public class TableLink : Link
     {
         Page ??= ListingModel.DEFAULT_PAGE;
         Page += offset;
-        CheckDefaultPage();
         ClassList.Add(PAGINATION_LINK_CLASS);
 
         return this;
@@ -52,65 +50,29 @@ public class TableLink : Link
         OrderBy = propertyIsDefaultOrder ? null : propertyName;
         Direction = GetOppositeDirection();
 
-        CheckDefaultPage();
-        CheckDefaultOrderBy();
-        CheckDefaultDirection();
-
         return this;
     }
 
-    public Dictionary<string, string?> GetFilterQueryParameters()
+    public ListingModel GetListingModel()
     {
-        Dictionary<string, string?> query = new();
-
-        if (Filter != null)
+        return new ListingModel()
         {
-            foreach (var kvp in Filter)
-            {
-                if (kvp.Value == null) continue;
-
-                string operatorParamName = $"Filters.{kvp.Key}.Operator";
-                string valueParamName = $"Filters.{kvp.Key}.Value";
-
-                query.Add(operatorParamName, kvp.Value.Operator);
-                query.Add(valueParamName, kvp.Value.Value);
-            }
-        }
-
-        return query;
+            ActionName = ActionName,
+            OrderBy = OrderBy,
+            Direction = Direction,
+            Page = Page,
+            Filters = Filters,
+            SearchPhrase = SearchPhrase,
+        };
     }
 
     private string GetOppositeDirection()
     {
-        if (Direction == null || Direction == "asc")
+        if (Direction != null && Direction == "asc")
         {
             return "desc";
         }
 
         return "asc";
-    }
-
-    private void CheckDefaultPage()
-    {
-        if (Page == ListingModel.DEFAULT_PAGE)
-        {
-            Page = null;
-        }
-    }
-
-    private void CheckDefaultOrderBy()
-    {
-        if (OrderBy == ListingModel.DEFAULT_ORDER_BY)
-        {
-            OrderBy = null;
-        }
-    }
-
-    private void CheckDefaultDirection()
-    {
-        if (Direction == ListingModel.DEFAULT_DIRECTION)
-        {
-            Direction = null;
-        }
     }
 }

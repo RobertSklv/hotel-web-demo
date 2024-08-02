@@ -7,16 +7,14 @@
 }
 
 <div class="search-bar-wrapper float-start">
-    <form asp-action="Index" method="get">
-        @if (Model.OrderBy != ListingModel.DEFAULT_ORDER_BY)
-        {
-            <input type="hidden" name="OrderBy" value="@Model.OrderBy" />
-        }
-        <div class="input-group mb-3">
-            <input type="search" class="form-control form-control-sm" name="searchPhrase" value="@Model.SearchPhrase" placeholder="Search..." />
-            <button class="btn btn-sm btn-secondary" type="submit" id="search-button" disabled="@(string.IsNullOrEmpty(Model.SearchPhrase))">
-                <i class="bi bi-search me-1"></i>Search
-            </button>
-        </div>
-    </form>
+    @if (Model.OrderBy != ListingModel.DEFAULT_ORDER_BY)
+    {
+        <input type="hidden" name="OrderBy" value="@Model.OrderBy" />
+    }
+    <div class="input-group mb-3" data-filter="SearchPhrase">
+        <input type="search" class="form-control form-control-sm filter-value" asp-for="@Model.SearchPhrase" placeholder="Search..." />
+        <button class="btn btn-sm btn-secondary" type="submit" id="search-button" disabled="@(string.IsNullOrEmpty(Model.SearchPhrase))">
+            <i class="bi bi-search me-1"></i>Search
+        </button>
+    </div>
 </div>

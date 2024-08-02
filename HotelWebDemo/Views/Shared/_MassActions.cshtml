@@ -1,18 +1,20 @@
 ﻿@using HotelWebDemo.Models.Components.Admin.Tables
 
-@model List<MassAction>
+@model MassActionContext
 
 @{
-    Model.Sort((a1, a2) => a1.SortOrder - a2.SortOrder);
+    Model.Actions.Sort((a1, a2) => a1.SortOrder - a2.SortOrder);
 }
 
 <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
-    @foreach (MassAction action in Model)
+    @foreach (MassAction action in Model.Actions)
     {
         <button
-            id="massAction-@(action.Action)"
+            id="massAction-@(action.ActionId)"
             asp-controller="@action.Controller"
-            asp-action="@action.Action"
+            asp-action="Mass"
+            asp-all-route-data="@Model.ListingModel.GenerateListingQuery()"
+            asp-route-massAction="@action.ActionId"
             type="submit"
             class="btn btn-sm btn-outline-@(action.ColorClass) fw-bold mass-action-button"
             title="@action.Label"

@@ -4,7 +4,7 @@ namespace HotelWebDemo.Models.Components.Admin.Tables;
 
 public class MassAction
 {
-    public string Action { get; set; }
+    public string ActionId { get; set; }
 
     public string Controller { get; set; }
 

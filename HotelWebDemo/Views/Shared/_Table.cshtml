@@ -4,27 +4,33 @@
 @model Table
 
 @{
-    bool hasMassActions = Model.MassActions.Any();
+    bool hasMassActions = Model.MassActionContext.Actions.Any();
     string modelTypeName = Model.ModelType.Name;
     string tableId = $"table-{modelTypeName}";
     string massActionFormId = $"massActionForm-{tableId}";
 }
 
 <div id="@tableId" class="table-wrapper">
-    @if (Model.IsFilterable)
-    {
-        <partial name="_TableFilters" model="@Model.FilterContext" />
-    }
+    <form method="get" asp-action="Index" class="filters-form">
+        <input type="hidden" name="OrderBy" value="@Model.ListingModel.OrderBy" />
+        <input type="hidden" name="Direction" value="@Model.ListingModel.Direction" />
+        <input type="hidden" name="Page" value="@Model.ListingModel.Page" />
 
-    @if (Model.IsSearchable)
-    {
-        <partial name="_TableSearchBar" model="@Model.ListingModel" />
-    }
+        @if (Model.IsFilterable)
+        {
+            <partial name="_TableFilters" model="@Model.FilterContext" />
+        }
+
+        @if (Model.IsSearchable)
+        {
+            <partial name="_TableSearchBar" model="@Model.ListingModel" />
+        }
+    </form>
 
     @if (hasMassActions)
     {
         <form id="@massActionFormId" method="post">
-            <partial name="_MassActions" model="@Model.MassActions" />
+            <partial name="_MassActions" model="@Model.MassActionContext" />
             <div class="inputs"></div>
         </form>
     }

@@ -86,6 +86,7 @@ public class FilterContext
         {
             ActiveFilter activeFilter = new()
             {
+                PropertyName = nameof(ViewModels.ListingModel.SearchPhrase),
                 Name = "Keywords",
                 Value = Table.ListingModel.SearchPhrase,
                 RawValue = Table.ListingModel.SearchPhrase,

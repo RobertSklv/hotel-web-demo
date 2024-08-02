@@ -57,62 +57,60 @@
     </a>
 </p>
 <div class="float-end collapse" id="filtersCollapse">
-    <div class="card card-body mb-3">
-        <form method="GET" class="grid-filters-form">
-            <div class="row">
-                @foreach (TableFilterControls controls in Model.FilterControls)
-                {
-                    <div class="col-12 col-md-6 col-lg-4 mb-4">
-                        <label class="fw-bold mb-2">@controls.Name</label>
-                        <div id="filter-@(controls.PropertyName)" class="filter" data-filter="@(controls.PropertyName)">
-                            <div class="row">
-                                <div class="col">
-                                    <select data-name="Filters.@(controls.PropertyName).Operator"
-                                            data-filter-operator-for="@controls.PropertyName"
-                                            class="form-select form-select-sm d-inline-block filter-operator">
-                                        @foreach (FilterOperatorOption op in controls.OperatorOptions)
+    <div class="card card-body mb-3 d-block">
+        <div class="row">
+            @foreach (TableFilterControls controls in Model.FilterControls)
+            {
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <label class="fw-bold mb-2">@controls.Name</label>
+                    <div id="filter-@(controls.PropertyName)" class="filter" data-filter="@(controls.PropertyName)">
+                        <div class="row">
+                            <div class="col">
+                                <select data-name="Filters.@(controls.PropertyName).Operator"
+                                        data-filter-operator-for="@controls.PropertyName"
+                                        class="form-select form-select-sm d-inline-block filter-operator">
+                                    @foreach (FilterOperatorOption op in controls.OperatorOptions)
+                                    {
+                                        bool selected = controls.SelectedOperator == op.Value;
+                                        <option value="@op.Value" selected=@selected>@op.Label</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col">
+                                @if (controls.IsSelectableFilter)
+                                {
+                                    <select data-name="Filters.@(controls.PropertyName).Value"
+                                            value="@controls.Value"
+                                            data-filter-value-for="@controls.PropertyName"
+                                            class="form-select form-select-sm filter-value">
+                                        <option value="0">-- Please select --</option>
+                                        @foreach (Option op in controls.SelectableOptions)
                                         {
-                                            bool selected = controls.SelectedOperator == op.Value;
-                                            <option value="@op.Value" selected=@selected>@op.Label</option>
+                                            bool selected = op.Value.ToString() == (controls.Value ?? "0");
+                                            <option value="@op.Value" selected=@selected>@op.Content</option>
                                         }
                                     </select>
-                                </div>
-                                <div class="col">
-                                    @if (controls.IsSelectableFilter)
-                                    {
-                                        <select data-name="Filters.@(controls.PropertyName).Value"
-                                                value="@controls.Value"
-                                                data-filter-value-for="@controls.PropertyName"
-                                                class="form-select form-select-sm filter-value">
-                                            <option value="0">-- Please select --</option>
-                                            @foreach (Option op in controls.SelectableOptions)
-                                            {
-                                                bool selected = op.Value.ToString() == (controls.Value ?? "0");
-                                                <option value="@op.Value" selected=@selected>@op.Content</option>
-                                            }
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <input data-name="Filters.@(controls.PropertyName).Value"
-                                               type="@controls.InputType"
-                                               value="@controls.Value"
-                                               data-filter-value-for="@controls.PropertyName"
-                                               class="form-control form-control-sm filter-value" />
-                                        <input data-name="Filters.@(controls.PropertyName).SecondaryValue"
-                                               type="@controls.InputType"
-                                               value="@controls.SecondaryValue"
-                                               data-filter-secondary-value-for="@controls.PropertyName"
-                                               class="form-control form-control-sm filter-secondary-value mt-1"
-                                               style="display: @(controls.SelectedOperator == "btw" ? "block" : "none") !important;" />
-                                    }
-                                </div>
+                                }
+                                else
+                                {
+                                    <input data-name="Filters.@(controls.PropertyName).Value"
+                                           type="@controls.InputType"
+                                           value="@controls.Value"
+                                           data-filter-value-for="@controls.PropertyName"
+                                           class="form-control form-control-sm filter-value" />
+                                    <input data-name="Filters.@(controls.PropertyName).SecondaryValue"
+                                           type="@controls.InputType"
+                                           value="@controls.SecondaryValue"
+                                           data-filter-secondary-value-for="@controls.PropertyName"
+                                           class="form-control form-control-sm filter-secondary-value mt-1"
+                                           style="display: @(controls.SelectedOperator == "btw" ? "block" : "none") !important;" />
+                                }
                             </div>
                         </div>
                     </div>
-                }
-            </div>
-            <button id="applyFiltersButton" type="submit" class="btn btn-secondary fw-bold px-3 py-2">Apply filters</button>
-        </form>
+                </div>
+            }
+        </div>
+        <button id="applyFiltersButton" type="submit" class="btn btn-secondary fw-bold px-3 py-2">Apply filters</button>
     </div>
 </div>
