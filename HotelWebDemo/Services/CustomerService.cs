@@ -135,6 +135,7 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
         List<Country> countries = countryService.GetAll();
 
         return base.CreateListingTable(listingModel, items)
+            .SetAdjustablePageSize(true)
             .OverrideColumnName(nameof(Customer.CreatedAt), "Registration date")
             .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship), countries)
             .AddRowActions(null, options => options.IncludesDelete(false));

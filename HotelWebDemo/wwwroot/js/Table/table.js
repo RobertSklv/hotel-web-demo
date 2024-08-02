@@ -10,6 +10,7 @@ window.createTableComponent = function (tableId) {
         searchBarWrapper: null,
         searchBarWrapperInput: null,
         searchBarWrapperButton: null,
+        filtersForm: null,
 
         initialize: function () {
             var self = this;
@@ -20,12 +21,18 @@ window.createTableComponent = function (tableId) {
                 self.removeFilter(this);
             });
 
-            $('.filters-form', idSelector).on('submit', function () {
-                self.applyFilters(this);
-            })
+            this.filtersForm = $('.filters-form', idSelector);
 
-            $('.filters-form .filter-operator', idSelector).on('change', function () {
+            this.filtersForm.on('submit', function () {
+                self.applyFilters(this);
+            });
+
+            this.filtersForm.find('.filter-operator').on('change', function () {
                 self.onOperatorChange(this);
+            });
+
+            this.filtersForm.find('select[name="PageSize"]', idSelector).on('change', function () {
+                self.filtersForm.trigger('submit');
             });
 
             var massActionFormIdSelector = '#massActionForm-' + tableId;
@@ -56,9 +63,9 @@ window.createTableComponent = function (tableId) {
             var propertyName = $(filter).data('remove-filter');
 
             if (propertyName == '__all') {
-                $('.filters-form').find(`[data-filter] .filter-value`).val('');
+                this.filtersForm.find(`[data-filter] .filter-value`).val('');
             } else {
-                $('.filters-form').find(`[data-filter="${propertyName}"] .filter-value`).val('');
+                this.filtersForm.find(`[data-filter="${propertyName}"] .filter-value`).val('');
             }
 
             $('#applyFiltersButton').click();

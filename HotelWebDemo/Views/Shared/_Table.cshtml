@@ -1,4 +1,5 @@
 ﻿@using HotelWebDemo.Models.Components.Admin.Tables
+@using HotelWebDemo.Models.Components.Common
 @using HotelWebDemo.Models.Database
 
 @model Table
@@ -12,9 +13,29 @@
 
 <div id="@tableId" class="table-wrapper">
     <form method="get" asp-action="Index" class="filters-form">
-        <input type="hidden" name="OrderBy" value="@Model.ListingModel.OrderBy" />
-        <input type="hidden" name="Direction" value="@Model.ListingModel.Direction" />
-        <input type="hidden" name="Page" value="@Model.ListingModel.Page" />
+        @if (Model.IsOrderable)
+        {
+            <input type="hidden" name="OrderBy" value="@Model.ListingModel.OrderBy" />
+            <input type="hidden" name="Direction" value="@Model.ListingModel.Direction" />
+        }
+
+        @if (Model.Pagination != null)
+        {
+            <input type="hidden" name="Page" value="@Model.ListingModel.Page" />
+
+            @if (Model.IsPageSizeAdjustable)
+            {
+                <div class="float-end">
+                    <label for="PageSize">Show per page:</label>
+                    <select id="PageSize" name="PageSize" class="form-select form-select-sm d-inline-block w-auto">
+                        @foreach (Option option in Model.GetPageSizeOptions())
+                        {
+                            <option value="@option.Value" selected="@option.Selected">@option.Content</option>
+                        }
+                    </select>
+                </div>
+            }
+        }
 
         @if (Model.IsFilterable)
         {

@@ -15,6 +15,8 @@ public class TableLink : Link
 
     public int? Page { get; set; }
 
+    public int PageSize { get; set; }
+
     public Dictionary<string, TableFilter>? Filters { get; set; }
 
     public string? SearchPhrase { get; set; }
@@ -61,6 +63,7 @@ public class TableLink : Link
             OrderBy = OrderBy,
             Direction = Direction,
             Page = Page,
+            PageSize = PageSize,
             Filters = Filters,
             SearchPhrase = SearchPhrase,
         };

@@ -22,6 +22,7 @@ public class RoomService : CrudService<Room>, IRoomService
     public override Table<Room> CreateListingTable(ListingModel<Room> listingModel, PaginatedList<Room> items)
     {
         return base.CreateListingTable(listingModel, items)
+            .SetAdjustablePageSize(true)
             .SetSelectableOptionsSource(nameof(Room.Hotel), hotelService.GetAll())
             .SetSelectableOptionsSource(nameof(Room.Category), roomCategoryService.GetAll())
             .AddRowActions(null, options => options.IncludesDelete(false))

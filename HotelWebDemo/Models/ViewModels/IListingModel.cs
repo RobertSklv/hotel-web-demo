@@ -12,7 +12,7 @@ public interface IListingModel
 
     int? Page { get; set; }
 
-    int PageSize { get; set; }
+    int? PageSize { get; set; }
 
     Dictionary<string, TableFilter>? Filters { get; set; }
 

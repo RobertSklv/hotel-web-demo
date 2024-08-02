@@ -87,7 +87,10 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
         entities = filterService.FilterBy(entities, listingModel.Filters);
         entities = searchService.GenerateSearchFilters(entities, listingModel.SearchPhrase);
 
-        PaginatedList<TEntity> paginatedList = await PaginatedList<TEntity>.CreateAsync(entities, (int)listingModel.Page, listingModel.PageSize);
+        PaginatedList<TEntity> paginatedList = await PaginatedList<TEntity>.CreateAsync(
+            entities,
+            (int)listingModel.Page,
+            listingModel.PageSize ?? ListingModel.DEFAULT_PAGE_SIZE);
 
         return paginatedList;
     }

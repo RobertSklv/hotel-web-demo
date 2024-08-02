@@ -21,7 +21,7 @@ public abstract class Table
 
     public bool IsSearchable { get; set; }
 
-    public bool HasCreateAction { get; set; } = true;
+    public bool IsPageSizeAdjustable { get; set; }
 
     public abstract bool HasItems { get; }
 
@@ -67,6 +67,24 @@ public abstract class Table
 
     public abstract List<IBaseEntity> GetItems();
 
+    public List<Option> GetPageSizeOptions()
+    {
+        List<Option> options = new();
+
+        foreach (int pageSize in ViewModels.ListingModel.PageSizes)
+        {
+            Option option = new()
+            {
+                Value = pageSize,
+                Content = pageSize.ToString(),
+                Selected = pageSize == ListingModel.PageSize
+            };
+            options.Add(option);
+        }
+
+        return options;
+    }
+
     public Table SetOrderable(bool orderable)
     {
         IsOrderable = orderable;
@@ -84,6 +102,13 @@ public abstract class Table
     public Table SetSearchable(bool searchable)
     {
         IsSearchable = searchable;
+
+        return this;
+    }
+
+    public Table SetAdjustablePageSize(bool adjustable)
+    {
+        IsPageSizeAdjustable = adjustable;
 
         return this;
     }
@@ -406,5 +431,10 @@ public class Table<T> : Table
     public new Table<T> SetSearchable(bool searchable)
     {
         return (Table<T>)base.SetSearchable(searchable);
+    }
+
+    public new Table<T> SetAdjustablePageSize(bool adjustable)
+    {
+        return (Table<T>)base.SetAdjustablePageSize(adjustable);
     }
 }

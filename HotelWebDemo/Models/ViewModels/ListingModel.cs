@@ -10,6 +10,8 @@ public class ListingModel : IListingModel
     public const int DEFAULT_PAGE = 1;
     public const int DEFAULT_PAGE_SIZE = 10;
 
+    public static int[] PageSizes = new int[] { 10, 20, 50, 100 };
+
     public string ActionName { get; set; }
 
     public string? OrderBy { get; set; }
@@ -18,7 +20,7 @@ public class ListingModel : IListingModel
 
     public int? Page { get; set; }
 
-    public int PageSize { get; set; } = DEFAULT_PAGE_SIZE;
+    public int? PageSize { get; set; } = DEFAULT_PAGE_SIZE;
 
     public Dictionary<string, TableFilter>? Filters { get; set; }
 
@@ -29,6 +31,7 @@ public class ListingModel : IListingModel
         Dictionary<string, string?> query = new();
 
         CheckDefaultPage();
+        CheckDefaultPageSize();
         CheckDefaultOrderBy();
         CheckDefaultDirection();
 
@@ -74,6 +77,14 @@ public class ListingModel : IListingModel
         if (Page == DEFAULT_PAGE)
         {
             Page = null;
+        }
+    }
+
+    private void CheckDefaultPageSize()
+    {
+        if (PageSize == DEFAULT_PAGE_SIZE)
+        {
+            PageSize = null;
         }
     }
 
