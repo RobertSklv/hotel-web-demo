@@ -12,41 +12,43 @@
 }
 
 <div id="@tableId" class="table-wrapper">
-    <form method="get" asp-action="Index" class="filters-form">
-        @if (Model.IsOrderable)
-        {
-            <input type="hidden" name="OrderBy" value="@Model.ListingModel.OrderBy" />
-            <input type="hidden" name="Direction" value="@Model.ListingModel.Direction" />
-        }
-
-        @if (Model.Pagination != null)
-        {
-            <input type="hidden" name="Page" value="@Model.ListingModel.Page" />
-
-            @if (Model.IsPageSizeAdjustable)
+    <div class="filters-wrapper">
+        <form method="get" asp-action="@Model.ListingModel.ActionName" class="filters-form">
+            @if (Model.IsOrderable)
             {
-                <div class="float-end">
-                    <label for="PageSize">Show per page:</label>
-                    <select id="PageSize" name="PageSize" class="form-select form-select-sm d-inline-block w-auto">
-                        @foreach (Option option in Model.GetPageSizeOptions())
-                        {
-                            <option value="@option.Value" selected="@option.Selected">@option.Content</option>
-                        }
-                    </select>
-                </div>
+                <input type="hidden" name="OrderBy" value="@Model.ListingModel.OrderBy" />
+                <input type="hidden" name="Direction" value="@Model.ListingModel.Direction" />
             }
-        }
 
-        @if (Model.IsFilterable)
-        {
-            <partial name="_TableFilters" model="@Model.FilterContext" />
-        }
+            @if (Model.Pagination != null)
+            {
+                <input type="hidden" name="Page" value="@Model.ListingModel.Page" />
 
-        @if (Model.IsSearchable)
-        {
-            <partial name="_TableSearchBar" model="@Model.ListingModel" />
-        }
-    </form>
+                @if (Model.IsPageSizeAdjustable)
+                {
+                    <div class="float-end ms-2">
+                        <label for="PageSize">Show per page:</label>
+                        <select id="PageSize" name="PageSize" class="form-select form-select-sm d-inline-block w-auto">
+                            @foreach (Option option in Model.GetPageSizeOptions())
+                            {
+                                <option value="@option.Value" selected="@option.Selected">@option.Content</option>
+                            }
+                        </select>
+                    </div>
+                }
+            }
+
+            @if (Model.IsFilterable)
+            {
+                <partial name="_TableFilters" model="@Model.FilterContext" />
+            }
+
+            @if (Model.IsSearchable)
+            {
+                <partial name="_TableSearchBar" model="@Model.ListingModel" />
+            }
+        </form>
+    </div>
 
     @if (hasMassActions)
     {
@@ -87,7 +89,7 @@
                             <th>@heading.Element.Content</th>
                         }
                     }
-                    @if (Model.RowActionOptions != null)
+                    @if (Model.RowActions.Any())
                     {
                         <th class="text-center">Actions</th>
                     }
@@ -111,7 +113,7 @@
                                     <span>@cellData</span>
                                 </td>
                             }
-                            @if (Model.RowActionOptions != null)
+                            @if (Model.RowActions.Any())
                             {
                                 <partial name="_RowActions" model="@Model.GenerateRowActions(item)" />
                             }
@@ -121,7 +123,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="@(Model.ColumnDatas.Count + (Model.RowActionOptions != null ? 1 : 0) + 1)">
+                        <td colspan="@(Model.ColumnDatas.Count + (Model.RowActions.Any() ? 1 : 0) + 1)">
                             No results were found.
                         </td>
                     </tr>

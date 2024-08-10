@@ -1,6 +1,7 @@
 ﻿using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Models;
 using HotelWebDemo.Models.Components.Admin.Tables;
+using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 
@@ -36,6 +37,11 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
         return repository.GetAll();
     }
 
+    public async Task<List<TEntity>> GetByIds(IEnumerable<int> ids)
+    {
+        return await repository.GetByIds(ids);
+    }
+
     public virtual async Task<PaginatedList<TEntity>> List(ListingModel listingModel)
     {
         return await repository.List(listingModel);
@@ -48,13 +54,7 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
 
     public virtual void InitializeListingModel(ListingModel<TEntity> listingModel, ListingModel listingQuery)
     {
-        listingModel.ActionName = "Index";
-        listingModel.OrderBy = listingQuery?.OrderBy ?? ListingModel.DEFAULT_ORDER_BY;
-        listingModel.Direction = listingQuery?.Direction ?? ListingModel.DEFAULT_DIRECTION;
-        listingModel.Page = listingQuery?.Page ?? ListingModel.DEFAULT_PAGE;
-        listingModel.PageSize = listingQuery?.PageSize ?? ListingModel.DEFAULT_PAGE_SIZE;
-        listingModel.Filters = listingQuery?.Filters;
-        listingModel.SearchPhrase = listingQuery?.SearchPhrase;
+        listingModel.Copy(listingQuery);
     }
 
     public virtual Table<TEntity> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items)
@@ -63,8 +63,32 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
             .SetSearchable(true)
             .SetOrderable(true)
             .SetFilterable(true)
-            .AddRowActions()
-            .AddPagination(items);
+            .AddChainCall(CreateEditRowAction)
+            .AddChainCall(CreateDeleteRowAction)
+            .AddPagination(true);
+    }
+
+    public virtual Table<TEntity> CreateEditRowAction(Table<TEntity> table)
+    {
+        return table.AddRowAction("Edit", RequestMethod.Get, BootstrapIconType.Pencil, CustomizeEditRowAction);
+    }
+
+    public virtual Table<TEntity> CreateDeleteRowAction(Table<TEntity> table)
+    {
+        return table.AddRowAction("Delete", RequestMethod.Delete, BootstrapIconType.TrashCan, CustomizeDeleteRowAction);
+    }
+
+    public virtual RowAction CustomizeEditRowAction(RowAction action)
+    {
+        return action;
+    }
+
+    public virtual RowAction CustomizeDeleteRowAction(RowAction action)
+    {
+        return action
+            .SetColor(ColorClass.Danger)
+            .SetConfirmationTitle("Delete confirmation")
+            .SetConfirmationMessage(item => $"Are you sure you want to delete {item.GetType().Name} with ID {item.Id}?");
     }
 
     public virtual async Task<ListingModel<TEntity>> CreateListingModel(ListingModel listingQuery)

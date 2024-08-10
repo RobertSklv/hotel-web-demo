@@ -13,13 +13,15 @@ public interface ICrudRepository<TEntity, TViewModel>
 
     List<TEntity> GetAll();
 
+    Task<List<TEntity>> GetByIds(IEnumerable<int> ids);
+
     Task<int> Upsert(TEntity entity);
 
     Task<int> Update(TEntity entity);
 
     Task<int> Delete(int id);
 
-    Task<PaginatedList<TEntity>> List(ListingModel listingModel);
+    Task<PaginatedList<TEntity>> List(ListingModel listingModel, Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryCallback = null);
 }
 
 public interface ICrudRepository<TEntity> : ICrudRepository<TEntity, TEntity>

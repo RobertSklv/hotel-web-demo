@@ -1,53 +1,118 @@
 ﻿@using HotelWebDemo.Models.Components.Admin.Tables
+@using HotelWebDemo.Models.Components.Common
 
 @model TableRowActions
 
-@{
-}
-
 <td class="text-center">
-    @if (Model.Options.Edit)
+    @foreach (RowAction action in Model.Actions)
     {
-        <a asp-action="Edit" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" class="btn btn-sm mx-2 btn-primary text-decoration-none">
-            <i class="bi bi-pencil-fill me-1"></i>Edit
-        </a>
-    }
-    @if (Model.Options.Delete)
-    {
-        if (Model.Options.ConfirmDelete)
+        BootstrapIcon icon = new()
         {
-        <button type="button" data-bs-toggle="modal" data-bs-target="#@Model.ConfirmModalId" class="btn btn-sm mx-2 btn-danger">
-            <i class="bi bi-trash-fill me-1"></i>Delete
-        </button>
-        }
-        else
+            Type = action.Icon
+        };
+        icon.ClassList.Add("me-1");
+        string confirmModalId = $"{action.Action}ConfirmModal-{Model.Item.Id}";
+        string confirmModalLabelId = $"{action.Action}ConfirmModalLabel-{Model.Item.Id}";
+        string actionId = string.Join('-', action.Id, Model.Item.Id);
+
+        if (action.HasConfirmationPopup)
         {
-        <form asp-action="Delete" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" method="DELETE">
-            <button type="submit" class="btn btn-sm mx-2 btn-danger">
-                <i class="bi bi-trash-fill me-1"></i>Delete
+            string confirmationMessage = action.ConfirmMessageCallback != null
+                ? action.ConfirmMessageCallback(Model.Item)
+                : action.ConfirmationMessage;
+
+            <button type="button" data-bs-toggle="modal" data-bs-target="#@confirmModalId" class="btn btn-sm mx-2 btn-@(action.ColorClass)">
+                @if (action.Icon != BootstrapIconType.None)
+                {
+                    <partial name="_BootstrapIcon" model="@icon" />
+                }
+                @action.Content
             </button>
-        </form>
-        }
-        <div class="modal fade" id="@Model.ConfirmModalId" tabindex="-1" aria-labelledby="@Model.ConfirmModalLabelId" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="modal-title fs-5" id="@Model.ConfirmModalLabelId">Delete confirmation</h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="text-start">@Model.DeleteConfirmMessage</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <form asp-action="Delete" asp-controller="@Model.Options.Controller" asp-route-id="@Model.Item.Id" method="DELETE">
-                            <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash-fill me-1"></i>Delete
-                            </button>
-                        </form>
+            <div class="modal fade" id="@confirmModalId" tabindex="-1" aria-labelledby="@confirmModalLabelId" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title fs-5" id="@confirmModalLabelId">@action.ConfirmationTitle</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="text-start">@confirmationMessage</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            @if (action.Method == RequestMethod.Get)
+                            {
+                                <a asp-action="@action.Action"
+                                   asp-controller="@action.Controller"
+                                   asp-route-id="@Model.Item.Id"
+                                   id="@actionId"
+                                   data-row-action="@action.Action"
+                                   data-item-id="@Model.Item.Id"
+                                   class="btn btn-@(action.ColorClass) text-decoration-none">
+                                    @if (action.Icon != BootstrapIconType.None)
+                                    {
+                                        <partial name="_BootstrapIcon" model="@icon" />
+                                    }
+                                    @action.Content
+                                </a>
+                            }
+                            else
+                            {
+                                <form asp-action="@action.Action"
+                                      asp-controller="@action.Controller"
+                                      asp-route-id="@Model.Item.Id"
+                                      id="@actionId"
+                                      data-row-action="@action.Action"
+                                      data-item-id="@Model.Item.Id"
+                                      method="@action.Method"
+                                >
+                                    <button type="submit" class="btn btn-@(action.ColorClass)">
+                                        @if (action.Icon != BootstrapIconType.None)
+                                        {
+                                            <partial name="_BootstrapIcon" model="@icon" />
+                                        }
+                                        @action.Content
+                                    </button>
+                                </form>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+        else if (action.Method == RequestMethod.Get)
+        {
+            <a asp-action="@action.Action"
+               asp-controller="@action.Controller"
+               asp-route-id="@Model.Item.Id"
+               id="@(action.Id)-@(Model.Item.Id)"
+               data-row-action="@action.Action"
+               data-item-id="@Model.Item.Id"
+               class="btn btn-sm mx-2 btn-@(action.ColorClass) text-decoration-none">
+                @if (action.Icon != BootstrapIconType.None)
+                {
+                    <partial name="_BootstrapIcon" model="@icon" />
+                }
+                @action.Content
+            </a>
+        }
+        else
+        {
+            <form asp-action="@action.Action"
+                  asp-controller="@action.Controller"
+                  asp-route-id="@Model.Item.Id"
+                  id="@(action.Id)-@(Model.Item.Id)"
+                  data-row-action="@action.Action"
+                  data-item-id="@Model.Item.Id"
+                  method="@action.Method">
+                <button type="submit" class="btn btn-sm mx-2 btn-@(action.ColorClass)">
+                    @if (action.Icon != BootstrapIconType.None)
+                    {
+                        <partial name="_BootstrapIcon" model="@icon" />
+                    }
+                    @action.Content
+                </button>
+            </form>
+        }
     }
 </td>

@@ -45,6 +45,11 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
         return DbSet.ToList();
     }
 
+    public async Task<List<TEntity>> GetByIds(IEnumerable<int> ids)
+    {
+        return await DbSet.Where(e => ids.Contains(e.Id)).ToListAsync();
+    }
+
     public virtual async Task<int> Upsert(TEntity entity)
     {
         if (entity.Id > 0)
@@ -74,11 +79,12 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
         return deleteResult;
     }
 
-    public virtual async Task<PaginatedList<TEntity>> List(ListingModel listingModel)
+    public virtual async Task<PaginatedList<TEntity>> List(ListingModel listingModel, Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryCallback = null)
     {
         if (listingModel.OrderBy == null) throw new ArgumentException($"The {nameof(ListingModel.OrderBy)} value is required.");
         if (listingModel.Direction == null) throw new ArgumentException($"The {nameof(ListingModel.Direction)} value is required.");
         if (listingModel.Page == null) throw new ArgumentException($"The {nameof(ListingModel.Page)} value is required.");
+        if (listingModel.PageSize == null) throw new ArgumentException($"The {nameof(ListingModel.PageSize)} value is required.");
 
         IQueryable<TEntity> entities = List(DbSet);
         bool desc = listingModel.Direction == ListingModel.DEFAULT_DIRECTION;
@@ -86,11 +92,16 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
         entities = sortService.OrderBy(entities, listingModel.OrderBy, desc);
         entities = filterService.FilterBy(entities, listingModel.Filters);
         entities = searchService.GenerateSearchFilters(entities, listingModel.SearchPhrase);
+        
+        if (queryCallback != null)
+        {
+            entities = queryCallback(entities);
+        }
 
         PaginatedList<TEntity> paginatedList = await PaginatedList<TEntity>.CreateAsync(
             entities,
             (int)listingModel.Page,
-            listingModel.PageSize ?? ListingModel.DEFAULT_PAGE_SIZE);
+            (int)listingModel.PageSize);
 
         return paginatedList;
     }

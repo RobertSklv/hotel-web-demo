@@ -15,8 +15,6 @@ public class AppDbContext : DbContext
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<BookingCancellation> BookingCancellations { get; set; }
     public DbSet<BookingCustomer> BookingCustomers { get; set; }
-    public DbSet<BookingItem> BookingItems { get; set; }
-    public DbSet<BookingItemRoomFeature> BookingItemRoomFeatures { get; set; }
     public DbSet<BookingPayment> BookingPayments { get; set; }
     public DbSet<Country> Countries { get; set; }
     public DbSet<Customer> Customers { get; set; }

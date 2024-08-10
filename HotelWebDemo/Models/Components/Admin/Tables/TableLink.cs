@@ -21,10 +21,13 @@ public class TableLink : Link
 
     public string? SearchPhrase { get; set; }
 
-    public TableLink(string actionName, string content)
+    public IListingModel Listing { get; set; }
+
+    public TableLink(IListingModel listing, string content)
     {
-        ActionName = actionName;
+        ActionName = listing.ActionName;
         Content = content;
+        Listing = listing;
     }
 
     public TableLink SetPage(int page)
@@ -55,18 +58,18 @@ public class TableLink : Link
         return this;
     }
 
-    public ListingModel GetListingModel()
+    public IListingModel GetListingModel()
     {
-        return new ListingModel()
-        {
-            ActionName = ActionName,
-            OrderBy = OrderBy,
-            Direction = Direction,
-            Page = Page,
-            PageSize = PageSize,
-            Filters = Filters,
-            SearchPhrase = SearchPhrase,
-        };
+        IListingModel clone = Listing.Clone();
+        clone.ActionName = ActionName;
+        clone.OrderBy = OrderBy;
+        clone.Direction = Direction;
+        clone.Page = Page;
+        clone.PageSize = PageSize;
+        clone.Filters = Filters;
+        clone.SearchPhrase = SearchPhrase;
+
+        return clone;
     }
 
     private string GetOppositeDirection()

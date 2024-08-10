@@ -25,13 +25,22 @@ public class RoomService : CrudService<Room>, IRoomService
             .SetAdjustablePageSize(true)
             .SetSelectableOptionsSource(nameof(Room.Hotel), hotelService.GetAll())
             .SetSelectableOptionsSource(nameof(Room.Category), roomCategoryService.GetAll())
-            .AddRowActions(null, options => options.IncludesDelete(false))
             .AddMassAction("MassEnable", "Enable selected")
             .AddMassAction("MassDisable", "Disable selected");
+    }
+
+    public override Table<Room> CreateDeleteRowAction(Table<Room> table)
+    {
+        return table;
     }
 
     public async Task<int> MassEnableToggle(List<int> selectedItemIds, bool enable)
     {
         return await repository.MassEnableToggle(selectedItemIds, enable);
+    }
+
+    public async Task<PaginatedList<Room>> GetBookableRooms(BookingRoomSelectListingModel listingModel)
+    {
+        return await repository.GetBookableRooms(listingModel);
     }
 }

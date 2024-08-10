@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using HotelWebDemo.Models.Attributes;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace HotelWebDemo.Models.Database;
 
@@ -34,6 +35,7 @@ public class RoomCategory : BaseEntity
     [TableColumn]
     public decimal Price { get; set; }
 
+    [JsonIgnore]
     public List<Room>? Rooms { get; set; }
 
     public string SelectLabel => $"{Name} ({Hotel?.Name})";

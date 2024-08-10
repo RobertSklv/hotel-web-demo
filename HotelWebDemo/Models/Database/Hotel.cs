@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using HotelWebDemo.Models.Attributes;
+using Newtonsoft.Json;
 
 namespace HotelWebDemo.Models.Database;
 
@@ -26,10 +27,13 @@ public class Hotel : BaseEntity
     [TableColumn]
     public int Stars { get; set; }
 
+    [JsonIgnore]
     public List<Room>? Rooms { get; set; }
 
+    [JsonIgnore]
     public List<AdminUser>? AdminUsers { get; set; }
 
+    [JsonIgnore]
     public List<RoomCategory>? Categories { get; set; }
 
     [TableColumn(Name = "Room count")]

@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Models.Attributes;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -53,7 +54,7 @@ public class EntitySortService : IEntitySortService
             }
         }
 
-        throw new Exception($"Failed to order by property: {propertyName}");
+        throw new Exception($"Failed to order by property: {propertyName}. Entity type: {typeof(T).ShortDisplayName()}");
     }
 
     public IOrderedQueryable<T> GenerateAndInvokeOrderBy<T>(IQueryable<T> source, string propertyName, Type propertyType, bool descending)

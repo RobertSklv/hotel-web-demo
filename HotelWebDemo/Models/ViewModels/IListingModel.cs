@@ -19,4 +19,8 @@ public interface IListingModel
     string? SearchPhrase { get; set; }
 
     Dictionary<string, string?> GenerateListingQuery();
+
+    void Copy(IListingModel? listingModel);
+
+    IListingModel Clone();
 }

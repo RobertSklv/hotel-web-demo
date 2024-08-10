@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Models.Database;
+using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Data.Repositories;
 
@@ -9,4 +10,6 @@ public interface IRoomRepository : ICrudRepository<Room>
     Task UpdateSelectedFeatures(Room room);
 
     Task<int> MassEnableToggle(List<int> selectedItemIds, bool enable);
+
+    Task<PaginatedList<Room>> GetBookableRooms(BookingRoomSelectListingModel listingModel);
 }

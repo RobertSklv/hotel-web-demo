@@ -23,6 +23,9 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
 
     protected string OldModelTempDataKey = $"OldModel-{typeof(TViewModel).Name}";
 
+    protected virtual string DefaultCreateViewName { get; } = "Upsert";
+    protected virtual string DefaultUpdateViewName { get; } = "Upsert";
+
     public CrudController(ICrudService<TEntity, TViewModel> service, IAdminPageService adminPageService, Serilog.ILogger logger)
     {
         this.service = service;
@@ -53,7 +56,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     {
         AddBackAction();
 
-        return View("Upsert", TempData.Pop<TViewModel>(OldModelTempDataKey) ?? new TViewModel());
+        return View(DefaultCreateViewName, TempData.Pop<TViewModel>(OldModelTempDataKey) ?? new TViewModel());
     }
 
     [HttpGet]
@@ -68,7 +71,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         {
             AddBackAction();
 
-            return View("Upsert", TempData.Pop<TViewModel>(OldModelTempDataKey) ?? model);
+            return View(DefaultUpdateViewName, TempData.Pop<TViewModel>(OldModelTempDataKey) ?? model);
         }
 
         AddMessage($"Entity with ID {id} doesn't exist.", ColorClass.Danger, log: true);

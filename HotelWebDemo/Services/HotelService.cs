@@ -15,8 +15,12 @@ public class HotelService : CrudService<Hotel>, IHotelService
     public override Table<Hotel> CreateListingTable(ListingModel<Hotel> listingModel, PaginatedList<Hotel> items)
     {
         return base.CreateListingTable(listingModel, items)
-            .SetSearchable(false)
-            .AddRowActions(null, options => options.SetDeleteConfirmationMessage<Hotel>(
-                hotel => $"Are you sure you want to remove hotel {hotel.Name}? This action cannot be undone."));
+            .SetSearchable(false);
+    }
+
+    public override RowAction CustomizeDeleteRowAction(RowAction action)
+    {
+        return base.CustomizeDeleteRowAction(action)
+            .SetConfirmationMessage<Hotel>(hotel => $"Are you sure you want to remove hotel {hotel.Name}? This action cannot be undone.");
     }
 }

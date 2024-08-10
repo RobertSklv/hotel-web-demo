@@ -16,6 +16,9 @@ public class BookingItem : BaseEntity
 
     public int RoomCategoryId { get; set; }
 
+    [Range(1, 5)]
+    public int TargetCapacity { get; set; }
+
     [Range(1, 999)]
     public int Quantity { get; set; }
 

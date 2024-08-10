@@ -1,0 +1,55 @@
+﻿@using HotelWebDemo.Models.Components.Admin.Pages
+@using HotelWebDemo.Models.Components.Common
+@using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
+
+@model BookingRoomSelectListingModel
+
+@{
+    Layout = "_AdminPageLayout";
+    ViewData["PageHeading"] = "New Booking";
+    int step = (int)(TempData["Step"]! ?? 0);
+}
+
+<div class="row">
+    <div class="col-2">
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+                Hotel selection
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">Room reservation</a>
+            <a class="list-group-item list-group-item-action disabled" aria-disabled="true">Booking summary</a>
+        </div>
+    </div>
+    <div class="col-10">
+        @if (step == 0)
+        {
+            <form asp-action="ChooseHotel" method="get">
+                <partial name="_ChooseHotelFieldset" model="@Model" />
+
+                <button type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Proceed</button>
+            </form>
+        }
+        else if (step == 1)
+        {
+            <form asp-action="ReserveRooms" method="get" class="d-flex flex-column">
+                <input type="hidden" asp-for="@Model.HotelId" />
+                <input type="hidden" asp-for="@Model.StartDate" />
+                <input type="hidden" asp-for="@Model.ExpirationDate" />
+
+                <button asp-action="BookingSummary" type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold me-auto order-2">Proceed</button>
+
+                <partial name="_ReserveFieldset" model="@Model" />
+            </form>
+        }
+        else if (step == 2)
+        {
+            
+        }
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/Booking/create.js"></script>
+}

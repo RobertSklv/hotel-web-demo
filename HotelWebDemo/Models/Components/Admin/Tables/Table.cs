@@ -27,7 +27,7 @@ public abstract class Table
 
     public Pagination? Pagination { get; set; }
 
-    public TableRowActionsOptions? RowActionOptions { get; set; }
+    public List<RowAction> RowActions { get; set; } = new();
 
     public FilterContext FilterContext { get; set; }
 
@@ -115,12 +115,7 @@ public abstract class Table
 
     public TableRowActions GenerateRowActions(IBaseEntity item)
     {
-        if (RowActionOptions == null)
-        {
-            throw new Exception($"No row action options were defined!");
-        }
-
-        return new TableRowActions(item, RowActionOptions);
+        return new TableRowActions(item, RowActions);
     }
 
     public TableColumnData? FindColumn(string propertyName, bool strict = true)
@@ -277,7 +272,7 @@ public abstract class Table
 
     public TableLink CreateLink(string content)
     {
-        return new(ListingModel.ActionName, content)
+        return new(ListingModel, content)
         {
             OrderBy = ListingModel.OrderBy,
             Direction = ListingModel.Direction,
@@ -293,11 +288,11 @@ public class Table<T> : Table
 {
     public delegate object? ColumnValueOverrider(T model, object? originalValue);
 
-    public List<T> Items { get; set; }
+    public PaginatedList<T> Items { get; set; }
 
     public override bool HasItems => Items.Count > 0;
 
-    public Table(IListingModel listingModel, List<T> items)
+    public Table(IListingModel listingModel, PaginatedList<T> items)
         : base(listingModel, typeof(T))
     {
         Items = items;
@@ -330,11 +325,6 @@ public class Table<T> : Table
         }
 
         return rowData;
-    }
-
-    public Pagination CreatePagination(PaginatedList<T> paginatedList)
-    {
-        return new(paginatedList.PageIndex, paginatedList.TotalPages, this);
     }
 
     public Table<T> OverrideColumnName(string propertyName, string columnName)
@@ -372,18 +362,59 @@ public class Table<T> : Table
         return this;
     }
 
-    public Table<T> AddPagination(PaginatedList<T> paginatedList)
+    public Table<T> AddPagination(bool add)
     {
-        Pagination = CreatePagination(paginatedList);
+        if (add)
+        {
+            Pagination = new(Items.PageIndex, Items.TotalPages, this);
+        }
+        else
+        {
+            Pagination = null;
+        }
 
         return this;
     }
 
-    public Table<T> AddRowActions(string? controller = null, Func<TableRowActionsOptions, TableRowActionsOptions>? options = null)
+    public Table<T> AddRowAction(
+        string action,
+        RequestMethod method = default,
+        BootstrapIconType icon = default,
+        Func<RowAction, RowAction>? customizationCallback = null)
     {
         Type entityType = typeof(T);
-        TableRowActionsOptions opt = new(controller ?? entityType.Name);
-        RowActionOptions = options != null ? options(opt) : opt;
+        RowAction rowAction = new()
+        {
+            Action = action,
+            Controller = entityType.Name,
+            Method = method,
+            Icon = icon,
+            Content = action
+        };
+
+        if (customizationCallback != null )
+        {
+            rowAction = customizationCallback(rowAction);
+        }
+
+        RowActions.Add(rowAction);
+
+        return this;
+    }
+
+    public Table<T> AddRowAction(RowAction? rowAction)
+    {
+        if (rowAction != null)
+        {
+            RowActions.Add(rowAction);
+        }
+
+        return this;
+    }
+
+    public Table<T> AddChainCall(Func<Table<T>, Table<T>> chainCallback)
+    {
+        chainCallback(this);
 
         return this;
     }

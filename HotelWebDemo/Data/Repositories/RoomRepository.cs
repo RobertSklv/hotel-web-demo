@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Models.Database;
+using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -67,5 +68,22 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
         return await db.Rooms
             .Where(e => selectedItemIds.Contains(e.Id))
             .ExecuteUpdateAsync(e => e.SetProperty(e => e.Enabled, enable));
+    }
+
+    public async Task<PaginatedList<Room>> GetBookableRooms(BookingRoomSelectListingModel listingModel)
+    {
+        return await List(
+            listingModel,
+            rooms => rooms
+                .Include(e => e.BookingRooms!)
+                .ThenInclude(e => e.Booking)
+                .Where(e => 
+                    e.Enabled &&
+                    e.HotelId == listingModel.HotelId &&
+                    !(listingModel.RoomsToReserve ?? new()).Contains(e.Id) &&
+                    e.BookingRooms!.Where(e => 
+                        (e.Booking!.StartDate >= listingModel.StartDate && e.Booking.StartDate < listingModel.ExpirationDate) ||
+                        (e.Booking.ExpirationDate > listingModel.StartDate && e.Booking.ExpirationDate <= listingModel.ExpirationDate))
+                    .Count() == 0));
     }
 }

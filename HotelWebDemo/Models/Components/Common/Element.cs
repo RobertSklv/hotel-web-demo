@@ -8,9 +8,9 @@ public class Element
 
     public string? Content { get; set; }
 
-    public ColorClass? Color { get; set; }
+    public ColorClass Color { get; set; }
 
-    public string ColorClass => Color?.ToString()?.ToLower() ?? string.Empty;
+    public string ColorClass => Color.ToString()?.ToLower() ?? string.Empty;
 
     public string? Class
     {

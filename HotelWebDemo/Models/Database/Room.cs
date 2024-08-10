@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using HotelWebDemo.Models.Attributes;
+using Newtonsoft.Json;
 
 namespace HotelWebDemo.Models.Database;
 
@@ -33,10 +34,18 @@ public class Room : BaseEntity
     [TableColumn]
     public int Capacity { get; set; }
 
+    [JsonIgnore]
     public List<RoomFeatureRoom>? RoomFeatureRooms { get; set; }
 
+    [JsonIgnore]
     public List<RoomFeature>? Features { get; set; }
+
+    [JsonIgnore]
+    public List<RoomReservation>? BookingRooms { get; set; }
 
     [NotMapped]
     public List<int> SelectedFeatureIds { get; set; } = new();
+
+    //[NotMapped]
+    //public Booking? ActiveBooking => BookingRooms?.Where(e => e.Booking?.ExpirationDate > DateTime.UtcNow).FirstOrDefault()?.Booking;
 }

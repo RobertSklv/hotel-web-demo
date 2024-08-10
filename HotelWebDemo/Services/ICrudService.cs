@@ -13,6 +13,8 @@ public interface ICrudService<TEntity, TViewModel>
 
     List<TEntity> GetAll();
 
+    Task<List<TEntity>> GetByIds(IEnumerable<int> ids);
+
     Task<int> Upsert(TViewModel model);
 
     Task<int> Update(TEntity entity);

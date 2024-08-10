@@ -10,7 +10,7 @@ window.createTableComponent = function (tableId) {
         searchBarWrapper: null,
         searchBarWrapperInput: null,
         searchBarWrapperButton: null,
-        filtersForm: null,
+        filtersWrapper: null,
 
         initialize: function () {
             var self = this;
@@ -21,18 +21,18 @@ window.createTableComponent = function (tableId) {
                 self.removeFilter(this);
             });
 
-            this.filtersForm = $('.filters-form', idSelector);
+            this.filtersWrapper = $('.filters-wrapper', idSelector);
 
-            this.filtersForm.on('submit', function () {
+            $('#applyFiltersButton').parents('form').on('submit', function () {
                 self.applyFilters(this);
             });
 
-            this.filtersForm.find('.filter-operator').on('change', function () {
+            this.filtersWrapper.find('.filter-operator').on('change', function () {
                 self.onOperatorChange(this);
             });
 
-            this.filtersForm.find('select[name="PageSize"]', idSelector).on('change', function () {
-                self.filtersForm.trigger('submit');
+            this.filtersWrapper.find('select[name="PageSize"]', idSelector).on('change', function () {
+                self.filtersWrapper.trigger('submit');
             });
 
             var massActionFormIdSelector = '#massActionForm-' + tableId;
@@ -63,17 +63,17 @@ window.createTableComponent = function (tableId) {
             var propertyName = $(filter).data('remove-filter');
 
             if (propertyName == '__all') {
-                this.filtersForm.find(`[data-filter] .filter-value`).val('');
+                this.filtersWrapper.find(`[data-filter] .filter-value`).val('');
             } else {
-                this.filtersForm.find(`[data-filter="${propertyName}"] .filter-value`).val('');
+                this.filtersWrapper.find(`[data-filter="${propertyName}"] .filter-value`).val('');
             }
 
             $('#applyFiltersButton').click();
         },
 
-        applyFilters: function (filtersForm) {
+        applyFilters: function (filtersWrapper) {
             var self = this;
-            var filters = $(filtersForm).find('.filter');
+            var filters = $(filtersWrapper).find('.filter');
 
             $.each(filters, function (i, e) {
                 var $e = $(e);

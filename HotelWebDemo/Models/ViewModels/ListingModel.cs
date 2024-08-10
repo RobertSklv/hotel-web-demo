@@ -26,7 +26,7 @@ public class ListingModel : IListingModel
 
     public string? SearchPhrase { get; set; }
 
-    public Dictionary<string, string?> GenerateListingQuery()
+    public virtual Dictionary<string, string?> GenerateListingQuery()
     {
         Dictionary<string, string?> query = new();
 
@@ -72,6 +72,41 @@ public class ListingModel : IListingModel
         return query;
     }
 
+    public virtual void Copy(IListingModel? listingModel)
+    {
+        ActionName = listingModel?.ActionName ?? "Index";
+        OrderBy = listingModel?.OrderBy ?? DEFAULT_ORDER_BY;
+        Direction = listingModel?.Direction ?? DEFAULT_DIRECTION;
+        Page = listingModel?.Page ?? DEFAULT_PAGE;
+        PageSize = listingModel?.PageSize ?? DEFAULT_PAGE_SIZE;
+        Filters = listingModel?.Filters;
+        SearchPhrase = listingModel?.SearchPhrase;
+    }
+
+    public virtual IListingModel Instantiate()
+    {
+        return new ListingModel();
+    }
+
+    public virtual void Clone(IListingModel listingModel)
+    {
+        listingModel.ActionName = ActionName;
+        listingModel.OrderBy = OrderBy;
+        listingModel.Direction = Direction;
+        listingModel.Page = Page;
+        listingModel.PageSize = PageSize;
+        listingModel.Filters = Filters != null ? new(Filters) : null;
+        listingModel.SearchPhrase = SearchPhrase;
+    }
+
+    public IListingModel Clone()
+    {
+        IListingModel clone = Instantiate();
+        Clone(clone);
+
+        return clone;
+    }
+
     private void CheckDefaultPage()
     {
         if (Page == DEFAULT_PAGE)
@@ -105,8 +140,8 @@ public class ListingModel : IListingModel
     }
 }
 
-public class ListingModel<T> : ListingModel
-    where T : IBaseEntity
+public class ListingModel<TEntity> : ListingModel
+    where TEntity : IBaseEntity
 {
-    public Table<T> Table { get; set; }
+    public Table<TEntity>? Table { get; set; }
 }

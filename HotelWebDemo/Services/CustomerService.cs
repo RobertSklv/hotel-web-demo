@@ -137,8 +137,12 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
         return base.CreateListingTable(listingModel, items)
             .SetAdjustablePageSize(true)
             .OverrideColumnName(nameof(Customer.CreatedAt), "Registration date")
-            .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship), countries)
-            .AddRowActions(null, options => options.IncludesDelete(false));
+            .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship), countries);
+    }
+
+    public override Table<Customer> CreateDeleteRowAction(Table<Customer> table)
+    {
+        return table;
     }
 
     public bool CompareResetPasswordToken(Customer customer, string token)

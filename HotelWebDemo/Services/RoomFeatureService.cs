@@ -19,8 +19,12 @@ public class RoomFeatureService : CrudService<RoomFeature>, IRoomFeatureService
     {
         return base.CreateListingTable(listingModel, items)
             .SetSearchable(false)
-            .SetSelectableOptionsSource(nameof(RoomFeature.Hotel), hotelService.GetAll())
-            .AddRowActions(null, options => options.SetDeleteConfirmationMessage<RoomFeature>(
-                roomFeature => $"Are you sure you want to remove room feature {roomFeature.Code}? This action cannot be undone."));
+            .SetSelectableOptionsSource(nameof(RoomFeature.Hotel), hotelService.GetAll());
+    }
+
+    public override RowAction CustomizeDeleteRowAction(RowAction action)
+    {
+        return base.CustomizeDeleteRowAction(action)
+            .SetConfirmationMessage<RoomFeature>(roomFeature => $"Are you sure you want to remove room feature {roomFeature.Code}? This action cannot be undone.");
     }
 }
