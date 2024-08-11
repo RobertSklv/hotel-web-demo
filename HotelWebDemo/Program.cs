@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+using Serilog.Formatting.Display;
 using StarExplorerMainServer.Areas.Admin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,12 +33,6 @@ builder.Services.AddAuthentication()
     });
 
 CultureInfo culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
-//culture.DateTimeFormat.ShortDatePattern = "dd MMM";
-//culture.DateTimeFormat.LongDatePattern = "dd.MM.yyyy";
-//culture.DateTimeFormat.FullDateTimePattern = "dd.MM.yyyy hh:mm";
-//culture.DateTimeFormat.DateSeparator = ".";
-//culture.DateTimeFormat.ShortTimePattern = "hh:mm";
-//culture.DateTimeFormat.LongTimePattern = "hh:mm:ss";
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
 
@@ -78,19 +73,21 @@ builder.Services.AddScoped<IEntityHelperService, EntityHelperService>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+MessageTemplateTextFormatter logFormatter = new("[{Timestamp:yyyy-MM-dd HH:mm:ss}] [{Level:u3}] {Message:lj}{NewLine}{Exception}");
+
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Logger(l => l
         .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information)
-        .WriteTo.File(@$"Logs\Info-{DateTime.UtcNow:dd-MM-yyyy}.log"))
+        .WriteTo.RollingFile(@$"Logs\Info.log", retainedFileCountLimit: 7))
     .WriteTo.Logger(l => l
-        .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug)
-        .WriteTo.File(@$"Logs\Debug-{DateTime.UtcNow:dd-MM-yyyy}.log"))
+        .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug || e.Level == LogEventLevel.Error || e.Level == LogEventLevel.Fatal)
+        .WriteTo.RollingFile(@$"Logs\Debug.log", retainedFileCountLimit: 7))
     .WriteTo.Logger(l => l
         .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error || e.Level == LogEventLevel.Fatal)
-        .WriteTo.File(@$"Logs\Error-{DateTime.UtcNow:dd-MM-yyyy}.log"))
+        .WriteTo.RollingFile(logFormatter, @"Logs\Error.log", retainedFileCountLimit: 7))
     .WriteTo.Logger(l => l
         .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Fatal)
-        .WriteTo.File(@$"Logs\Fatal-{DateTime.UtcNow:dd-MM-yyyy}.log"))
+        .WriteTo.RollingFile(@$"Logs\Fatal.log", retainedFileCountLimit: 7))
     .CreateLogger();
 
 builder.Services.AddSingleton(Log.Logger);

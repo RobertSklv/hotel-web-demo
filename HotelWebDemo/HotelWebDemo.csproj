@@ -28,12 +28,14 @@
     </PackageReference>
     <PackageReference Include="MimeKit" Version="4.7.1" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.Map" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\Seeding\DefaultData\" />
     <Folder Include="Data\Seeding\SampleData\" />
+    <Folder Include="Logs\" />
     <Folder Include="wwwroot\js\Common\" />
     <Folder Include="wwwroot\js\Booking\" />
     <Folder Include="wwwroot\js\Room\" />
