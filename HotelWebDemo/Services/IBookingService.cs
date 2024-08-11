@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Models.Database;
+﻿using HotelWebDemo.Models.Components.Admin.Booking;
+using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Services;
@@ -10,4 +11,6 @@ public interface IBookingService : ICrudService<Booking, BookingRoomSelectListin
     Task ConvertReservedRoomIdsIfAny(BookingRoomSelectListingModel viewModel);
 
     RoomReservation CreateRoomReservation(int roomId);
+
+    BookingStepContext GenerateBookingStepContext(BookingRoomSelectListingModel? viewModel, string? activeStep = null);
 }

@@ -45,7 +45,7 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
         return DbSet.ToList();
     }
 
-    public async Task<List<TEntity>> GetByIds(IEnumerable<int> ids)
+    public virtual async Task<List<TEntity>> GetByIds(IEnumerable<int> ids)
     {
         return await DbSet.Where(e => ids.Contains(e.Id)).ToListAsync();
     }

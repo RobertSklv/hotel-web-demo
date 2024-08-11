@@ -22,9 +22,9 @@ public class BookingRoomSelectListingModel : ListingModel<Room>, IBookingViewMod
     {
         var query = base.GenerateListingQuery();
 
-        query.Add("HotelId", HotelId.ToString());
-        query.Add("StartDate", StartDate.ToString());
-        query.Add("ExpirationDate", ExpirationDate.ToString());
+        query.Add(nameof(HotelId), HotelId.ToString());
+        query.Add(nameof(StartDate), StartDate.ToString());
+        query.Add(nameof(ExpirationDate), ExpirationDate.ToString());
 
         for (int i = 0; i < RoomsToReserve?.Count; i++)
         {

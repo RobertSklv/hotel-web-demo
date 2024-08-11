@@ -37,7 +37,6 @@ public class Room : BaseEntity
     [JsonIgnore]
     public List<RoomFeatureRoom>? RoomFeatureRooms { get; set; }
 
-    [JsonIgnore]
     public List<RoomFeature>? Features { get; set; }
 
     [JsonIgnore]
@@ -45,6 +44,41 @@ public class Room : BaseEntity
 
     [NotMapped]
     public List<int> SelectedFeatureIds { get; set; } = new();
+
+    public decimal Price
+    {
+        get
+        {
+            if (Category == null)
+            {
+                throw new Exception($"The category must be loaded in order to calculate the total price.");
+            }
+
+            return Category.Price;
+        }
+    }
+
+    public decimal FeaturesPrice
+    {
+        get
+        {
+            if (Features == null)
+            {
+                throw new Exception($"The features must be loaded in order to calculate the total price.");
+            }
+
+            decimal total = 0;
+
+            foreach (RoomFeature roomFeature in Features)
+            {
+                total += roomFeature.Price;
+            }
+
+            return total;
+        }
+    }
+
+    public decimal TotalPrice => Price + FeaturesPrice;
 
     //[NotMapped]
     //public Booking? ActiveBooking => BookingRooms?.Where(e => e.Booking?.ExpirationDate > DateTime.UtcNow).FirstOrDefault()?.Booking;

@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Extensions;
+using HotelWebDemo.Models.Components.Admin.Booking;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
@@ -32,26 +33,29 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
     {
         ViewData["Hotels"] = hotelService.GetAll();
         ViewData["RoomCategories"] = categoryService.GetAll();
-        if (TempData["Step"] == null)
+        if (!TempData.ContainsKey("StepContext"))
         {
-            TempData["Step"] = 0;
+            BookingRoomSelectListingModel? viewModel = TempData.Get<BookingRoomSelectListingModel>(OldModelTempDataKey);
+            TempData.Set("StepContext", service.GenerateBookingStepContext(viewModel));
         }
 
         return base.Create();
     }
 
     [HttpGet]
-    public IActionResult ChooseHotel(int hotelId, DateTime startDate, DateTime expirationDate)
+    public IActionResult BackToChooseHotel([FromQuery] BookingRoomSelectListingModel viewModel)
     {
-        BookingRoomSelectListingModel viewModel = new()
-        {
-            HotelId = hotelId,
-            StartDate = startDate,
-            ExpirationDate = expirationDate
-        };
         TempData.Set(OldModelTempDataKey, viewModel);
+        TempData.Set("StepContext", service.GenerateBookingStepContext(viewModel));
 
-        TempData["Step"] = 1;
+        return RedirectToAction("Create");
+    }
+
+    [HttpGet]
+    public IActionResult ChooseHotel([FromQuery] BookingRoomSelectListingModel viewModel)
+    {
+        TempData.Set(OldModelTempDataKey, viewModel);
+        TempData.Set("StepContext", service.GenerateBookingStepContext(viewModel, BookingService.ROOM_RESERVATION_STEP_NAME));
 
         return RedirectToAction("ReserveRooms", viewModel);
     }
@@ -59,31 +63,34 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
     [HttpGet]
     public async Task<IActionResult> ReserveRooms([FromQuery] BookingRoomSelectListingModel viewModel)
     {
-        ViewData["Hotels"] = hotelService.GetAll();
-        ViewData["RoomCategories"] = categoryService.GetAll();
         await service.ConvertReservedRoomIdsIfAny(viewModel);
+
         TempData.Set(OldModelTempDataKey, viewModel);
 
-        if (viewModel.HotelId == 0 || viewModel.StartDate == default || viewModel.ExpirationDate == default)
+        BookingStepContext bookingStepContext = service.GenerateBookingStepContext(viewModel);
+
+        if (bookingStepContext.GetStep(BookingService.ROOM_RESERVATION_STEP_NAME).Disabled)
         {
-            TempData["Step"] = 0;
+            bookingStepContext.ActiveStep = BookingService.HOTEL_SELECTION_STEP_NAME;
+            TempData.Set("StepContext", bookingStepContext);
 
             return RedirectToAction("Create");
         }
 
-        TempData["Step"] = 1;
+        bookingStepContext.ActiveStep = BookingService.ROOM_RESERVATION_STEP_NAME;
+        TempData.Set("StepContext", bookingStepContext);
 
         ViewData["RoomListing"] = await service.CreateRoomListing(viewModel);
 
         return base.Create();
     }
 
-    [HttpPost]
+    [HttpGet]
     public IActionResult BookingSummary(BookingRoomSelectListingModel viewModel)
     {
         service.ConvertReservedRoomIdsIfAny(viewModel);
 
-        TempData["Step"] = 2;
+        TempData.Set("StepContext", service.GenerateBookingStepContext(viewModel, BookingService.SUMMARY_STEP_NAME));
 
         return base.Create();
     }

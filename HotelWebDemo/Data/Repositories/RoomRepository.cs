@@ -26,6 +26,15 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
         return room;
     }
 
+    public override async Task<List<Room>> GetByIds(IEnumerable<int> ids)
+    {
+        return await DbSet
+            .Include(e => e.Category)
+            .Include(e => e.Features)
+            .Where(e => ids.Contains(e.Id))
+            .ToListAsync();
+    }
+
     public override async Task<int> Update(Room entity)
     {
         await UpdateSelectedFeatures(entity);

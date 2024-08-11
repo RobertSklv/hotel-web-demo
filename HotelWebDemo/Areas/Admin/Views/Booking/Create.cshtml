@@ -1,4 +1,6 @@
-﻿@using HotelWebDemo.Models.Components.Admin.Pages
+﻿@using HotelWebDemo.Extensions
+@using HotelWebDemo.Models.Components.Admin.Booking
+@using HotelWebDemo.Models.Components.Admin.Pages
 @using HotelWebDemo.Models.Components.Common
 @using HotelWebDemo.Models.Database
 @using HotelWebDemo.Models.ViewModels
@@ -8,44 +10,29 @@
 @{
     Layout = "_AdminPageLayout";
     ViewData["PageHeading"] = "New Booking";
-    int step = (int)(TempData["Step"]! ?? 0);
+    BookingStepContext stepContext = TempData.Get<BookingStepContext>("StepContext") ?? throw new Exception("Step context is not defined.");
+    BookingStep activeStep = stepContext.GetStep(stepContext.ActiveStep);
 }
 
 <div class="row">
     <div class="col-2">
         <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
-                Hotel selection
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">Room reservation</a>
-            <a class="list-group-item list-group-item-action disabled" aria-disabled="true">Booking summary</a>
+            @foreach (BookingStep step in stepContext.Steps)
+            {
+                <a href="@step.Href"
+                    asp-area="@step.Area"
+                    asp-controller="@step.Controller"
+                    asp-action="@step.Action"
+                    asp-all-route-data="@step.QueryParameters"
+                    class="list-group-item list-group-item-action @(step.Id == stepContext.ActiveStep ? "active" : "") @(step.Disabled ? "disabled" : "")"
+                    aria-current="true">
+                    @step.Content
+                </a>
+            }
         </div>
     </div>
     <div class="col-10">
-        @if (step == 0)
-        {
-            <form asp-action="ChooseHotel" method="get">
-                <partial name="_ChooseHotelFieldset" model="@Model" />
-
-                <button type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Proceed</button>
-            </form>
-        }
-        else if (step == 1)
-        {
-            <form asp-action="ReserveRooms" method="get" class="d-flex flex-column">
-                <input type="hidden" asp-for="@Model.HotelId" />
-                <input type="hidden" asp-for="@Model.StartDate" />
-                <input type="hidden" asp-for="@Model.ExpirationDate" />
-
-                <button asp-action="BookingSummary" type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold me-auto order-2">Proceed</button>
-
-                <partial name="_ReserveFieldset" model="@Model" />
-            </form>
-        }
-        else if (step == 2)
-        {
-            
-        }
+        <partial name="@activeStep.Partial" model="Model" />
     </div>
 </div>
 

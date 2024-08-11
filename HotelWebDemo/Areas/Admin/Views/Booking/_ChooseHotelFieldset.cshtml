@@ -11,37 +11,41 @@
     List<RoomCategory> roomCategories = ViewData["RoomCategories"] as List<RoomCategory> ?? new();
 }
 
-<div class="row mb-4 field-hotel">
-    <div class="col-12 col-lg-4">
-        <label asp-for=@Model.Hotel></label>
+<form asp-action="ChooseHotel" method="get">
+    <div class="row mb-4 field-hotel">
+        <div class="col-12 col-lg-4">
+            <label asp-for=@Model.Hotel></label>
+        </div>
+        <div class="col-12 col-lg-8">
+            <select asp-for=@Model.HotelId
+                    class="form-select d-block w-100"
+                    asp-items="new SelectList(
+                                    hotels,
+                                    nameof(Hotel.Id),
+                                    nameof(Hotel.Name))">
+                <option value="0">-- Please select --</option>
+            </select>
+            <span asp-validation-for=@Model.Hotel class="text-danger"></span>
+        </div>
     </div>
-    <div class="col-12 col-lg-8">
-        <select asp-for=@Model.HotelId
-                class="form-select d-block w-100"
-                asp-items="new SelectList(
-                                hotels,
-                                nameof(Hotel.Id),
-                                nameof(Hotel.Name))">
-            <option value="0">-- Please select --</option>
-        </select>
-        <span asp-validation-for=@Model.Hotel class="text-danger"></span>
+    <div class="row mb-4">
+        <div class="col-12 col-lg-4">
+            <label asp-for=@Model.StartDate></label>
+        </div>
+        <div class="col-12 col-lg-8">
+            <input asp-for=@Model.StartDate class="form-control d-block w-100" />
+            <span asp-validation-for=@Model.StartDate class="text-danger"></span>
+        </div>
     </div>
-</div>
-<div class="row mb-4">
-    <div class="col-12 col-lg-4">
-        <label asp-for=@Model.StartDate></label>
+    <div class="row mb-4">
+        <div class="col-12 col-lg-4">
+            <label asp-for=@Model.ExpirationDate></label>
+        </div>
+        <div class="col-12 col-lg-8">
+            <input asp-for=@Model.ExpirationDate class="form-control d-block w-100" />
+            <span asp-validation-for=@Model.ExpirationDate class="text-danger"></span>
+        </div>
     </div>
-    <div class="col-12 col-lg-8">
-        <input asp-for=@Model.StartDate class="form-control d-block w-100" />
-        <span asp-validation-for=@Model.StartDate class="text-danger"></span>
-    </div>
-</div>
-<div class="row mb-4">
-    <div class="col-12 col-lg-4">
-        <label asp-for=@Model.ExpirationDate></label>
-    </div>
-    <div class="col-12 col-lg-8">
-        <input asp-for=@Model.ExpirationDate class="form-control d-block w-100" />
-        <span asp-validation-for=@Model.ExpirationDate class="text-danger"></span>
-    </div>
-</div>
+
+    <button type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Proceed</button>
+</form>

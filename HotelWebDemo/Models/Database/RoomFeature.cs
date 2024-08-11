@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using HotelWebDemo.Models.Attributes;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace HotelWebDemo.Models.Database;
 
@@ -29,10 +30,13 @@ public class RoomFeature : BaseEntity
 
     public int HotelId { get; set; }
 
+    [JsonIgnore]
     public List<Room>? Rooms { get; set; }
 
+    [JsonIgnore]
     public List<RoomFeatureRoom>? RoomFeatureRooms { get; set; }
 
+    [JsonIgnore]
     public List<BookingItemRoomFeature>? BookedFeatures { get; set; }
 
     [TableColumn(Name = "Times used")]
