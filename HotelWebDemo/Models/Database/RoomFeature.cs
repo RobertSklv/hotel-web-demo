@@ -24,6 +24,10 @@ public class RoomFeature : BaseEntity
     [DataType(DataType.Currency)]
     public decimal Price { get; set; }
 
+    [TableColumn]
+    [Display(Name = "Price per night")]
+    public bool IsPricePerNight { get; set; }
+
     [DeleteBehavior(DeleteBehavior.NoAction)]
     [TableColumn]
     public Hotel Hotel { get; set; }

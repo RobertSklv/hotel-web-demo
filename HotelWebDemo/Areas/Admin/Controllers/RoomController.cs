@@ -37,7 +37,7 @@ public class RoomController : CrudController<Room>
         return base.Create();
     }
 
-    public override IActionResult Edit(int? id)
+    public override IActionResult Edit(int id)
     {
         ViewData["Hotels"] = hotelService.GetAll();
         ViewData["RoomCategories"] = roomCategoryService.GetAll();

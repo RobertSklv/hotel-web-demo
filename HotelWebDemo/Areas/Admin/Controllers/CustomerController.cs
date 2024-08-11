@@ -39,14 +39,11 @@ public class CustomerController : CrudController<Customer, CustomerViewModel>
         return base.Create();
     }
 
-    public override IActionResult Edit(int? id)
+    public override IActionResult Edit(int id)
     {
         ViewData["Countries"] = countryService.GetAll();
 
-        if (id != null)
-        {
-            CreateResetPasswordAction((int)id);
-        }
+        CreateResetPasswordAction(id);
 
         return base.Edit(id);
     }

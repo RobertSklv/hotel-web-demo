@@ -17,6 +17,8 @@ public class RowAction : Element
 
     public string ConfirmationMessage { get; set; } = "Are you sure you want to perform this action on this item?";
 
+    public int SortOrder { get; set; } = 10;
+
     public Func<IBaseEntity, string> ConfirmMessageCallback { get; set; } = m => $"Are you sure you want to perform this action on item of type {m.GetType().Name} and ID {m.Id}?";
 
     public BootstrapIconType Icon { get; set; }
@@ -43,8 +45,7 @@ public class RowAction : Element
     }
 
     public RowAction SetAction(string action)
-    {
-        Action = action;
+    { 
 
         return this;
     }
@@ -59,6 +60,13 @@ public class RowAction : Element
     public RowAction SetMethod(RequestMethod method)
     {
         Method = method;
+
+        return this;
+    }
+
+    public RowAction SetSortOrder(int sortOrder)
+    {
+        SortOrder = sortOrder;
 
         return this;
     }

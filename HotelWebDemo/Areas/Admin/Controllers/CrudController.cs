@@ -33,6 +33,10 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         this.logger = logger;
     }
 
+    public virtual async Task UpsertMethod(TViewModel model) => await service.Upsert(model);
+
+    protected virtual Task<string> MassAction(string massAction, List<int> selectedItemIds) => Task.FromResult("Index");
+
     [HttpGet]
     public virtual async Task<IActionResult> Index([FromQuery] ListingModel listingModel)
     {
@@ -47,9 +51,18 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         return View(await service.CreateListingModel(listingModel));
     }
 
-    public virtual async Task UpsertMethod(TViewModel model) => await service.Upsert(model);
+    [HttpGet]
+    public IActionResult View(int id)
+    {
+        if (GetEntity(id, out TViewModel? viewModel))
+        {
+            AddBackAction();
 
-    protected virtual Task<string> MassAction(string massAction, List<int> selectedItemIds) => Task.FromResult("Index");
+            return View(viewModel);
+        }
+
+        return RedirectToAction("Index");
+    }
 
     [HttpGet]
     public virtual IActionResult Create()
@@ -60,14 +73,9 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     }
 
     [HttpGet]
-    public virtual IActionResult Edit(int? id)
+    public virtual IActionResult Edit(int id)
     {
-        if (id == null)
-        {
-            return RedirectToAction("Index");
-        }
-
-        if (GetEntity((int)id, out TViewModel? model))
+        if (GetEntity(id, out TViewModel? model))
         {
             AddBackAction();
 
@@ -98,7 +106,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         }
         catch (Exception e)
         {
-            logger.Error(e, "An error occurred while creating entity {Name:l}({Id:l})", model.GetType().ShortDisplayName(), model.Id);
+            logger.Error(e, $"An error occurred while creating entity {model.GetType().ShortDisplayName()}({model.Id})");
             AddMessage("An error has occured.", ColorClass.Danger);
 
             TempData.Set(OldModelTempDataKey, model);
@@ -106,7 +114,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
             return RedirectToAction("Create");
         }
 
-        logger.Information("Record successfully created: {Name:l}({Id:l})", model.GetType().ShortDisplayName(), model.Id);
+        logger.Information($"Record successfully created: {model.GetType().ShortDisplayName()}({model.Id})");
         AddMessage("Record successfully created.", ColorClass.Success);
 
         return RedirectToAction("Index");
@@ -131,7 +139,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         }
         catch (Exception e)
         {
-            logger.Error(e, "An error occurred while saving entity {Name:l}({Id:l})", model.GetType().ShortDisplayName(), model.Id);
+            logger.Error(e, $"An error occurred while saving entity {model.GetType().ShortDisplayName()}({model.Id})");
             AddMessage("An error has occured.", ColorClass.Danger);
 
             TempData.Set(OldModelTempDataKey, model);
@@ -139,32 +147,33 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
             return RedirectToAction("Edit", new { model.Id });
         }
 
-        logger.Information("Record successfully saved: {Name:l}({Id:l})", model.GetType().ShortDisplayName(), model.Id);
+        logger.Information($"Record successfully saved: {model.GetType().ShortDisplayName()}({model.Id})");
         AddMessage("Record successfully saved.", ColorClass.Success);
 
         return RedirectToAction("Edit", new { model.Id });
     }
 
-    public virtual async Task<IActionResult> Delete(int? id)
+    public virtual async Task<IActionResult> Delete(int id)
     {
-        if (id == null)
-        {
-            return RedirectToAction("Index");
-        }
+        TEntity? entity = GetEntity(id);
 
-        if (GetEntity((int)id, out TViewModel? model))
+        if (entity != null)
         {
             try
             {
                 await service.Delete((int)id);
-                logger.Information("Record successfully deleted: {Name:l}({Id:l})", model.GetType().ShortDisplayName(), model.Id);
+                logger.Information($"Record successfully deleted: {entity.GetType().ShortDisplayName()}({entity.Id})");
                 AddMessage("Record successfully deleted.", ColorClass.Success);
             }
             catch (Exception e)
             {
-                logger.Error(e, "An error occurred while attempting to delete entity {Name:l}({Id:l})", model.GetType().ShortDisplayName(), model.Id);
+                logger.Error(e, $"An error occurred while attempting to delete entity {entity.GetType().ShortDisplayName()}({entity.Id})");
                 AddMessage("An error has occured.", ColorClass.Danger);
             }
+        }
+        else
+        {
+            AddMessage($"Entity with ID {id} doesn't exist.", ColorClass.Danger, log: true);
         }
 
         return RedirectToAction("Index");

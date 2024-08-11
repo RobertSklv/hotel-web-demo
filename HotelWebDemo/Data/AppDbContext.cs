@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<AdminRole> AdminRoles { get; set; }
     public DbSet<AdminUser> AdminUsers { get; set; }
     public DbSet<Booking> Bookings { get; set; }
+    public DbSet<BookingContact> BookingContacts { get; set; }
     public DbSet<BookingCancellation> BookingCancellations { get; set; }
     public DbSet<BookingCustomer> BookingCustomers { get; set; }
     public DbSet<BookingPayment> BookingPayments { get; set; }
@@ -27,6 +28,7 @@ public class AppDbContext : DbContext
     public DbSet<RoomCategory> RoomCategories { get; set; }
     public DbSet<RoomFeature> RoomFeatures { get; set; }
     public DbSet<RoomFeatureRoom> RoomFeatureRooms { get; set; }
+    public DbSet<RoomReservation> RoomReservations { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvider serviceProvider)
         : base(options)

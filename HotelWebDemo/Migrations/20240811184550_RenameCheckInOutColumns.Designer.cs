@@ -4,6 +4,7 @@ using HotelWebDemo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelWebDemo.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240811184550_RenameCheckInOutColumns")]
+    partial class RenameCheckInOutColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,11 +269,7 @@ namespace HotelWebDemo.Migrations
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)");
+                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(32)
@@ -281,7 +280,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BookingContacts");
+                    b.ToTable("BookingContact");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.BookingCustomer", b =>
@@ -2443,7 +2442,7 @@ namespace HotelWebDemo.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("RoomReservations");
+                    b.ToTable("BookingRooms");
                 });
 
             modelBuilder.Entity("HotelWebDemo.Models.Database.HotelReview", b =>

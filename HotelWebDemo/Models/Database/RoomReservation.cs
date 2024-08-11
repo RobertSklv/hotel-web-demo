@@ -2,7 +2,7 @@
 
 namespace HotelWebDemo.Models.Database;
 
-[Table("BookingRooms")]
+[Table("RoomReservations")]
 public class RoomReservation : BaseEntity
 {
     public Booking? Booking { get; set; }

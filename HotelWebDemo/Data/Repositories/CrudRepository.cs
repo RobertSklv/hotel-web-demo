@@ -37,7 +37,7 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
 
     public virtual TEntity? Get(int id)
     {
-        return DbSet.Where(e => e.Id == id).FirstOrDefault();
+        return DbSet.FirstOrDefault(e => e.Id == id);
     }
 
     public virtual List<TEntity> GetAll()

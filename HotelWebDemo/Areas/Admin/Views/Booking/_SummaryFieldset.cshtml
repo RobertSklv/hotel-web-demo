@@ -6,3 +6,29 @@
     Layout = "_FieldsetLayout";
     ViewData["Legend"] = "Booking summary";
 }
+
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="@Model.HotelId" />
+    <input type="hidden" asp-for="@Model.CheckInDate" />
+    <input type="hidden" asp-for="@Model.CheckOutDate" />
+
+    @if (Model.RoomsToReserve != null)
+    {
+        foreach (int i in Model.RoomsToReserve)
+        {
+            <input type="hidden" name="@nameof(BookingRoomSelectListingModel.RoomsToReserve)" value="@i" />
+        }
+    }
+
+    @if (Model.Contact != null)
+    {
+        <input type="hidden" asp-for=@Model.Contact.FullName />
+        <input type="hidden" asp-for=@Model.Contact.Phone />
+        <input type="hidden" asp-for=@Model.Contact.Email />
+        <input type="hidden" asp-for=@Model.Contact.Note />
+    }
+
+    <partial name="_ViewBooking" model="@Model" />
+
+    <button type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Submit Reservation</button>
+</form>

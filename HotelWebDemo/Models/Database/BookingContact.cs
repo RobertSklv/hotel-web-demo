@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelWebDemo.Models.Database;
 
+[Table("BookingContacts")]
 public class BookingContact : BaseEntity
 {
     [Display(Name = "Full name")]
-    [Column(TypeName = "VARCHAR")]
     [StringLength(64)]
     public string FullName { get; set; }
 
@@ -20,4 +20,7 @@ public class BookingContact : BaseEntity
     [Column(TypeName = "VARCHAR")]
     [StringLength(64)]
     public string? Email { get; set; }
+
+    [StringLength(1024)]
+    public string? Note { get; set; }
 }

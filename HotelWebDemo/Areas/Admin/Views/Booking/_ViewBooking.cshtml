@@ -1,0 +1,86 @@
+﻿@using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
+
+@model BookingRoomSelectListingModel
+
+@{
+}
+
+<table class="table view-booking-table">
+    <tr>
+        <th colspan="2" class="table-dark">General</th>
+    </tr>
+    <tr>
+        <td>Hotel:</td>
+        <td>@Model.Hotel!.Name</td>
+    </tr>
+    <tr>
+        <td>Check-in date:</td>
+        <td>@Model.CheckInDate.ToLongDateString()</td>
+    </tr>
+    <tr>
+        <td>Check-out date:</td>
+        <td>@Model.CheckOutDate.ToLongDateString()</td>
+    </tr>
+    <tr>
+        <td>Length:</td>
+        <td>@Model.NightsLabel</td>
+    </tr>
+    <tr>
+        <td>Rooms reserved:</td>
+        <td>@Model.RoomsToReserve!.Count</td>
+    </tr>
+    <tr>
+        <th colspan="2" class="table-dark">Contact</th>
+    </tr>
+    <tr>
+        <td>Name:</td>
+        <td>@Model.Contact!.FullName</td>
+    </tr>
+    <tr>
+        <td>Phone:</td>
+        <td>
+            @if (Model.Contact!.Phone != null)
+            {
+                <a href="tel:@(Model.Contact.Phone)">@Model.Contact.Phone</a>
+            }
+            else
+            {
+                <span>N/A</span>
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>E-mail address:</td>
+        <td>
+            @if (Model.Contact!.Email != null)
+            {
+                <a href="mailto:@(Model.Contact.Email)">@Model.Contact.Email</a>
+            }
+            else
+            {
+                <span>N/A</span>
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>Note:</td>
+        <td>@Model.Contact!.Note</td>
+    </tr>
+    <tr>
+        <th colspan="2" class="table-dark">Totals</th>
+    </tr>
+    @foreach (Room r in Model.ReservedRooms!)
+    {
+        <tr>
+            <td><span>@r.Category!.Name:</span></td>
+            <td><span class="currency-dollar">@(r.GetTotalPriceForPeriod(Model.Nights).ToString("#0.00"))</span></td>
+        </tr>
+    }
+    <tfoot class="fw-bold fs-5">
+        <tr>
+            <td class="text-primary"><span>Total:</span></td>
+            <td class="text-primary"><span class="currency-dollar">@(Model.TotalPrice.ToString("#0.00"))</span></td>
+        </tr>
+    </tfoot>
+</table>

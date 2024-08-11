@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using HotelWebDemo.Models.Attributes;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Models.Database;
@@ -12,15 +14,28 @@ public class Booking : BaseEntity
     public int? BookingPaymentId { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public BookingContact Contact { get; set; }
+    public BookingContact? Contact { get; set; }
 
-    public int ContactId { get; set; }
+    public int? ContactId { get; set; }
 
-    public DateTime StartDate { get; set; }
+    [TableColumn]
+    [Display(Name = "Check-in date")]
+    public DateTime CheckInDate { get; set; }
 
-    public DateTime ExpirationDate { get; set; }
+    [TableColumn]
+    [Display(Name = "Check-out date")]
+    public DateTime CheckOutDate { get; set; }
 
     public List<BookingCustomer>? BookingCustomers { get; set; }
 
     public List<RoomReservation>? ReservedRooms { get; set; }
+
+    [TableColumn(Name = "Contact name")]
+    public string? Contact_FullName => Contact?.FullName;
+
+    [TableColumn(Name = "Contact phone")]
+    public string? Contact_Phone => Contact?.Phone;
+
+    [TableColumn(Name = "Contact e-mail")]
+    public string? Contact_Email => Contact?.Email;
 }

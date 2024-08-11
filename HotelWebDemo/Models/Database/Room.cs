@@ -80,6 +80,34 @@ public class Room : BaseEntity
 
     public decimal TotalPrice => Price + FeaturesPrice;
 
+    public decimal GetPrice(int nights) => Price * nights;
+
+    public decimal GetFeaturesPrice(int nights)
+    {
+        if (Features == null)
+        {
+            throw new Exception($"The features must be loaded in order to calculate the total price.");
+        }
+
+        decimal total = 0;
+
+        foreach (RoomFeature roomFeature in Features)
+        {
+            decimal featurePrice = roomFeature.Price;
+
+            if (roomFeature.IsPricePerNight)
+            {
+                featurePrice *= nights;
+            }
+
+            total += featurePrice;
+        }
+
+        return total;
+    }
+
+    public decimal GetTotalPriceForPeriod(int nights) => GetPrice(nights) + GetFeaturesPrice(nights);
+
     //[NotMapped]
     //public Booking? ActiveBooking => BookingRooms?.Where(e => e.Booking?.ExpirationDate > DateTime.UtcNow).FirstOrDefault()?.Booking;
 }

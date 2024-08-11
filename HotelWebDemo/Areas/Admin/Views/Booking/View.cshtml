@@ -1,0 +1,10 @@
+﻿@using HotelWebDemo.Models.ViewModels
+
+@model BookingRoomSelectListingModel
+
+@{
+    Layout = "_AdminPageLayout";
+    ViewData["PageHeading"] = $"Booking #{Model.Id}";
+}
+
+<partial name="_ViewBookingFieldset" model="@Model" />

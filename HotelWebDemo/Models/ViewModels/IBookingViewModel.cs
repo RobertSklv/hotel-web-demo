@@ -6,7 +6,7 @@ public interface IBookingViewModel : IModel
 {
     int Id { get; set; }
 
-    Hotel Hotel { get; set; }
+    Hotel? Hotel { get; set; }
 
     int HotelId { get; set; }
 

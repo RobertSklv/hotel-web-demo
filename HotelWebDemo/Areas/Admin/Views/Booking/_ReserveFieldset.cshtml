@@ -3,6 +3,7 @@
 @using HotelWebDemo.Models.Components.Admin.Tables
 @using HotelWebDemo.Models.Database
 @using HotelWebDemo.Models.ViewModels
+@using HotelWebDemo.Services
 
 @model BookingRoomSelectListingModel
 
@@ -15,104 +16,149 @@
 
 <form asp-action="ReserveRooms" method="get" class="d-flex flex-column">
     <input type="hidden" asp-for="@Model.HotelId" />
-    <input type="hidden" asp-for="@Model.StartDate" />
-    <input type="hidden" asp-for="@Model.ExpirationDate" />
+    <input type="hidden" asp-for="@Model.CheckInDate" />
+    <input type="hidden" asp-for="@Model.CheckOutDate" />
+
+    @if (Model.Contact != null)
+    {
+        <input type="hidden" asp-for=@Model.Contact.FullName />
+        <input type="hidden" asp-for=@Model.Contact.Phone />
+        <input type="hidden" asp-for=@Model.Contact.Email />
+        <input type="hidden" asp-for=@Model.Contact.Note />
+    }
 
     <button asp-action="ReserveRooms" id="refresh-btn" type="submit" class="d-none"></button>
-    <button asp-action="BookingSummary"
+    <button asp-action="Contact"
         type="submit"
         class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold me-auto order-2"
-        disabled="@(stepContext.GetStep("summary").Disabled)">
+        disabled="@(stepContext.GetStep(BookingService.CONTACT_STEP_NAME).Disabled)">
         Proceed
     </button>
 
-    <div id="reserved-rooms" class="mb-3">
-        @if (Model.ReservedRooms != null)
-        {
-            <div class="row">
-                @foreach (Room r in Model.ReservedRooms)
-                {
-                    bool hasFeatures = r.Features != null && r.Features.Count > 0;
+    <div class="mb-3">
+        <div id="reserved-rooms">
+            @if (Model.ReservedRooms != null)
+            {
+                <div class="row">
+                    @foreach (Room r in Model.ReservedRooms)
+                    {
+                        bool hasFeatures = r.Features != null && r.Features.Count > 0;
 
-                    <div class="col-6">
-                        <div class="toast show w-auto p-3 mb-3">
-                            <input type="hidden" name="@nameof(BookingRoomSelectListingModel.RoomsToReserve)" value="@r.Id" />
-                            <div class="card-title d-flex">
-                                <h2>@r.Category?.Name</h2>
-                                <button type="button"
-                                        class="btn-close btn-remove-reserved-room me-2 m-auto"
-                                        data-remove-reserved-room="@r.Id"
-                                        data-bs-dismiss="toast"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="toast-body">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <table class="w-100">
-                                            <tr>
-                                                <td><strong class="colon-after">Number</strong></td>
-                                                <td><span>@r.Number</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong class="colon-after">Capacity</strong></td>
-                                                <td><span>@r.Capacity</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong class="colon-after">Floor</strong></td>
-                                                <td><span>@r.Floor</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong class="colon-after">Area</strong></td>
-                                                <td><span>@r.Area m<sup>2</sup></span></td>
-                                            </tr>
+                        <div class="col-6">
+                            <div class="toast show w-auto p-3 mb-3">
+                                <input type="hidden" name="@nameof(BookingRoomSelectListingModel.RoomsToReserve)" value="@r.Id" />
+                                <div class="card-title d-flex">
+                                    <h2>@r.Category?.Name</h2>
+                                    <button type="button"
+                                            class="btn-close btn-remove-reserved-room me-2 m-auto"
+                                            data-remove-reserved-room="@r.Id"
+                                            data-bs-dismiss="toast"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body p-0">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <table class="w-100">
+                                                <tr>
+                                                    <td><strong class="colon-after">Number</strong></td>
+                                                    <td><span>@r.Number</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong class="colon-after">Capacity</strong></td>
+                                                    <td><span>@r.Capacity</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong class="colon-after">Floor</strong></td>
+                                                    <td><span>@r.Floor</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong class="colon-after">Area</strong></td>
+                                                    <td><span>@r.Area m<sup>2</sup></span></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="col-6">
+                                            <h3 class="h4">Features</h3>
+                                            @if (hasFeatures)
+                                            {
+                                                <table class="w-100">
+                                                    @foreach (RoomFeature f in r.Features)
+                                                    {
+                                                        <tr>
+                                                            <td>@f.Name</td>
+                                                            <td><strong class="currency-dollar">@f.Price.ToString("#0.00")</strong></td>
+                                                        </tr>
+                                                    }
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <small><i>The room has no premium features defined.</i></small>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="totals room-totals mt-3">
+                                        <table class="text-primary w-100">
+                                            <tbody>
+                                                <tr>
+                                                    <td><span>Room price:</span></td>
+                                                    <td><span class="currency-dollar">@(r.Price.ToString("#0.00"))</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span>Extra:</span></td>
+                                                    <td><span class="currency-dollar">@(r.FeaturesPrice.ToString("#0.00"))</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span>Total per night:</span></td>
+                                                    <td><span class="currency-dollar">@(r.TotalPrice.ToString("#0.00"))</span></td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot class="fw-bold fs-6">
+                                                <tr>
+                                                    <td><span>Total (@Model.NightsLabel):</span></td>
+                                                    <td><span class="currency-dollar">@(r.GetTotalPriceForPeriod(Model.Nights).ToString("#0.00"))</span></td>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </div>
-                                    <div class="col-6">
-                                        <h3 class="h4">Features</h3>
-                                        @if (hasFeatures)
-                                        {
-                                            <table class="w-100">
-                                                @foreach (RoomFeature f in r.Features)
-                                                {
-                                                    <tr>
-                                                        <td>@f.Name</td>
-                                                        <td><strong class="currency-dollar">@f.Price.ToString("#0.00")</strong></td>
-                                                    </tr>
-                                                }
-                                            </table>
-                                        }
-                                        else
-                                        {
-                                            <small><i>The room has no premium features defined.</i></small>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="room-totals mt-3">
-                                    <table class="text-primary w-50">
-                                        <tbody>
-                                            <tr>
-                                                <td><span>Room price:</span></td>
-                                                <td><span class="currency-dollar">@(r.Price.ToString("#0.00"))</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><span>Extra:</span></td>
-                                                <td><span class="currency-dollar">@(r.FeaturesPrice.ToString("#0.00"))</span></td>
-                                            </tr>
-                                        </tbody>
-                                        <tfoot class="fw-bold fs-6">
-                                            <tr>
-                                                <td><span>Total:</span></td>
-                                                <td><span class="currency-dollar">@(r.TotalPrice.ToString("#0.00"))</span></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
                                 </div>
                             </div>
                         </div>
+                    }
+                </div>
+                <div class="totals card mt-3 fs-6">
+                    <div class="card-body">
+                        <div class="card-title mb-3">
+                            <h3>
+                                <span>Reservation for</span>
+                                <date>@Model.CheckInDate.ToString("dd MMM")</date>
+                                -
+                                <date>@Model.CheckOutDate.ToString("dd MMM")</date>
+                                (@Model.NightsLabel)
+                            </h3>
+                        </div>
+                        <table class="text-primary w-50">
+                            <tbody>
+                                <tr>
+                                    <td><span>Rooms price:</span></td>
+                                    <td><span class="currency-dollar">@(Model.RoomsPrice.ToString("#0.00"))</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span>Extra:</span></td>
+                                    <td><span class="currency-dollar">@(Model.FeaturesPrice.ToString("#0.00"))</span></td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="fw-bold fs-5">
+                                <tr>
+                                    <td><span>Total:</span></td>
+                                    <td><span class="currency-dollar">@(Model.TotalPrice.ToString("#0.00"))</span></td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
-                }
-            </div>
-        }
+                </div>
+            }
+        </div>
     </div>
 
     @if (roomListing != null)

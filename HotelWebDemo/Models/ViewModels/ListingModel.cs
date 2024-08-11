@@ -12,7 +12,7 @@ public class ListingModel : IListingModel
 
     public static int[] PageSizes = new int[] { 10, 20, 50, 100 };
 
-    public string ActionName { get; set; }
+    public string? ActionName { get; set; }
 
     public string? OrderBy { get; set; }
 

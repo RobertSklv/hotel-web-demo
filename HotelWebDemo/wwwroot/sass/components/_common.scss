@@ -1,42 +1,23 @@
-
-
-/*dl.custom-data-list {
-    & > dt,
-    & > dd {
-        display: inline;
-    }
-
-    & > dt {
-        &:after {
-            content: ':';
-        }
-    }
-
-    & > dd {
-        &:after {
-            content: '';
-            display: block;
-        }
-    }
-}*/
-
-/*.data-items {
-    & > p {
-        & > span:first-child {
-            font-weight: bold;
-            min-width: 140px;
-
-            &:after {
-                content: ':';
-            }
-        }
-    }
-}*/
-
 .colon-after:after {
     content: ':';
 }
 
 .currency-dollar:before {
     content: '$ ';
+}
+
+.totals table {
+    td + td {
+        text-align: right;
+
+        & > span {
+            width: 100%;
+        }
+    }
+}
+
+table.view-booking-table {
+    tr td:first-child {
+        min-width: 400px;
+    }
 }

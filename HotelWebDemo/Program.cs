@@ -31,8 +31,15 @@ builder.Services.AddAuthentication()
         options.LoginPath = "/Login";
     });
 
-CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+CultureInfo culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+//culture.DateTimeFormat.ShortDatePattern = "dd MMM";
+//culture.DateTimeFormat.LongDatePattern = "dd.MM.yyyy";
+//culture.DateTimeFormat.FullDateTimePattern = "dd.MM.yyyy hh:mm";
+//culture.DateTimeFormat.DateSeparator = ".";
+//culture.DateTimeFormat.ShortTimePattern = "hh:mm";
+//culture.DateTimeFormat.LongTimePattern = "hh:mm:ss";
+CultureInfo.DefaultThreadCurrentCulture = culture;
+CultureInfo.DefaultThreadCurrentUICulture = culture;
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();

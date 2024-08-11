@@ -13,4 +13,24 @@ public class BookingRepository : CrudRepository<Booking, IBookingViewModel>, IBo
         : base(db, filterService, sortService, searchService)
     {
     }
+
+    public override Booking? Get(int id)
+    {
+        return DbSet
+            .Include(e => e.Contact)
+            .Include(e => e.ReservedRooms)
+            .ThenInclude(e => e.Room)
+            .ThenInclude(e => e.Features)
+            .Include(e => e.ReservedRooms)
+            .ThenInclude(e => e.Room)
+            .ThenInclude(e => e.Category)
+            .ThenInclude(e => e.Hotel)
+            .FirstOrDefault(e => e.Id == id);
+    }
+
+    public override IQueryable<Booking> List(DbSet<Booking> dbSet)
+    {
+        return base.List(dbSet)
+            .Include(e => e.Contact);
+    }
 }

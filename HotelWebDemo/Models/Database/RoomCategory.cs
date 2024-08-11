@@ -38,5 +38,7 @@ public class RoomCategory : BaseEntity
     [JsonIgnore]
     public List<Room>? Rooms { get; set; }
 
-    public string SelectLabel => $"{Name} ({Hotel?.Name})";
+    public string SelectLabel => Hotel != null
+        ? $"{Name} ({Hotel.Name})"
+        : Name;
 }

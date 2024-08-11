@@ -3,6 +3,10 @@
 
 @model TableRowActions
 
+@{
+    Model.Actions.Sort((a1, a2) => a1.SortOrder - a2.SortOrder);
+}
+
 <td class="text-center">
     @foreach (RowAction action in Model.Actions)
     {
