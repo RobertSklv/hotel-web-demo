@@ -6,6 +6,8 @@ $(function () {
     var reservedRooms = $('#reserved-rooms');
     var reserveButtons = table.find('[data-row-action=Reserve]');
     var removeReservedRoomButton = $('.btn-remove-reserved-room');
+    var customGrandTotalCheck = $('#HasCustomGrandTotal');
+    var customGrandTotalInput = $('#Totals_CustomGrandTotal');
 
     reserveButtons.each(function (i, e) {
         var $e = $(e);
@@ -27,4 +29,13 @@ $(function () {
         input.remove();
         refreshBtn.trigger('click');
     });
+
+    function updateCustomGrandTotalFieldState(check) {
+        customGrandTotalInput.prop('disabled', !$(check).is(':checked'));
+    }
+
+    customGrandTotalCheck.on('change', function () {
+        updateCustomGrandTotalFieldState($(this));
+    });
+    updateCustomGrandTotalFieldState(customGrandTotalCheck);
 });

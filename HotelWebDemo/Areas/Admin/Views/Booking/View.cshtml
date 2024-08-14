@@ -1,6 +1,6 @@
 ﻿@using HotelWebDemo.Models.ViewModels
 
-@model BookingRoomSelectListingModel
+@model BookingViewModel
 
 @{
     Layout = "_AdminPageLayout";
@@ -8,3 +8,5 @@
 }
 
 <partial name="_ViewBookingFieldset" model="@Model" />
+
+<partial name="_Timeline" model="@Model" />

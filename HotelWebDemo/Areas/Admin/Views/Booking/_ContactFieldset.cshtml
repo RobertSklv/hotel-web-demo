@@ -1,61 +1,47 @@
 ﻿@using HotelWebDemo.Models.ViewModels
 
-@model BookingRoomSelectListingModel
+@model BookingViewModel
 
 @{
     Layout = "_FieldsetLayout";
     ViewData["Legend"] = "Contact information";
 }
 
-<form asp-action="BookingSummary" method="get">
-    <input type="hidden" asp-for="@Model.HotelId" />
-    <input type="hidden" asp-for="@Model.CheckInDate" />
-    <input type="hidden" asp-for="@Model.CheckOutDate" />
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Contact.FullName></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.Contact.FullName class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.Contact.FullName class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Contact.Phone></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.Contact.Phone class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.Contact.Phone class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Contact.Email></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <input asp-for=@Model.Contact.Email class="form-control d-block w-100" />
+        <span asp-validation-for=@Model.Contact.Email class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 col-lg-4">
+        <label asp-for=@Model.Contact.Note></label>
+    </div>
+    <div class="col-12 col-lg-8">
+        <textarea asp-for=@Model.Contact.Note class="form-control d-block w-100" rows="3"></textarea>
+        <span asp-validation-for=@Model.Contact.Note class="text-danger"></span>
+    </div>
+</div>
 
-    @if (Model.RoomsToReserve != null)
-    {
-        foreach (int i in Model.RoomsToReserve)
-        {
-            <input type="hidden" name="@nameof(BookingRoomSelectListingModel.RoomsToReserve)" value="@i" />
-        }
-    }
-
-    <div class="row mb-4">
-        <div class="col-12 col-lg-4">
-            <label asp-for=@Model.Contact.FullName></label>
-        </div>
-        <div class="col-12 col-lg-8">
-            <input asp-for=@Model.Contact.FullName class="form-control d-block w-100" />
-            <span asp-validation-for=@Model.Contact.FullName class="text-danger"></span>
-        </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-12 col-lg-4">
-            <label asp-for=@Model.Contact.Phone></label>
-        </div>
-        <div class="col-12 col-lg-8">
-            <input asp-for=@Model.Contact.Phone class="form-control d-block w-100" />
-            <span asp-validation-for=@Model.Contact.Phone class="text-danger"></span>
-        </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-12 col-lg-4">
-            <label asp-for=@Model.Contact.Email></label>
-        </div>
-        <div class="col-12 col-lg-8">
-            <input asp-for=@Model.Contact.Email class="form-control d-block w-100" />
-            <span asp-validation-for=@Model.Contact.Email class="text-danger"></span>
-        </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-12 col-lg-4">
-            <label asp-for=@Model.Contact.Note></label>
-        </div>
-        <div class="col-12 col-lg-8">
-            <textarea asp-for=@Model.Contact.Note class="form-control d-block w-100" rows="3"></textarea>
-            <span asp-validation-for=@Model.Contact.Note class="text-danger"></span>
-        </div>
-    </div>
-
-    <button type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Proceed</button>
-</form>
+<button asp-action="BookingSummary" type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Proceed</button>

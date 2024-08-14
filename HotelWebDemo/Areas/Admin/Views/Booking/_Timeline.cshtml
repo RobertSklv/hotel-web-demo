@@ -1,0 +1,32 @@
+﻿@using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
+
+@model BookingViewModel
+
+@{
+    Layout = "_FieldsetLayout";
+    ViewData["Legend"] = "Timeline";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Admin</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    @if (Model.Timeline != null)
+    {
+        <tbody>
+            @foreach (BookingEventLog log in Model.Timeline)
+            {
+                <tr>
+                    <td>@log.CreatedAt.ToString("dd.MM.yyyy hh:mm:ss")</td>
+                    <td>@log.Admin.UserName</td>
+                    <td>@log.Message</td>
+                </tr>
+            }
+        </tbody>
+    }
+</table>

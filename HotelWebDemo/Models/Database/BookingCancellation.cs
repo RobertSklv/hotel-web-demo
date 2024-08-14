@@ -12,4 +12,8 @@ public class BookingCancellation : BaseEntity
 
     [StringLength(2048, MinimumLength = 10)]
     public string Reason { get; set; }
+
+    [Column(TypeName = "decimal(19, 4)")]
+    [DataType(DataType.Currency)]
+    public decimal Fee { get; set; }
 }

@@ -3,13 +3,15 @@ using HotelWebDemo.Models.Database;
 
 namespace HotelWebDemo.Models.ViewModels;
 
-public class BookingRoomSelectListingModel : ListingModel<Room>, IBookingViewModel
+public class BookingViewModel : ListingModel<Room>, IBookingViewModel
 {
     public int Id { get; set; }
 
     public Hotel? Hotel { get; set; }
 
     public int HotelId { get; set; }
+
+    public AdminUser? AdminUser { get; set; }
 
     [DataType(DataType.Date)]
     [Display(Name = "Check-in date")]
@@ -24,12 +26,16 @@ public class BookingRoomSelectListingModel : ListingModel<Room>, IBookingViewMod
     public List<Room>? ReservedRooms { get; set; }
 
     public BookingContact? Contact { get; set; }
-    
-    public decimal RoomsPrice => ReservedRooms?.Sum(r => r.GetPrice(Nights)) ?? 0;
 
-    public decimal FeaturesPrice => ReservedRooms?.Sum(r => r.GetFeaturesPrice(Nights)) ?? 0;
+    public bool HasCustomGrandTotal { get; set; }
 
-    public decimal TotalPrice => ReservedRooms?.Sum(r => r.GetTotalPriceForPeriod(Nights)) ?? 0;
+    public decimal? CustomGrandTotal { get; set; }
+
+    public BookingTotals? Totals { get; set; }
+
+    public BookingStatus Status { get; set; }
+
+    public List<BookingEventLog>? Timeline { get; set; }
 
     public int Nights => (CheckOutDate - CheckInDate).Days;
 
@@ -71,6 +77,13 @@ public class BookingRoomSelectListingModel : ListingModel<Room>, IBookingViewMod
             }
         }
 
+        query.Add(nameof(HasCustomGrandTotal), HasCustomGrandTotal.ToString());
+
+        if (CustomGrandTotal != null)
+        {
+            query.Add(nameof(CustomGrandTotal), CustomGrandTotal.ToString());
+        }
+
         return query;
     }
 
@@ -78,7 +91,7 @@ public class BookingRoomSelectListingModel : ListingModel<Room>, IBookingViewMod
     {
         base.Copy(listingModel);
 
-        if (listingModel is BookingRoomSelectListingModel bookingVM)
+        if (listingModel is BookingViewModel bookingVM)
         {
             Hotel = bookingVM.Hotel;
             HotelId = bookingVM.HotelId;
@@ -90,14 +103,14 @@ public class BookingRoomSelectListingModel : ListingModel<Room>, IBookingViewMod
 
     public override IListingModel Instantiate()
     {
-        return new BookingRoomSelectListingModel();
+        return new BookingViewModel();
     }
 
     public override void Clone(IListingModel listingModel)
     {
         base.Clone(listingModel);
 
-        if (listingModel is BookingRoomSelectListingModel bookingVM)
+        if (listingModel is BookingViewModel bookingVM)
         {
             bookingVM.Hotel = Hotel;
             bookingVM.HotelId = HotelId;

@@ -88,7 +88,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(TViewModel model)
+    public virtual async Task<IActionResult> Create(TViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -106,7 +106,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         }
         catch (Exception e)
         {
-            logger.Error(e, $"An error occurred while creating entity {model.GetType().ShortDisplayName()}({model.Id})");
+            logger.Error(e, $"An error occurred while creating entity {model.GetType().ShortDisplayName()}");
             AddMessage("An error has occured.", ColorClass.Danger);
 
             TempData.Set(OldModelTempDataKey, model);
@@ -121,7 +121,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Update(TViewModel model)
+    public virtual async Task<IActionResult> Update(TViewModel model)
     {
         if (!ModelState.IsValid)
         {

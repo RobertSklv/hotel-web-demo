@@ -1,34 +1,35 @@
 ﻿@using HotelWebDemo.Models.ViewModels
 
-@model BookingRoomSelectListingModel
+@model BookingViewModel
 
 @{
     Layout = "_FieldsetLayout";
     ViewData["Legend"] = "Booking summary";
 }
 
-<form asp-action="Create" method="post">
-    <input type="hidden" asp-for="@Model.HotelId" />
-    <input type="hidden" asp-for="@Model.CheckInDate" />
-    <input type="hidden" asp-for="@Model.CheckOutDate" />
+<partial name="_ViewBooking" model="@Model" />
 
-    @if (Model.RoomsToReserve != null)
-    {
-        foreach (int i in Model.RoomsToReserve)
-        {
-            <input type="hidden" name="@nameof(BookingRoomSelectListingModel.RoomsToReserve)" value="@i" />
-        }
-    }
+<fieldset>
+    <div class="row mb-4">
+        <div class="col-12 col-lg-4">
+            <label asp-for=@Model.HasCustomGrandTotal></label>
+        </div>
+        <div class="col-12 col-lg-8">
+            <div class="form-check form-switch">
+                <input asp-for=@Model.HasCustomGrandTotal class="form-check-input" />
+                <span asp-validation-for=@Model.HasCustomGrandTotal class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12 col-lg-4">
+            <label asp-for=@Model.CustomGrandTotal></label>
+        </div>
+        <div class="col-12 col-lg-8">
+            <input asp-for=@Model.CustomGrandTotal class="form-control d-block w-100" disabled="@Model.HasCustomGrandTotal" />
+            <span asp-validation-for=@Model.CustomGrandTotal class="text-danger"></span>
+        </div>
+    </div>
+</fieldset>
 
-    @if (Model.Contact != null)
-    {
-        <input type="hidden" asp-for=@Model.Contact.FullName />
-        <input type="hidden" asp-for=@Model.Contact.Phone />
-        <input type="hidden" asp-for=@Model.Contact.Email />
-        <input type="hidden" asp-for=@Model.Contact.Note />
-    }
-
-    <partial name="_ViewBooking" model="@Model" />
-
-    <button type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Submit Reservation</button>
-</form>
+<button asp-action="Create" formmethod="post" type="submit" class="btn btn-lg btn-primary mt-4 px-5 py-3 fw-bold">Submit Reservation</button>

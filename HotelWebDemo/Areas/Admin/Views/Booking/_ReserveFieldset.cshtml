@@ -5,7 +5,7 @@
 @using HotelWebDemo.Models.ViewModels
 @using HotelWebDemo.Services
 
-@model BookingRoomSelectListingModel
+@model BookingViewModel
 
 @{
     Layout = "_FieldsetLayout";
@@ -14,19 +14,7 @@
     ListingModel<Room>? roomListing = ViewData["RoomListing"] as ListingModel<Room>;
 }
 
-<form asp-action="ReserveRooms" method="get" class="d-flex flex-column">
-    <input type="hidden" asp-for="@Model.HotelId" />
-    <input type="hidden" asp-for="@Model.CheckInDate" />
-    <input type="hidden" asp-for="@Model.CheckOutDate" />
-
-    @if (Model.Contact != null)
-    {
-        <input type="hidden" asp-for=@Model.Contact.FullName />
-        <input type="hidden" asp-for=@Model.Contact.Phone />
-        <input type="hidden" asp-for=@Model.Contact.Email />
-        <input type="hidden" asp-for=@Model.Contact.Note />
-    }
-
+<div class="d-flex flex-column">
     <button asp-action="ReserveRooms" id="refresh-btn" type="submit" class="d-none"></button>
     <button asp-action="Contact"
         type="submit"
@@ -46,7 +34,7 @@
 
                         <div class="col-6">
                             <div class="toast show w-auto p-3 mb-3">
-                                <input type="hidden" name="@nameof(BookingRoomSelectListingModel.RoomsToReserve)" value="@r.Id" />
+                                <input type="hidden" name="@nameof(BookingViewModel.RoomsToReserve)" value="@r.Id" />
                                 <div class="card-title d-flex">
                                     <h2>@r.Category?.Name</h2>
                                     <button type="button"
@@ -126,7 +114,7 @@
                         </div>
                     }
                 </div>
-                <div class="totals card mt-3 fs-6">
+                <div class="totals card fs-6">
                     <div class="card-body">
                         <div class="card-title mb-3">
                             <h3>
@@ -141,17 +129,17 @@
                             <tbody>
                                 <tr>
                                     <td><span>Rooms price:</span></td>
-                                    <td><span class="currency-dollar">@(Model.RoomsPrice.ToString("#0.00"))</span></td>
+                                    <td><span class="currency-dollar">@(Model.Totals.RoomsPrice.ToString("#0.00"))</span></td>
                                 </tr>
                                 <tr>
                                     <td><span>Extra:</span></td>
-                                    <td><span class="currency-dollar">@(Model.FeaturesPrice.ToString("#0.00"))</span></td>
+                                    <td><span class="currency-dollar">@(Model.Totals.RoomFeaturesPrice.ToString("#0.00"))</span></td>
                                 </tr>
                             </tbody>
                             <tfoot class="fw-bold fs-5">
                                 <tr>
                                     <td><span>Total:</span></td>
-                                    <td><span class="currency-dollar">@(Model.TotalPrice.ToString("#0.00"))</span></td>
+                                    <td><span class="currency-dollar">@(Model.Totals.GetGrandTotal().ToString("#0.00"))</span></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -165,4 +153,4 @@
     {
         <partial name="_Table" model="@roomListing.Table" />
     }
-</form>
+</div>

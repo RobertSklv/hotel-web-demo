@@ -7,7 +7,7 @@ namespace HotelWebDemo.Models.Database;
 [Table("BookingItems")]
 public class BookingItem : BaseEntity
 {
-    public Booking Booking { get; set; }
+    public Booking? Booking { get; set; }
 
     public int BookingId { get; set; }
 
@@ -22,5 +22,9 @@ public class BookingItem : BaseEntity
     [Range(1, 999)]
     public int Quantity { get; set; }
 
-    public List<BookingItemRoomFeature> DesiredFeatures { get; set; }
+    [Column(TypeName = "decimal(19, 4)")]
+    [DataType(DataType.Currency)]
+    public decimal Price { get; set; }
+
+    public List<BookingItemRoomFeature>? DesiredFeatures { get; set; }
 }

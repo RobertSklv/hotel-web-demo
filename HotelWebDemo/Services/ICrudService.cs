@@ -27,6 +27,10 @@ public interface ICrudService<TEntity, TViewModel>
 
     TEntity ViewModelToEntity(TViewModel model);
 
+    Task<TViewModel> EntityToViewModelAsync(TEntity entity);
+
+    Task<TEntity> ViewModelToEntityAsync(TViewModel model);
+
     Task<PaginatedList<TEntity>> List(ListingModel<TEntity> listingModel);
 
     void InitializeListingModel(ListingModel<TEntity> listingModel, ListingModel listingQuery);

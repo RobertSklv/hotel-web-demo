@@ -39,7 +39,7 @@ public class RoomService : CrudService<Room>, IRoomService
         return await repository.MassEnableToggle(selectedItemIds, enable);
     }
 
-    public async Task<PaginatedList<Room>> GetBookableRooms(BookingRoomSelectListingModel listingModel)
+    public async Task<PaginatedList<Room>> GetBookableRooms(BookingViewModel listingModel)
     {
         return await repository.GetBookableRooms(listingModel);
     }

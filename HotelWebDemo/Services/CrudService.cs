@@ -18,9 +18,25 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
         this.repository = repository;
     }
 
-    public abstract TViewModel EntityToViewModel(TEntity entity);
+    public virtual TViewModel EntityToViewModel(TEntity entity)
+    {
+        throw new NotImplementedException($"Required method {nameof(EntityToViewModel)} was not overridden.");
+    }
 
-    public abstract TEntity ViewModelToEntity(TViewModel model);
+    public virtual TEntity ViewModelToEntity(TViewModel model)
+    {
+        throw new NotImplementedException($"Required method {nameof(ViewModelToEntity)} was not overridden.");
+    }
+
+    public virtual async Task<TViewModel> EntityToViewModelAsync(TEntity entity)
+    {
+        return await Task.FromResult(EntityToViewModel(entity));
+    }
+
+    public virtual async Task<TEntity> ViewModelToEntityAsync(TViewModel model)
+    {
+        return await Task.FromResult(ViewModelToEntity(model));
+    }
 
     public virtual async Task<int> Delete(int id)
     {
@@ -110,7 +126,9 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
 
     public virtual async Task<int> Upsert(TViewModel model)
     {
-        return await repository.Upsert(ViewModelToEntity(model));
+        TEntity entity = await ViewModelToEntityAsync(model);
+
+        return await repository.Upsert(entity);
     }
 }
 

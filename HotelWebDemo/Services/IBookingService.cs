@@ -4,13 +4,13 @@ using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Services;
 
-public interface IBookingService : ICrudService<Booking, BookingRoomSelectListingModel>
+public interface IBookingService : ICrudService<Booking, BookingViewModel>
 {
-    Task<ListingModel<Room>> CreateRoomListing(BookingRoomSelectListingModel viewModel);
+    Task<ListingModel<Room>> CreateRoomListing(BookingViewModel viewModel);
 
-    Task ConvertReservedRoomIdsIfAny(BookingRoomSelectListingModel viewModel);
+    Task LoadReservedRoomsAndCalculateTotals(BookingViewModel viewModel);
 
     RoomReservation CreateRoomReservation(int roomId);
 
-    BookingStepContext GenerateBookingStepContext(BookingRoomSelectListingModel? viewModel, string? activeStep = null);
+    BookingStepContext GenerateBookingStepContext(BookingViewModel? viewModel, string? activeStep = null);
 }

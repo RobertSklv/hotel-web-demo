@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Extensions;
+﻿using System.Security.Claims;
+using HotelWebDemo.Extensions;
 using HotelWebDemo.Models.Components.Admin.Booking;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
@@ -7,11 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelWebDemo.Areas.Admin.Controllers;
 
-public class BookingController : CrudController<Booking, BookingRoomSelectListingModel>
+public class BookingController : CrudController<Booking, BookingViewModel>
 {
     private readonly new IBookingService service;
     private readonly IHotelService hotelService;
     private readonly IRoomCategoryService categoryService;
+    private readonly IAdminUserService adminUserService;
 
     protected override string DefaultCreateViewName => "Create";
 
@@ -20,12 +22,14 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
         IHotelService hotelService,
         IRoomCategoryService categoryService,
         IAdminPageService adminPageService,
+        IAdminUserService adminUserService,
         Serilog.ILogger logger)
         : base(service, adminPageService, logger)
     {
         this.service = service;
         this.hotelService = hotelService;
         this.categoryService = categoryService;
+        this.adminUserService = adminUserService;
     }
 
     [HttpGet]
@@ -35,7 +39,7 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
         ViewData["RoomCategories"] = categoryService.GetAll();
         if (!TempData.ContainsKey("StepContext"))
         {
-            BookingRoomSelectListingModel? viewModel = TempData.Get<BookingRoomSelectListingModel>(OldModelTempDataKey);
+            BookingViewModel? viewModel = TempData.Get<BookingViewModel>(OldModelTempDataKey);
             TempData.Set("StepContext", service.GenerateBookingStepContext(viewModel));
         }
 
@@ -43,7 +47,7 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
     }
 
     [HttpGet]
-    public IActionResult BackToChooseHotel([FromQuery] BookingRoomSelectListingModel viewModel)
+    public IActionResult BackToChooseHotel([FromQuery] BookingViewModel viewModel)
     {
         TempData.Set(OldModelTempDataKey, viewModel);
         TempData.Set("StepContext", service.GenerateBookingStepContext(viewModel));
@@ -52,7 +56,7 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
     }
 
     [HttpGet]
-    public IActionResult ChooseHotel([FromQuery] BookingRoomSelectListingModel viewModel)
+    public IActionResult ChooseHotel([FromQuery] BookingViewModel viewModel)
     {
         TempData.Set(OldModelTempDataKey, viewModel);
         TempData.Set("StepContext", service.GenerateBookingStepContext(viewModel, BookingService.ROOM_RESERVATION_STEP_NAME));
@@ -61,9 +65,9 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
     }
 
     [HttpGet]
-    public async Task<IActionResult> ReserveRooms([FromQuery] BookingRoomSelectListingModel viewModel)
+    public async Task<IActionResult> ReserveRooms([FromQuery] BookingViewModel viewModel)
     {
-        await service.ConvertReservedRoomIdsIfAny(viewModel);
+        await service.LoadReservedRoomsAndCalculateTotals(viewModel);
 
         BookingStepContext bookingStepContext = service.GenerateBookingStepContext(viewModel);
 
@@ -86,7 +90,7 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
     }
 
     [HttpGet]
-    public async Task<IActionResult> Contact(BookingRoomSelectListingModel viewModel)
+    public async Task<IActionResult> Contact(BookingViewModel viewModel)
     {
         BookingStepContext bookingStepContext = service.GenerateBookingStepContext(viewModel);
 
@@ -99,8 +103,8 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
             return RedirectToAction("Create");
         }
 
-        await service.ConvertReservedRoomIdsIfAny(viewModel);
-        viewModel.Contact = new();
+        await service.LoadReservedRoomsAndCalculateTotals(viewModel);
+        viewModel.Contact ??= new();
 
         bookingStepContext.ActiveStep = BookingService.CONTACT_STEP_NAME;
         TempData.Set("StepContext", bookingStepContext);
@@ -110,7 +114,7 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
     }
 
     [HttpGet]
-    public async Task<IActionResult> BookingSummary(BookingRoomSelectListingModel viewModel)
+    public async Task<IActionResult> BookingSummary(BookingViewModel viewModel)
     {
         BookingStepContext bookingStepContext = service.GenerateBookingStepContext(viewModel);
 
@@ -123,7 +127,7 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
             return RedirectToAction("Create");
         }
 
-        await service.ConvertReservedRoomIdsIfAny(viewModel);
+        await service.LoadReservedRoomsAndCalculateTotals(viewModel);
         viewModel.Hotel = hotelService.Get(viewModel.HotelId);
 
         bookingStepContext.ActiveStep = BookingService.SUMMARY_STEP_NAME;
@@ -131,5 +135,12 @@ public class BookingController : CrudController<Booking, BookingRoomSelectListin
         TempData.Set(OldModelTempDataKey, viewModel);
 
         return base.Create();
+    }
+
+    public override Task<IActionResult> Create(BookingViewModel model)
+    {
+        model.AdminUser = adminUserService.Get(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+        return base.Create(model);
     }
 }

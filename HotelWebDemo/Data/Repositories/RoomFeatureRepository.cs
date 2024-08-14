@@ -21,7 +21,6 @@ public class RoomFeatureRepository : CrudRepository<RoomFeature>, IRoomFeatureRe
     {
         return base.List(dbSet)
             .Include(e => e.Hotel)
-            .Include(e => e.Rooms)
-            .Include(e => e.BookedFeatures);
+            .Include(e => e.Rooms);
     }
 }

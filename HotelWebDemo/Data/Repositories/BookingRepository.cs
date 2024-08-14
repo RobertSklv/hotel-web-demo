@@ -19,12 +19,16 @@ public class BookingRepository : CrudRepository<Booking, IBookingViewModel>, IBo
         return DbSet
             .Include(e => e.Contact)
             .Include(e => e.ReservedRooms)
-            .ThenInclude(e => e.Room)
-            .ThenInclude(e => e.Features)
+                .ThenInclude(e => e.Room)
+                    .ThenInclude(e => e.Features)
             .Include(e => e.ReservedRooms)
-            .ThenInclude(e => e.Room)
-            .ThenInclude(e => e.Category)
-            .ThenInclude(e => e.Hotel)
+                .ThenInclude(e => e.Room)
+                    .ThenInclude(e => e.Category)
+                        .ThenInclude(e => e.Hotel)
+            .Include(e => e.Totals)
+                .ThenInclude(e => e.Discounts)
+            .Include(e => e.BookingTimeline)
+                .ThenInclude(e => e.Admin)
             .FirstOrDefault(e => e.Id == id);
     }
 
@@ -32,5 +36,12 @@ public class BookingRepository : CrudRepository<Booking, IBookingViewModel>, IBo
     {
         return base.List(dbSet)
             .Include(e => e.Contact);
+    }
+
+    public async Task<List<BookingTotalsDiscount>> GetOrLoadDiscounts(BookingTotals totals)
+    {
+        totals.Discounts ??= await db.BookingTotalsDiscounts.Where(e => e.TotalsId == totals.Id).ToListAsync();
+
+        return totals.Discounts;
     }
 }

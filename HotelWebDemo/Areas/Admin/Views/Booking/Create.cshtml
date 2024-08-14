@@ -5,7 +5,7 @@
 @using HotelWebDemo.Models.Database
 @using HotelWebDemo.Models.ViewModels
 
-@model BookingRoomSelectListingModel
+@model BookingViewModel
 
 @{
     Layout = "_AdminPageLayout";
@@ -14,27 +14,30 @@
     BookingStep activeStep = stepContext.GetStep(stepContext.ActiveStep);
 }
 
-<div class="row">
-    <div class="col-2">
-        <div class="list-group">
-            @foreach (BookingStep step in stepContext.Steps)
-            {
-                <a href="@step.Href"
-                    asp-area="@step.Area"
-                    asp-controller="@step.Controller"
-                    asp-action="@step.Action"
-                    asp-all-route-data="@Model.GenerateListingQuery()"
-                    class="list-group-item list-group-item-action @(step.Id == stepContext.ActiveStep ? "active" : "") @(step.Disabled ? "disabled" : "")"
-                    aria-current="true">
-                    @step.Content
-                </a>
-            }
+<form method="get">
+    <div class="row">
+        <div class="col-2">
+            <div class="list-group">
+                @foreach (BookingStep step in stepContext.Steps)
+                {
+                    <a href="@step.Href"
+                       asp-area="@step.Area"
+                       asp-controller="@step.Controller"
+                       asp-action="@step.Action"
+                       asp-all-route-data="@Model.GenerateListingQuery()"
+                       class="list-group-item list-group-item-action @(step.Id == stepContext.ActiveStep ? "active" : "") @(step.Disabled ? "disabled" : "")"
+                       aria-current="true">
+                        @step.Content
+                    </a>
+                }
+            </div>
+        </div>
+        <div class="col-10">
+            <partial name="_StepState" model="Model" />
+            <partial name="@activeStep.Partial" model="Model" />
         </div>
     </div>
-    <div class="col-10">
-        <partial name="@activeStep.Partial" model="Model" />
-    </div>
-</div>
+</form>
 
 @section Scripts
 {

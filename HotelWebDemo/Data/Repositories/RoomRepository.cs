@@ -35,6 +35,11 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
             .ToListAsync();
     }
 
+    public override IQueryable<Room> List(DbSet<Room> dbSet)
+    {
+        return base.List(dbSet).Include(e => e.Features);
+    }
+
     public override async Task<int> Update(Room entity)
     {
         await UpdateSelectedFeatures(entity);
@@ -79,7 +84,7 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
             .ExecuteUpdateAsync(e => e.SetProperty(e => e.Enabled, enable));
     }
 
-    public async Task<PaginatedList<Room>> GetBookableRooms(BookingRoomSelectListingModel listingModel)
+    public async Task<PaginatedList<Room>> GetBookableRooms(BookingViewModel listingModel)
     {
         return await List(
             listingModel,

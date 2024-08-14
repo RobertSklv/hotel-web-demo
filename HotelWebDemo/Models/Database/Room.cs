@@ -45,6 +45,11 @@ public class Room : BaseEntity
     [NotMapped]
     public List<int> SelectedFeatureIds { get; set; } = new();
 
+    [TableColumn(Name = "Premium features", Orderable = false, Filterable = false)]
+    public string FeaturesEnumerated => Features != null && Features.Count > 0
+        ? string.Join(", ", Features.ConvertAll(f => $"{f.Name} (${f.Price:#0.00})"))
+        : "None";
+
     public decimal Price
     {
         get

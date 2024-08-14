@@ -5,11 +5,11 @@ namespace HotelWebDemo.Models.Database;
 [Table("BookingItemRoomFeatures")]
 public class BookingItemRoomFeature : BaseEntity
 {
-    public BookingItem BookingItem { get; set; }
+    public BookingItem? BookingItem { get; set; }
 
     public int BookingItemId { get; set; }
 
-    public RoomFeature RoomFeature { get; set; }
+    public RoomFeature? RoomFeature { get; set; }
 
     public int RoomFeatureId { get; set; }
 }

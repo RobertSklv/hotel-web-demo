@@ -40,6 +40,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 builder.Services.AddScoped<IAdminUserCreateService, AdminUserCreateService>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -55,6 +56,9 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IBookingTotalsService, BookingTotalsService>();
+builder.Services.AddScoped<IBookingLogService, BookingLogService>();
+builder.Services.AddScoped<IBookingLogRepository, BookingLogRepository>();
 
 builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
 builder.Services.AddTransient<IMailingService, MailingService>();

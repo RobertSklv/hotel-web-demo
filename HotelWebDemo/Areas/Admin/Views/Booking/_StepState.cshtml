@@ -1,0 +1,53 @@
+﻿@using HotelWebDemo.Extensions
+@using HotelWebDemo.Models.Components.Admin.Booking
+@using HotelWebDemo.Models.ViewModels
+@using HotelWebDemo.Services
+
+@model BookingViewModel
+
+@{
+    BookingStepContext stepContext = TempData.Get<BookingStepContext>("StepContext") ?? throw new Exception("Step context is not defined.");
+    BookingStep activeStep = stepContext.GetStep(stepContext.ActiveStep);
+}
+
+@foreach (BookingStep step in stepContext.Steps)
+{
+    if (step.Id != stepContext.ActiveStep)
+    {
+        if (step.Id == BookingService.HOTEL_SELECTION_STEP_NAME)
+        {
+            <input type="hidden" asp-for="@Model.HotelId" />
+            <input type="hidden" asp-for="@Model.CheckInDate" />
+            <input type="hidden" asp-for="@Model.CheckOutDate" />
+        }
+        else if (step.Id == BookingService.ROOM_RESERVATION_STEP_NAME)
+        {
+            if (Model.RoomsToReserve != null)
+            {
+                foreach (int i in Model.RoomsToReserve)
+                {
+                    <input type="hidden" name="@nameof(BookingViewModel.RoomsToReserve)" value="@i" />
+                }
+            }
+        }
+        else if (step.Id == BookingService.CONTACT_STEP_NAME)
+        {
+            @if (Model.Contact != null)
+            {
+                <input type="hidden" asp-for=@Model.Contact.FullName />
+                <input type="hidden" asp-for=@Model.Contact.Phone />
+                <input type="hidden" asp-for=@Model.Contact.Email />
+                <input type="hidden" asp-for=@Model.Contact.Note />
+            }
+        }
+        else if (step.Id == BookingService.SUMMARY_STEP_NAME)
+        {
+            <input type="hidden" asp-for=@Model.HasCustomGrandTotal />
+
+            @if (Model.CustomGrandTotal != null)
+            {
+                <input type="hidden" asp-for=@Model.CustomGrandTotal />
+            }
+        }
+    }
+}

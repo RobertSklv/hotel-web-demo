@@ -8,7 +8,7 @@ using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Services;
 
-public class BookingService : CrudService<Booking, BookingRoomSelectListingModel>, IBookingService
+public class BookingService : CrudService<Booking, BookingViewModel>, IBookingService
 {
     public const string HOTEL_SELECTION_STEP_NAME = "hotel_selection";
     public const string ROOM_RESERVATION_STEP_NAME = "room_reservation";
@@ -17,17 +17,26 @@ public class BookingService : CrudService<Booking, BookingRoomSelectListingModel
 
     private readonly IRoomService roomService;
     private readonly IRoomCategoryService categoryService;
+    private readonly IBookingTotalsService totalsService;
+    private readonly IBookingLogService logService;
 
-    public BookingService(IBookingRepository repository, IRoomService roomService, IRoomCategoryService categoryService)
+    public BookingService
+        (IBookingRepository repository,
+        IRoomService roomService,
+        IRoomCategoryService categoryService,
+        IBookingTotalsService totalsService,
+        IBookingLogService logService)
         : base(repository)
     {
         this.roomService = roomService;
         this.categoryService = categoryService;
+        this.totalsService = totalsService;
+        this.logService = logService;
     }
 
-    public async Task<ListingModel<Room>> CreateRoomListing(BookingRoomSelectListingModel? viewModel)
+    public async Task<ListingModel<Room>> CreateRoomListing(BookingViewModel? viewModel)
     {
-        BookingRoomSelectListingModel listingModel = new();
+        BookingViewModel listingModel = new();
         listingModel.Copy(viewModel);
         listingModel.ActionName = "ReserveRooms";
 
@@ -60,15 +69,26 @@ public class BookingService : CrudService<Booking, BookingRoomSelectListingModel
         return table;
     }
 
-    public override BookingRoomSelectListingModel EntityToViewModel(Booking entity)
+    public override BookingViewModel EntityToViewModel(Booking entity)
     {
-        BookingRoomSelectListingModel viewModel = new()
+        if (entity.Totals == null)
         {
+            throw new Exception("Totals not loaded.");
+        }
+
+        BookingViewModel viewModel = new()
+        {
+            Id = entity.Id,
             CheckInDate = entity.CheckInDate,
             CheckOutDate = entity.CheckOutDate,
             Contact = entity.Contact,
+            Totals = entity.Totals,
+            HasCustomGrandTotal = entity.Totals.HasCustomGrandTotal,
+            CustomGrandTotal = entity.Totals.CustomGrandTotal,
             RoomsToReserve = new(),
             ReservedRooms = new(),
+            Status = entity.Status,
+            Timeline = entity.BookingTimeline,
         };
 
         if (entity.ReservedRooms == null || entity.ReservedRooms.Count == 0)
@@ -76,7 +96,7 @@ public class BookingService : CrudService<Booking, BookingRoomSelectListingModel
             throw new Exception($"ReservedRooms is null or empty");
         }
 
-        viewModel.Hotel = entity.ReservedRooms[0].Room.Category.Hotel;
+        viewModel.Hotel = entity.ReservedRooms[0].Room?.Category?.Hotel;
         viewModel.HotelId = viewModel.Hotel.Id;
 
         foreach (RoomReservation rr in entity.ReservedRooms)
@@ -88,30 +108,44 @@ public class BookingService : CrudService<Booking, BookingRoomSelectListingModel
         return viewModel;
     }
 
-    public override Booking ViewModelToEntity(BookingRoomSelectListingModel viewModel)
+    public override async Task<Booking> ViewModelToEntityAsync(BookingViewModel viewModel)
     {
-        Booking booking = new()
-        {
-            CheckInDate = viewModel.CheckInDate,
-            CheckOutDate = viewModel.CheckOutDate,
-            Contact = viewModel.Contact ?? throw new Exception("Contact is null."),
-            ReservedRooms = new()
-        };
-
         if (viewModel.RoomsToReserve == null || viewModel.RoomsToReserve.Count == 0)
         {
             throw new Exception($"RoomsToReserve is null or empty");
         }
 
-        foreach (int roomId in viewModel.RoomsToReserve)
+        if (viewModel.AdminUser == null)
         {
-            booking.ReservedRooms.Add(CreateRoomReservation(roomId));
+            throw new Exception($"AdminUser is null");
         }
+
+        await LoadReservedRoomsAndCalculateTotals(viewModel);
+
+        if (viewModel.ReservedRooms == null)
+        {
+            throw new Exception($"ReservedRooms is null");
+        }
+
+        Booking booking = new()
+        {
+            CheckInDate = viewModel.CheckInDate,
+            CheckOutDate = viewModel.CheckOutDate,
+            Contact = viewModel.Contact ?? throw new Exception("Contact is null."),
+            Totals = viewModel.Totals,
+            ReservedRooms = viewModel.RoomsToReserve.ConvertAll(CreateRoomReservation),
+            BookingItems = SquashBookingItems(viewModel.ReservedRooms.ConvertAll(CreateBookingItem)),
+            BookingTimeline = new()
+            {
+                logService.CreateLog(viewModel.AdminUser, "Booking created.")
+            },
+            Status = BookingStatus.New,
+        };
 
         return booking;
     }
 
-    public async Task ConvertReservedRoomIdsIfAny(BookingRoomSelectListingModel viewModel)
+    public async Task LoadReservedRoomsAndCalculateTotals(BookingViewModel viewModel)
     {
         if (viewModel.RoomsToReserve == null || viewModel.RoomsToReserve.Count == 0)
         {
@@ -119,20 +153,85 @@ public class BookingService : CrudService<Booking, BookingRoomSelectListingModel
         }
 
         viewModel.ReservedRooms = await roomService.GetByIds(viewModel.RoomsToReserve);
+
+        viewModel.Totals = totalsService.CalculateTotals(viewModel);
     }
 
     public RoomReservation CreateRoomReservation(int roomId)
     {
         Room room = roomService.Get(roomId) ?? throw new Exception($"No such room with ID {roomId} was found in the database.");
 
+        return CreateRoomReservation(room);
+    }
+
+    public RoomReservation CreateRoomReservation(Room room)
+    {
         return new RoomReservation
         {
-            RoomId = roomId,
+            RoomId = room.Id,
             Room = room,
         };
     }
 
-    public BookingStepContext GenerateBookingStepContext(BookingRoomSelectListingModel? viewModel, string? activeStep = null)
+    public BookingItem CreateBookingItem(Room room)
+    {
+        return new BookingItem
+        {
+            RoomCategoryId = room.CategoryId,
+            TargetCapacity = room.Capacity,
+            Price = room.Price,
+            Quantity = 1,
+            DesiredFeatures = CreateBookingItemRoomFeatures(room),
+        };
+    }
+
+    public List<BookingItem> SquashBookingItems(List<BookingItem> items)
+    {
+        int maxIterations = items.Count;
+
+        List<BookingItem> squashedItems = new();
+
+        for (int i = 0; items.Count > 0 && i < maxIterations; i++)
+        {
+            List<BookingItem> identical = GetIdenticalItems(items[0], items);
+
+            int totalQty = identical.Sum(i => i.Quantity);
+            identical[0].Quantity = totalQty;
+
+            squashedItems.Add(identical[0]);
+            items.RemoveAll(identical.Contains);
+        }
+
+        return squashedItems;
+    }
+
+    public List<BookingItem> GetIdenticalItems(BookingItem compareTo, List<BookingItem> items)
+    {
+        return items.Where(item => CompareBookingItems(compareTo, item)).ToList();
+    }
+
+    public bool CompareBookingItems(BookingItem item1, BookingItem item2)
+    {
+        return item1.RoomCategoryId == item2.RoomCategoryId
+            && item1.TargetCapacity == item2.TargetCapacity
+            && item1.Price == item2.Price;
+    }
+
+    public List<BookingItemRoomFeature> CreateBookingItemRoomFeatures(Room room)
+    {
+        if (room.Features == null)
+        {
+            throw new Exception("Room features not loaded!");
+        }
+
+        return room.Features.ConvertAll(feature => new BookingItemRoomFeature
+        {
+            RoomFeature = feature,
+            RoomFeatureId = feature.Id
+        });
+    }
+
+    public BookingStepContext GenerateBookingStepContext(BookingViewModel? viewModel, string? activeStep = null)
     {
         BookingStepContext context = new()
         {
