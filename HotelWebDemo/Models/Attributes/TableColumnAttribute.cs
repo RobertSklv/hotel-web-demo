@@ -12,6 +12,10 @@ public class TableColumnAttribute : Attribute
 
     public object? DefaultValue { get; set; }
 
+    public string? Format { get; set; }
+
+    public TableColumnSpecialFormat SpecialFormat { get; set; }
+
     public bool Orderable { get; set; } = true;
 
     public bool Filterable { get; set; } = true;

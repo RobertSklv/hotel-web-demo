@@ -32,7 +32,7 @@ public class RoomCategory : BaseEntity
 
     [Column(TypeName = "decimal(19, 4)")]
     [DataType(DataType.Currency)]
-    [TableColumn]
+    [TableColumn(Format = "$#0.00")]
     public decimal Price { get; set; }
 
     [JsonIgnore]

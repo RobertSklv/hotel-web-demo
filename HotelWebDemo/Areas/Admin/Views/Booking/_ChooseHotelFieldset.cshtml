@@ -9,6 +9,7 @@
 
     List<Hotel> hotels = ViewData["Hotels"] as List<Hotel> ?? new();
     List<RoomCategory> roomCategories = ViewData["RoomCategories"] as List<RoomCategory> ?? new();
+    int? fixedHotelId = ViewData["FixedHotelId"] as int?;
 }
 
 <div class="row mb-4 field-hotel">
@@ -18,6 +19,7 @@
     <div class="col-12 col-lg-8">
         <select asp-for=@Model.HotelId
                 class="form-select d-block w-100"
+                disabled=@(fixedHotelId != null)
                 asp-items="new SelectList(
                                 hotels,
                                 nameof(Hotel.Id),

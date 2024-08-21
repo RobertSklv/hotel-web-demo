@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
 
 namespace HotelWebDemo.Models.ViewModels;
@@ -24,6 +25,8 @@ public class BookingViewModel : ListingModel<Room>, IBookingViewModel
     public List<int>? RoomsToReserve { get; set; }
 
     public List<Room>? ReservedRooms { get; set; }
+
+    public List<RoomReservation>? RoomReservations { get; set; }
 
     public BookingContact? Contact { get; set; }
 
@@ -85,6 +88,23 @@ public class BookingViewModel : ListingModel<Room>, IBookingViewModel
         }
 
         return query;
+    }
+
+    public ColorClass GetStatusColor()
+    {
+        return Status switch
+        {
+            BookingStatus.New => ColorClass.Info,
+            BookingStatus.CheckedIn => ColorClass.Primary,
+            BookingStatus.Cancelled => ColorClass.Danger,
+            BookingStatus.CheckedOut => ColorClass.Success,
+            _ => ColorClass.Secondary,
+        };
+    }
+
+    public string GetStatusColorAsString()
+    {
+        return GetStatusColor().ToString().ToLower();
     }
 
     public override void Copy(IListingModel? listingModel)

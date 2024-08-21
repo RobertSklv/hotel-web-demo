@@ -59,6 +59,8 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingTotalsService, BookingTotalsService>();
 builder.Services.AddScoped<IBookingLogService, BookingLogService>();
 builder.Services.AddScoped<IBookingLogRepository, BookingLogRepository>();
+builder.Services.AddScoped<IRoomReservationService, RoomReservationService>();
+builder.Services.AddScoped<IRoomReservationRepository, RoomReservationRepository>();
 
 builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
 builder.Services.AddTransient<IMailingService, MailingService>();

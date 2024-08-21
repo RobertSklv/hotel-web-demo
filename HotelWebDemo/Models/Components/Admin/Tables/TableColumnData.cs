@@ -1,4 +1,6 @@
-﻿namespace HotelWebDemo.Models.Components.Admin.Tables;
+﻿using HotelWebDemo.Models.Attributes;
+
+namespace HotelWebDemo.Models.Components.Admin.Tables;
 
 public class TableColumnData
 {
@@ -11,6 +13,10 @@ public class TableColumnData
     public Func<object, object?> ValueCallback { get; set; }
 
     public object? DefaultValue { get; set; }
+
+    public string? Format { get; set; }
+
+    public TableColumnSpecialFormat SpecialFormat { get; set; }
 
     public bool Orderable { get; set; }
 

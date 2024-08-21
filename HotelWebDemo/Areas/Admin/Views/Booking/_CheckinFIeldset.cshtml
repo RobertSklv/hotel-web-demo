@@ -1,0 +1,33 @@
+﻿@using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
+
+@model BookingViewModel
+
+@{
+    Layout = "_FieldsetLayout";
+    ViewData["Legend"] = "Check-in";
+}
+
+@foreach (RoomReservation r in Model.RoomReservations)
+{
+    @*Do not load alert if the room is already checked in*@
+
+    <div class="alert alert-info p-3 mb-3">
+        <div class="row">
+            <div class="col">
+                <h3>@r.Room?.CategoryNameAndCapacity</h3>
+            </div>
+            <div class="col text-end">
+                <a
+                    asp-area="Admin"
+                    asp-controller="RoomReservation"
+                    asp-action="Checkin"
+                    asp-route-id="@r.Id"
+                    class="btn btn-link btn-primary text-decoration-none"
+                >
+                    Check-in customers
+                </a>
+            </div>
+        </div>
+    </div>
+}

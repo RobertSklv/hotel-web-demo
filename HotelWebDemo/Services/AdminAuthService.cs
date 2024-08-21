@@ -47,6 +47,7 @@ public class AdminAuthService : IAdminAuthService
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.Code),
+            new Claim("HotelId", (user.HotelId ?? 0).ToString()),
         };
         ClaimsIdentity identity = new(claims, "AdminCookie");
         ClaimsPrincipal principal = new(identity);

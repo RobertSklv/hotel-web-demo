@@ -82,7 +82,6 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
             CustomerAccount = new CustomerAccount()
             {
                 Email = viewModel.Email,
-                DateOfBirth = viewModel.DateOfBirth,
                 Address = new Address()
                 {
                     StreetLine1 = viewModel.StreetLine1,
@@ -101,6 +100,7 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
                 NationalId = viewModel.NationalId,
                 Citizenship = viewModel.Citizenship,
                 CitizenshipId = viewModel.CitizenshipId,
+                DateOfBirth = viewModel.DateOfBirth,
             }
         };
     }
@@ -114,7 +114,7 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
             MiddleName = customer.MiddleName,
             LastName = customer.LastName,
             Email = customer.CustomerAccount.Email,
-            DateOfBirth = customer.CustomerAccount.DateOfBirth,
+            DateOfBirth = customer.CustomerIdentity.DateOfBirth,
             PassportId = customer.CustomerIdentity.PassportId,
             NationalId = customer.CustomerIdentity.NationalId,
             Citizenship = customer.CustomerIdentity.Citizenship,

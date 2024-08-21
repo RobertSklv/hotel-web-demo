@@ -52,7 +52,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     }
 
     [HttpGet]
-    public IActionResult View(int id)
+    public virtual IActionResult View(int id)
     {
         if (GetEntity(id, out TViewModel? viewModel))
         {
@@ -219,9 +219,23 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         return (List<PageActionButton>)ViewData["PageActions"]!;
     }
 
-    protected void AddBackAction()
+    protected void AddBackAction(
+        string action = "Index",
+        string? controllerName = null,
+        Dictionary<string, object>? requestParameters = null)
     {
-        GetOrCreatePageActionButtonsList().Add(adminPageService.BackAction(this));
+        if (controllerName != null)
+        {
+            GetOrCreatePageActionButtonsList().Add(adminPageService.BackAction(
+                area: "Admin",
+                controller: controllerName,
+                action: action,
+                requestParameters: requestParameters));
+        }
+        else
+        {
+            GetOrCreatePageActionButtonsList().Add(adminPageService.BackAction(this, action: action));
+        }
     }
 
     protected void AddCreateAction()

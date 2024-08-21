@@ -10,12 +10,12 @@ public abstract class BaseEntity : IBaseEntity
     [TableColumn(Name = "#", SortOrder = -10, Searchable = false)]
     public int Id { get; set; }
 
-    [TableColumn(SortOrder = 998)]
+    [TableColumn(SortOrder = 998, Format = "dd MMM yyyy hh:mm:ss")]
     [DataType(DataType.DateTime)]
     [Display(Name = "Created at")]
     public DateTime CreatedAt { get; set; }
 
-    [TableColumn(SortOrder = 999)]
+    [TableColumn(SortOrder = 999, Format = "dd MMM yyyy hh:mm:ss")]
     [DataType(DataType.DateTime)]
     [Display(Name = "Updated at")]
     public DateTime UpdatedAt { get; set; }

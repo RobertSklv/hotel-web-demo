@@ -7,7 +7,7 @@ namespace HotelWebDemo.Models.Database;
 [Table("CustomerAccounts")]
 public class CustomerAccount : BaseEntity
 {
-    public Customer Customer { get; set; }
+    public Customer? Customer { get; set; }
 
     public int CustomerId { get; set; }
 
@@ -24,8 +24,6 @@ public class CustomerAccount : BaseEntity
     [MinLength(16)]
     [MaxLength(16)]
     public byte[] PasswordHashSalt { get; set; }
-
-    public DateTime DateOfBirth { get; set; }
 
     [ForeignKey(nameof(AddressId))]
     [DeleteBehavior(DeleteBehavior.NoAction)]

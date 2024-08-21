@@ -15,11 +15,11 @@ public interface ICrudService<TEntity, TViewModel>
 
     Task<List<TEntity>> GetByIds(IEnumerable<int> ids);
 
-    Task<int> Upsert(TViewModel model);
+    Task<bool> Upsert(TViewModel model);
 
-    Task<int> Update(TEntity entity);
+    Task<bool> Update(TEntity entity);
 
-    Task<int> Delete(int id);
+    Task<bool> Delete(int id);
 
     Task<PaginatedList<TEntity>> List(ListingModel listingModel);
 

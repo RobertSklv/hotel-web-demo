@@ -1,6 +1,7 @@
 ﻿@using HotelWebDemo.Models.Components.Admin.Tables
 @using HotelWebDemo.Models.Components.Common
 @using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
 
 @model Table
 
@@ -16,13 +17,22 @@
         <form method="get" asp-action="@Model.ListingModel.ActionName" class="filters-form">
             @if (Model.IsOrderable)
             {
-                <input type="hidden" name="OrderBy" value="@Model.ListingModel.OrderBy" />
-                <input type="hidden" name="Direction" value="@Model.ListingModel.Direction" />
+                if (Model.ListingModel.OrderBy != ListingModel.DEFAULT_ORDER_BY)
+                {
+                    <input type="hidden" name="OrderBy" value="@Model.ListingModel.OrderBy" />
+                }
+                if (Model.ListingModel.Direction != ListingModel.DEFAULT_DIRECTION)
+                {
+                    <input type="hidden" name="Direction" value="@Model.ListingModel.Direction" />
+                }
             }
 
             @if (Model.Pagination != null)
             {
-                <input type="hidden" name="Page" value="@Model.ListingModel.Page" />
+                if (Model.ListingModel.Page != ListingModel.DEFAULT_PAGE)
+                {
+                    <input type="hidden" name="Page" value="@Model.ListingModel.Page" />
+                }
 
                 @if (Model.IsPageSizeAdjustable)
                 {
@@ -31,7 +41,9 @@
                         <select id="PageSize" name="PageSize" class="form-select form-select-sm d-inline-block w-auto">
                             @foreach (Option option in Model.GetPageSizeOptions())
                             {
-                                <option value="@option.Value" selected="@option.Selected">@option.Content</option>
+                                <option value="@option.Value" selected="@option.Selected">
+                                    @option.Content
+                                </option>
                             }
                         </select>
                     </div>
@@ -107,11 +119,9 @@
                                     <input class="form-check-input mass-action-check" type="checkbox" value="@item.Id" data-select-item="@item.Id">
                                 </td>
                             }
-                            @foreach (object? cellData in Model.GetRowData(item))
+                            @foreach (TableCellData cellData in Model.GetRowData(item))
                             {
-                                <td>
-                                    <span>@cellData</span>
-                                </td>
+                                <partial name="_TableCell" model="@cellData" />
                             }
                             @if (Model.RowActions.Any())
                             {

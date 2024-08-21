@@ -96,8 +96,8 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
                     e.HotelId == listingModel.HotelId &&
                     !(listingModel.RoomsToReserve ?? new()).Contains(e.Id) &&
                     e.BookingRooms!.Where(e => 
-                        (e.Booking!.CheckInDate >= listingModel.CheckInDate && e.Booking.CheckInDate < listingModel.CheckOutDate) ||
-                        (e.Booking.CheckOutDate > listingModel.CheckInDate && e.Booking.CheckOutDate <= listingModel.CheckOutDate))
+                        (e.Booking!.CheckinDate >= listingModel.CheckInDate && e.Booking.CheckinDate < listingModel.CheckOutDate) ||
+                        (e.Booking.CheckoutDate > listingModel.CheckInDate && e.Booking.CheckoutDate <= listingModel.CheckOutDate))
                     .Count() == 0));
     }
 }

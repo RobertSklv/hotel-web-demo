@@ -63,7 +63,7 @@ public abstract class Table
         };
     }
 
-    public abstract List<object?> GetRowData(IBaseEntity item);
+    public abstract List<TableCellData> GetRowData(IBaseEntity item);
 
     public abstract List<IBaseEntity> GetItems();
 
@@ -198,6 +198,8 @@ public abstract class Table
                 PropertyType = property.PropertyType,
                 Name = GetColumnName(property, columnAttr),
                 DefaultValue = columnAttr.DefaultValue,
+                Format = columnAttr.Format,
+                SpecialFormat = columnAttr.SpecialFormat,
                 Filterable = columnAttr.Filterable,
                 Orderable = columnAttr.Orderable,
                 SortOrder = columnAttr.SortOrder,
@@ -298,7 +300,7 @@ public class Table<T> : Table
         Items = items;
     }
 
-    public override List<object?> GetRowData(IBaseEntity item)
+    public override List<TableCellData> GetRowData(IBaseEntity item)
     {
         return GetRowData((T)item);
     }
@@ -315,13 +317,18 @@ public class Table<T> : Table
         return items;
     }
 
-    public List<object?> GetRowData(T item)
+    public List<TableCellData> GetRowData(T item)
     {
-        List<object?> rowData = new();
+        List<TableCellData> rowData = new();
 
         foreach (TableColumnData colData in ColumnDatas)
         {
-            rowData.Add(colData.ValueCallback(item));
+            TableCellData cellData = new()
+            {
+                ColumnData = colData,
+                Value = colData.ValueCallback(item)
+            };
+            rowData.Add(cellData);
         }
 
         return rowData;

@@ -13,13 +13,13 @@ public class Booking : BaseEntity
 
     public int? ContactId { get; set; }
 
-    [TableColumn]
+    [TableColumn(Format = "dd/MM/yyyy")]
     [Display(Name = "Check-in date")]
-    public DateTime CheckInDate { get; set; }
+    public DateTime CheckinDate { get; set; }
 
-    [TableColumn]
+    [TableColumn(Format = "dd/MM/yyyy")]
     [Display(Name = "Check-out date")]
-    public DateTime CheckOutDate { get; set; }
+    public DateTime CheckoutDate { get; set; }
 
     [ForeignKey(nameof(TotalsId))]
     public BookingTotals? Totals { get; set; }
@@ -45,8 +45,6 @@ public class Booking : BaseEntity
 
     public List<BookingItem>? BookingItems { get; set; }
 
-    public List<BookingCustomer>? BookingCustomers { get; set; }
-
     public List<RoomReservation>? ReservedRooms { get; set; }
 
     public List<BookingEventLog>? BookingTimeline { get; set; }
@@ -54,10 +52,10 @@ public class Booking : BaseEntity
     [TableColumn(Name = "Contact name")]
     public string? Contact_FullName => Contact?.FullName;
 
-    [TableColumn(Name = "Contact phone")]
+    [TableColumn(Name = "Contact phone", SpecialFormat = TableColumnSpecialFormat.TelephoneLink)]
     public string? Contact_Phone => Contact?.Phone;
 
-    [TableColumn(Name = "Contact e-mail")]
+    [TableColumn(Name = "Contact e-mail", SpecialFormat = TableColumnSpecialFormat.EmailLink)]
     public string? Contact_Email => Contact?.Email;
 
     [NotMapped]

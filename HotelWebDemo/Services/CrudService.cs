@@ -38,9 +38,9 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
         return await Task.FromResult(ViewModelToEntity(model));
     }
 
-    public virtual async Task<int> Delete(int id)
+    public virtual async Task<bool> Delete(int id)
     {
-        return await repository.Delete(id);
+        return await repository.Delete(id) > 0;
     }
 
     public virtual TEntity? Get(int id)
@@ -119,16 +119,16 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
         return model;
     }
 
-    public virtual async Task<int> Update(TEntity entity)
+    public virtual async Task<bool> Update(TEntity entity)
     {
-        return await repository.Update(entity);
+        return await repository.Update(entity) > 0;
     }
 
-    public virtual async Task<int> Upsert(TViewModel model)
+    public virtual async Task<bool> Upsert(TViewModel model)
     {
         TEntity entity = await ViewModelToEntityAsync(model);
 
-        return await repository.Upsert(entity);
+        return await repository.Upsert(entity) > 0;
     }
 }
 

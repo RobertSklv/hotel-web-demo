@@ -7,7 +7,7 @@ namespace HotelWebDemo.Models.Database;
 [Table("CustomerIdentities")]
 public class CustomerIdentity : BaseEntity
 {
-    public Customer Customer { get; set; }
+    public Customer? Customer { get; set; }
 
     public int CustomerId { get; set; }
 
@@ -21,4 +21,8 @@ public class CustomerIdentity : BaseEntity
     public Country? Citizenship { get; set; }
 
     public int CitizenshipId { get; set; }
+
+    public DateTime DateOfBirth { get; set; }
+
+    public bool Gender { get; set; }
 }

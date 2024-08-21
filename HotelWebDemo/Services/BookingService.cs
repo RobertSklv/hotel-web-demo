@@ -79,14 +79,15 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
         BookingViewModel viewModel = new()
         {
             Id = entity.Id,
-            CheckInDate = entity.CheckInDate,
-            CheckOutDate = entity.CheckOutDate,
+            CheckInDate = entity.CheckinDate,
+            CheckOutDate = entity.CheckoutDate,
             Contact = entity.Contact,
             Totals = entity.Totals,
             HasCustomGrandTotal = entity.Totals.HasCustomGrandTotal,
             CustomGrandTotal = entity.Totals.CustomGrandTotal,
             RoomsToReserve = new(),
             ReservedRooms = new(),
+            RoomReservations = entity.ReservedRooms,
             Status = entity.Status,
             Timeline = entity.BookingTimeline,
         };
@@ -129,8 +130,8 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
 
         Booking booking = new()
         {
-            CheckInDate = viewModel.CheckInDate,
-            CheckOutDate = viewModel.CheckOutDate,
+            CheckinDate = viewModel.CheckInDate,
+            CheckoutDate = viewModel.CheckOutDate,
             Contact = viewModel.Contact ?? throw new Exception("Contact is null."),
             Totals = viewModel.Totals,
             ReservedRooms = viewModel.RoomsToReserve.ConvertAll(CreateRoomReservation),

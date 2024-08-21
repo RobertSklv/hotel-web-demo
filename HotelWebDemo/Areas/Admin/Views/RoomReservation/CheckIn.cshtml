@@ -1,0 +1,110 @@
+﻿@using HotelWebDemo.Models.Database
+
+@model RoomReservation
+
+@{
+    Layout = "_AdminPageLayout";
+    ViewData["PageHeading"] = "Check-in";
+    ViewData["PageSubHeading"] = $"Room {Model.Room?.CategoryNameAndCapacity}";
+}
+
+<table class="table room-info mb-3">
+    <tr>
+        <td>#:</td>
+        <td>@Model.Room?.Id</td>
+    </tr>
+    <tr>
+        <td>No.:</td>
+        <td>@Model.Room?.Number</td>
+    </tr>
+    <tr>
+        <td>Floor No.:</td>
+        <td>@Model.Room?.Floor</td>
+    </tr>
+    <tr>
+        <td>Capacity:</td>
+        <td>@Model.Room?.Capacity</td>
+    </tr>
+    <tr>
+        <td>Features:</td>
+        <td>@Model.Room?.FeaturesEnumerated</td>
+    </tr>
+</table>
+
+<form asp-action="CheckIn">
+    @if (Model.Id != 0)
+    {
+        <input type="hidden" asp-for="@Model.Id" />
+    }
+    <input type="hidden" asp-for="@Model.BookingId" />
+    <input type="hidden" asp-for="@Model.RoomId" />
+
+    @for (int i = 0; i < Model.CurrentCheckin.CustomerCheckinInfos.Count; i++)
+    {
+        <div class="card p-3 mb-3">
+            <div class="card-title">
+                <h2>Customer @(i + 1)</h2>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.FirstName></label>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <input asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.FirstName class="form-control d-block w-100" />
+                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.FirstName class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.MiddleName></label>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <input asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.MiddleName class="form-control d-block w-100" />
+                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.MiddleName class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.LastName></label>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <input asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.LastName class="form-control d-block w-100" />
+                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.LastName class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CustomerIdentity.NationalId></label>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <input asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CustomerIdentity.NationalId class="form-control d-block w-100" />
+                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CustomerIdentity.NationalId class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CustomerIdentity.PassportId></label>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <input asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CustomerIdentity.PassportId class="form-control d-block w-100" />
+                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CustomerIdentity.PassportId class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CustomerIdentity.DateOfBirth></label>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <input asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CustomerIdentity.DateOfBirth class="form-control d-block w-100" />
+                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CustomerIdentity.DateOfBirth class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary p-3">
+        Check-in
+    </button>
+</form>

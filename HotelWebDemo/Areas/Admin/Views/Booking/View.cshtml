@@ -1,10 +1,20 @@
 ﻿@using HotelWebDemo.Models.ViewModels
+@using HotelWebDemo.Models.Database
 
 @model BookingViewModel
 
 @{
     Layout = "_AdminPageLayout";
     ViewData["PageHeading"] = $"Booking #{Model.Id}";
+}
+
+<p>
+    Status: <strong class="text-@Model.GetStatusColorAsString()">@Model.Status</strong>
+</p>
+
+@if (Model.CheckInDate >= DateTime.UtcNow)
+{
+    <partial name="_CheckinFieldset" model="@Model" />
 }
 
 <partial name="_ViewBookingFieldset" model="@Model" />

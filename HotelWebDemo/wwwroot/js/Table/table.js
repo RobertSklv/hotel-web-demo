@@ -32,7 +32,10 @@ window.createTableComponent = function (tableId) {
             });
 
             this.filtersWrapper.find('select[name="PageSize"]', idSelector).on('change', function () {
-                self.filtersWrapper.trigger('submit');
+                if (!self.searchBarWrapperInput.hasClass('active-search')) {
+                    self.searchBarWrapperInput.removeAttr('name');
+                }
+                $('.filters-form').trigger('submit');
             });
 
             var massActionFormIdSelector = '#massActionForm-' + tableId;

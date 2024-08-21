@@ -6,6 +6,8 @@ namespace HotelWebDemo.Models.Database;
 [Table("BookingContacts")]
 public class BookingContact : BaseEntity
 {
+    public Booking? Booking { get; set; }
+
     [Display(Name = "Full name")]
     [StringLength(64)]
     public string FullName { get; set; }

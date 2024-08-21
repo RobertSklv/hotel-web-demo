@@ -8,7 +8,7 @@
 
 <table class="table view-booking-table">
     <tr>
-        <th colspan="2" class="table-dark">General</th>
+        <th colspan="2" class="table-dark fs-6">General</th>
     </tr>
     <tr>
         <td>Hotel:</td>
@@ -31,7 +31,7 @@
         <td>@Model.RoomsToReserve!.Count</td>
     </tr>
     <tr>
-        <th colspan="2" class="table-dark">Contact</th>
+        <th colspan="2" class="table-dark fs-6">Contact</th>
     </tr>
     <tr>
         <td>Name:</td>
@@ -68,12 +68,12 @@
         <td>@Model.Contact!.Note</td>
     </tr>
     <tr>
-        <th colspan="2" class="table-dark">Totals</th>
+        <th colspan="2" class="table-dark fs-6">Totals</th>
     </tr>
     @foreach (Room r in Model.ReservedRooms!)
     {
         <tr>
-            <td><span>@r.Category!.Name:</span></td>
+            <td><span>@r.CategoryNameAndCapacity:</span></td>
             <td><span class="currency-dollar">@(r.GetTotalPriceForPeriod(Model.Nights).ToString("#0.00"))</span></td>
         </tr>
     }

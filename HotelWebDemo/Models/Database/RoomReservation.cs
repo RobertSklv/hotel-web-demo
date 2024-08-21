@@ -12,4 +12,9 @@ public class RoomReservation : BaseEntity
     public Room? Room { get; set; }
 
     public int RoomId { get; set; }
+
+    public List<CheckinInfo>? CheckinInfos { get; set; }
+
+    [NotMapped]
+    public CheckinInfo? CurrentCheckin { get; set; }
 }

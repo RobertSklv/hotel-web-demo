@@ -27,7 +27,7 @@ public class Room : BaseEntity
     [TableColumn]
     public int Floor { get; set; }
 
-    [TableColumn]
+    [TableColumn(SpecialFormat = TableColumnSpecialFormat.MeterSquared)]
     public float Area { get; set; }
 
     [Range(0, 10)]
@@ -49,6 +49,21 @@ public class Room : BaseEntity
     public string FeaturesEnumerated => Features != null && Features.Count > 0
         ? string.Join(", ", Features.ConvertAll(f => $"{f.Name} (${f.Price:#0.00})"))
         : "None";
+
+    public string CategoryNameAndCapacity
+    {
+        get
+        {
+            if (Category == null)
+            {
+                throw new Exception($"The category is not loaded.");
+            }
+
+            string adultsLabel = Capacity > 1 ? "adults" : "adult";
+
+            return $"{Category.Name} ({Capacity} {adultsLabel})";
+        }
+    }
 
     public decimal Price
     {

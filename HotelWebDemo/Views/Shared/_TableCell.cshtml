@@ -1,0 +1,47 @@
+﻿@using HotelWebDemo.Models.Components.Admin.Tables
+@using HotelWebDemo.Models.Attributes
+
+@model TableCellData
+
+@{
+    string? formattedValue = Model.GetFormattedValue(Model.ColumnData.Format);
+}
+
+<td>
+    <span>
+        @if (Model.Value == null)
+        {
+            @Model.ColumnData.DefaultValue
+        }
+        else if (Model.ColumnData.SpecialFormat == default)
+        {
+            @formattedValue
+        }
+        else if (Model.ColumnData.SpecialFormat == TableColumnSpecialFormat.TelephoneLink)
+        {
+            <a href="tel:@(Model.Value)">@formattedValue</a>
+        }
+        else if (Model.ColumnData.SpecialFormat == TableColumnSpecialFormat.EmailLink)
+        {
+            <a href="mailto:@(Model.Value)">@formattedValue</a>
+        }
+        else if (Model.ColumnData.SpecialFormat == TableColumnSpecialFormat.MeterSquared)
+        {
+            <span>@formattedValue</span>
+            <span>m<sup>2</sup></span>
+        }
+        else if (Model.ColumnData.SpecialFormat == TableColumnSpecialFormat.MeterCubic)
+        {
+            <span>@formattedValue</span>
+            <span>m<sup>3</sup></span>
+        }
+        else if (Model.ColumnData.SpecialFormat == TableColumnSpecialFormat.YesNo)
+        {
+            @((bool)Model.Value ? "Yes" : "No")
+        }
+        else
+        {
+            @formattedValue
+        }
+    </span>
+</td>

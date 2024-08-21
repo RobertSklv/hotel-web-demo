@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
 using HotelWebDemo.Extensions;
 using HotelWebDemo.Models.Components.Admin.Booking;
+using HotelWebDemo.Models.Components.Admin.Pages;
+using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
@@ -32,14 +34,31 @@ public class BookingController : CrudController<Booking, BookingViewModel>
         this.adminUserService = adminUserService;
     }
 
+    public override IActionResult View(int id)
+    {
+        CreateViewPageActions(id);
+
+        return base.View(id);
+    }
+
     [HttpGet]
     public override IActionResult Create()
     {
-        ViewData["Hotels"] = hotelService.GetAll();
+        List<Hotel> hotels = hotelService.GetAll();
+        ViewData["Hotels"] = hotels;
         ViewData["RoomCategories"] = categoryService.GetAll();
+
+        int currentAdminHotelId = GetCurrentAdminHotelId();
+        BookingViewModel? viewModel = TempData.Get<BookingViewModel>(OldModelTempDataKey);
+
+        if (currentAdminHotelId != 0)
+        {
+            ViewData["FixedHotelId"] = currentAdminHotelId;
+            viewModel.Hotel = hotels.FirstOrDefault(e => e.Id == currentAdminHotelId);
+        }
+
         if (!TempData.ContainsKey("StepContext"))
         {
-            BookingViewModel? viewModel = TempData.Get<BookingViewModel>(OldModelTempDataKey);
             TempData.Set("StepContext", service.GenerateBookingStepContext(viewModel));
         }
 
@@ -142,5 +161,41 @@ public class BookingController : CrudController<Booking, BookingViewModel>
         model.AdminUser = adminUserService.Get(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         return base.Create(model);
+    }
+
+    private int GetCurrentAdminHotelId()
+    {
+        return int.Parse(User.Claims.First(c => c.Type == "HotelId").Value);
+    }
+
+    private void CreateViewPageActions(int bookingId)
+    {
+        List<PageActionButton> btnList = GetOrCreatePageActionButtonsList();
+
+        btnList.Add(new PageActionButton
+        {
+            Content = "Create payment",
+            Color = ColorClass.Primary,
+            Controller = "Booking",
+            Action = "CreatePayment",
+            IsLink = true,
+            RequestParameters = new()
+            {
+                { "Id", bookingId }
+            }
+        });
+
+        btnList.Add(new PageActionButton
+        {
+            Content = "Cancel",
+            Color = ColorClass.Danger,
+            Controller = "Booking",
+            Action = "Cancel",
+            IsLink = false,
+            RequestParameters = new()
+            {
+                { "Id", bookingId }
+            }
+        });
     }
 }
