@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using HotelWebDemo.Models.Attributes;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace HotelWebDemo.Models.Database;
 
 [Table("Customers")]
 [SelectOption(LabelProperty = nameof(FullName))]
+[JsonObject]
 public class Customer : BaseEntity
 {
     [TableColumn]
@@ -25,22 +27,46 @@ public class Customer : BaseEntity
     [StringLength(64, MinimumLength = 1)]
     public string LastName { get; set; }
 
-    [ForeignKey(nameof(CustomerIdentityId))]
-    [DeleteBehavior(DeleteBehavior.NoAction)]
-    public CustomerIdentity? CustomerIdentity { get; set; }
+    [StringLength(16)]
+    [Display(Name = "National ID")]
+    [JsonIgnore]
+    public string? NationalId { get; set; }
 
-    public int? CustomerIdentityId { get; set; }
+    [StringLength(16)]
+    [Display(Name = "Passport ID")]
+    [JsonIgnore]
+    public string? PassportId { get; set; }
+
+    [TableColumn]
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public Country? Citizenship { get; set; }
+
+    public int CitizenshipId { get; set; }
+
+    [Display(Name = "Date of birth")]
+    public DateTime DateOfBirth { get; set; }
+
+    [TableColumn(SpecialFormat = TableColumnSpecialFormat.MaleFemale)]
+    public bool Gender { get; set; }
+
+    [ForeignKey(nameof(AddressId))]
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public Address? Address { get; set; }
+
+    public int AddressId { get; set; }
 
     [ForeignKey(nameof(CustomerAccountId))]
     [DeleteBehavior(DeleteBehavior.NoAction)]
+    [JsonIgnore]
     public CustomerAccount? CustomerAccount { get; set; }
 
+    [JsonIgnore]
     public int? CustomerAccountId { get; set; }
 
+    [JsonIgnore]
     public List<CustomerCheckinInfo>? CustomerCheckinInfos { get; set; }
 
-    public List<Review>? Reviews { get; set; }
-
+    [JsonIgnore]
     public string FullName
     {
         get
@@ -58,33 +84,27 @@ public class Customer : BaseEntity
         }
     }
 
+    [JsonIgnore]
     [TableColumn(Name = "E-mail", DefaultValue = "Not specified.", SortOrder = -1)]
     public string? CustomerAccount_Email => CustomerAccount?.Email;
 
-    [TableColumn(Name = "Citizenship", DefaultValue = "Not specified.")]
-    public Country? CustomerIdentity_Citizenship => CustomerIdentity?.Citizenship;
-
+    [JsonIgnore]
     [TableColumn(Name = "Address", DefaultValue = "Not specified.")]
-    public string? CustomerAccount_Address_StreetLine1
+    public string? Address_StreetLine1
     {
         get
         {
-            if (CustomerAccount == null || CustomerAccount.Address == null)
-            {
-                return null;
-            }
-
             StringBuilder sb = new();
-            sb.AppendLine(CustomerAccount?.Address?.StreetLine1);
+            sb.AppendLine(Address?.StreetLine1);
 
-            if (CustomerAccount?.Address?.StreetLine2 != null) sb.AppendLine(CustomerAccount?.Address?.StreetLine2);
-            if (CustomerAccount?.Address?.StreetLine3 != null) sb.AppendLine(CustomerAccount?.Address?.StreetLine3);
+            if (Address?.StreetLine2 != null) sb.AppendLine(Address?.StreetLine2);
+            if (Address?.StreetLine3 != null) sb.AppendLine(Address?.StreetLine3);
 
-            sb.Append(CustomerAccount?.Address?.City);
+            sb.Append(Address?.City);
             sb.Append(", ");
-            sb.AppendLine(CustomerAccount?.Address?.PostalCode);
+            sb.AppendLine(Address?.PostalCode);
 
-            sb.AppendLine(CustomerAccount?.Address?.Country?.Name);
+            sb.AppendLine(Address?.Country?.Name);
 
             return sb.ToString();
         }

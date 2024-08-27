@@ -27,4 +27,8 @@ public interface ICustomerService : ICrudService<Customer, CustomerViewModel>
     Task<bool> InitiateResetPasswordAndNotify(int customerId);
 
     Task<bool> ResetPassword(ResetPasswordModel model, ModelStateDictionary modelState);
+
+    Task<Customer?> GetByNationalId(string nationalId);
+
+    Task<Customer?> GetByPassportId(string passportId);
 }

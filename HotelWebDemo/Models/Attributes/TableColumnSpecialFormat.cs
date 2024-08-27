@@ -8,4 +8,5 @@ public enum TableColumnSpecialFormat
     MeterSquared,
     MeterCubic,
     YesNo,
+    MaleFemale,
 }

@@ -7,7 +7,7 @@ namespace HotelWebDemo.Models.Database;
 [Table("Reviews")]
 public class Review : BaseEntity
 {
-    public Customer Author { get; set; }
+    public CustomerAccount Author { get; set; }
 
     public int AuthorId { get; set; }
 

@@ -63,6 +63,11 @@ public class CustomerController : CrudController<Customer, CustomerViewModel>
         return RedirectToAction("Edit", new { id });
     }
 
+    public async Task<Customer?> GetByNationalId(string nationalId)
+    {
+        return await service.GetByNationalId(nationalId);
+    }
+
     private void CreateResetPasswordAction(int customerId)
     {
         GetOrCreatePageActionButtonsList().Add(new()

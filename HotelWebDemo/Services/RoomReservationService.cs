@@ -30,9 +30,6 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
             CustomerCheckinInfo cch = new()
             {
                 Customer = new()
-                {
-                    CustomerIdentity = new()
-                }
             };
             roomReservation.CurrentCheckin.CustomerCheckinInfos.Add(cch);
         }

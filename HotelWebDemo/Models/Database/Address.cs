@@ -1,15 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace HotelWebDemo.Models.Database;
 
 [Table("Addresses")]
-public class Address : BaseEntity
+[JsonObject]
+public class Address : BaseEntity, IAddress
 {
-    public CustomerAccount? CustomerAccount { get; set; }
-
-    public int CustomerAccountId { get; set; }
+    [JsonIgnore]
+    public Customer? Customer { get; set; }
 
     [Required]
     [StringLength(64)]

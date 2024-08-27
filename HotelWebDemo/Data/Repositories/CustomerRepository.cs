@@ -16,22 +16,20 @@ public class CustomerRepository : CrudRepository<Customer>, ICustomerRepository
     public override IQueryable<Customer> List(DbSet<Customer> dbSet)
     {
         return dbSet
-            .Include(c => c.CustomerIdentity)
-            .ThenInclude(i => i.Citizenship)
+            .Include(i => i.Citizenship)
             .Include(c => c.CustomerAccount)
-            .ThenInclude(a => a.Address)
-            .ThenInclude(a => a.Country);
+            .Include(a => a.Address)
+                .ThenInclude(a => a.Country);
     }
 
     public Customer? GetFull(int id)
     {
         return DbSet
             .Where(c => c.Id == id)
-            .Include(c => c.CustomerIdentity)
-            .ThenInclude(i => i.Citizenship)
+            .Include(i => i.Citizenship)
             .Include(c => c.CustomerAccount)
-            .ThenInclude(a => a.Address)
-            .ThenInclude(a => a.Country)
+            .Include(a => a.Address)
+                .ThenInclude(a => a.Country)
             .FirstOrDefault();
     }
 
@@ -41,6 +39,22 @@ public class CustomerRepository : CrudRepository<Customer>, ICustomerRepository
             .Where(c => c.Id == id)
             .Include(c => c.CustomerAccount)
             .FirstOrDefault();
+    }
+
+    public async Task<Customer?> GetByNationalId(string nationalId)
+    {
+        return await DbSet
+            .Include(e => e.Citizenship)
+            .Include(e => e.Address)
+            .FirstOrDefaultAsync(e => e.NationalId == nationalId);
+    }
+
+    public async Task<Customer?> GetByPassportId(string passportId)
+    {
+        return await DbSet
+            .Include(e => e.Citizenship)
+            .Include(e => e.Address)
+            .FirstOrDefaultAsync(e => e.PassportId == passportId);
     }
 
     public override async Task<int> Update(Customer entity)

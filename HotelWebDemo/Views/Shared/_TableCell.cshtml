@@ -39,6 +39,10 @@
         {
             @((bool)Model.Value ? "Yes" : "No")
         }
+        else if (Model.ColumnData.SpecialFormat == TableColumnSpecialFormat.MaleFemale)
+        {
+            @((bool)Model.Value ? "Male" : "Female")
+        }
         else
         {
             @formattedValue

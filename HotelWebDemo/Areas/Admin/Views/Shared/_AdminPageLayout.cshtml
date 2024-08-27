@@ -35,6 +35,11 @@
 
 @RenderBody()
 
+@section ScriptsHead
+{
+    @await RenderSectionAsync("ScriptsHead", required: false)
+}
+
 @section Scripts
 {
     @await RenderSectionAsync("Scripts", required: false)

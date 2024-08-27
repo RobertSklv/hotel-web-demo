@@ -39,6 +39,8 @@ public class CustomerViewModel : IModel
 
     public DateTime DateOfBirth { get; set; }
 
+    public bool Gender { get; set; }
+
     [Required]
     [StringLength(64)]
     [Display(Name = "Street line 1")]

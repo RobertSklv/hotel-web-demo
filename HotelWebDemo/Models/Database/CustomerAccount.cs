@@ -9,8 +9,6 @@ public class CustomerAccount : BaseEntity
 {
     public Customer? Customer { get; set; }
 
-    public int CustomerId { get; set; }
-
     [Required]
     [StringLength(64)]
     [EmailAddress]
@@ -25,12 +23,6 @@ public class CustomerAccount : BaseEntity
     [MaxLength(16)]
     public byte[] PasswordHashSalt { get; set; }
 
-    [ForeignKey(nameof(AddressId))]
-    [DeleteBehavior(DeleteBehavior.NoAction)]
-    public Address? Address { get; set; }
-
-    public int AddressId { get; set; }
-
     [MinLength(12)]
     [MaxLength(12)]
     public byte[]? PasswordResetToken { get; set; }
@@ -38,4 +30,6 @@ public class CustomerAccount : BaseEntity
     public DateTime? PasswordResetStart { get; set; }
 
     public bool EmailVerified { get; set; }
+
+    public List<Review>? Reviews { get; set; }
 }

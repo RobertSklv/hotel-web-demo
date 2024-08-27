@@ -79,28 +79,26 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
             FirstName = viewModel.FirstName,
             MiddleName = viewModel.MiddleName,
             LastName = viewModel.LastName,
+            PassportId = viewModel.PassportId,
+            NationalId = viewModel.NationalId,
+            Citizenship = viewModel.Citizenship,
+            CitizenshipId = viewModel.CitizenshipId,
+            DateOfBirth = viewModel.DateOfBirth,
+            Gender = viewModel.Gender,
+            Address = new Address()
+            {
+                StreetLine1 = viewModel.StreetLine1,
+                StreetLine2 = viewModel.StreetLine2,
+                StreetLine3 = viewModel.StreetLine3,
+                Country = viewModel.Country,
+                CountryId = viewModel.CountryId,
+                City = viewModel.City,
+                PostalCode = viewModel.PostalCode,
+                Phone = viewModel.Phone,
+            },
             CustomerAccount = new CustomerAccount()
             {
-                Email = viewModel.Email,
-                Address = new Address()
-                {
-                    StreetLine1 = viewModel.StreetLine1,
-                    StreetLine2 = viewModel.StreetLine2,
-                    StreetLine3 = viewModel.StreetLine3,
-                    Country = viewModel.Country,
-                    CountryId = viewModel.CountryId,
-                    City = viewModel.City,
-                    PostalCode = viewModel.PostalCode,
-                    Phone = viewModel.Phone,
-                }
-            },
-            CustomerIdentity = new CustomerIdentity()
-            {
-                PassportId = viewModel.PassportId,
-                NationalId = viewModel.NationalId,
-                Citizenship = viewModel.Citizenship,
-                CitizenshipId = viewModel.CitizenshipId,
-                DateOfBirth = viewModel.DateOfBirth,
+                Email = viewModel.Email
             }
         };
     }
@@ -114,19 +112,19 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
             MiddleName = customer.MiddleName,
             LastName = customer.LastName,
             Email = customer.CustomerAccount.Email,
-            DateOfBirth = customer.CustomerIdentity.DateOfBirth,
-            PassportId = customer.CustomerIdentity.PassportId,
-            NationalId = customer.CustomerIdentity.NationalId,
-            Citizenship = customer.CustomerIdentity.Citizenship,
-            CitizenshipId = customer.CustomerIdentity.CitizenshipId,
-            StreetLine1 = customer.CustomerAccount.Address.StreetLine1,
-            StreetLine2 = customer.CustomerAccount.Address.StreetLine2,
-            StreetLine3 = customer.CustomerAccount.Address.StreetLine3,
-            Country = customer.CustomerAccount.Address.Country,
-            CountryId = customer.CustomerAccount.Address.CountryId,
-            City = customer.CustomerAccount.Address.City,
-            PostalCode = customer.CustomerAccount.Address.PostalCode,
-            Phone = customer.CustomerAccount.Address.Phone,
+            DateOfBirth = customer.DateOfBirth,
+            PassportId = customer.PassportId,
+            NationalId = customer.NationalId,
+            Citizenship = customer.Citizenship,
+            CitizenshipId = customer.CitizenshipId,
+            StreetLine1 = customer.Address.StreetLine1,
+            StreetLine2 = customer.Address.StreetLine2,
+            StreetLine3 = customer.Address.StreetLine3,
+            Country = customer.Address.Country,
+            CountryId = customer.Address.CountryId,
+            City = customer.Address.City,
+            PostalCode = customer.Address.PostalCode,
+            Phone = customer.Address.Phone,
         };
     }
 
@@ -137,7 +135,7 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
         return base.CreateListingTable(listingModel, items)
             .SetAdjustablePageSize(true)
             .OverrideColumnName(nameof(Customer.CreatedAt), "Registration date")
-            .SetSelectableOptionsSource(nameof(Customer.CustomerIdentity_Citizenship), countries);
+            .SetSelectableOptionsSource(nameof(Customer.Citizenship), countries);
     }
 
     public override Table<Customer> CreateDeleteRowAction(Table<Customer> table)
@@ -280,5 +278,15 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
         }
         
         return false;
+    }
+
+    public async Task<Customer?> GetByNationalId(string nationalId)
+    {
+        return await repository.GetByNationalId(nationalId);
+    }
+
+    public async Task<Customer?> GetByPassportId(string passportId)
+    {
+        return await repository.GetByPassportId(passportId);
     }
 }

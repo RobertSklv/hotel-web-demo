@@ -23,7 +23,6 @@ public class AppDbContext : DbContext
     public DbSet<Country> Countries { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<CustomerAccount> CustomerAccounts { get; set; }
-    public DbSet<CustomerIdentity> CustomerIdentities { get; set; }
     public DbSet<Hotel> Hotels { get; set; }
     public DbSet<HotelReview> HotelReviews { get; set; }
     public DbSet<Review> Reviews { get; set; }

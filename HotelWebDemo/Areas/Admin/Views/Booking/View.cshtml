@@ -12,7 +12,7 @@
     Status: <strong class="text-@Model.GetStatusColorAsString()">@Model.Status</strong>
 </p>
 
-@if (Model.CheckInDate >= DateTime.UtcNow)
+@if (DateTime.UtcNow >= Model.CheckInDate && DateTime.UtcNow < Model.CheckOutDate)
 {
     <partial name="_CheckinFieldset" model="@Model" />
 }
