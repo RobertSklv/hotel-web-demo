@@ -7,7 +7,7 @@ namespace HotelWebDemo.Models.Database;
 
 [Table("Addresses")]
 [JsonObject]
-public class Address : BaseEntity, IAddress
+public class Address : BaseEntity
 {
     [JsonIgnore]
     public Customer? Customer { get; set; }

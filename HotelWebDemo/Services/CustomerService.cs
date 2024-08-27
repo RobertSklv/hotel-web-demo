@@ -282,11 +282,21 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
 
     public async Task<Customer?> GetByNationalId(string nationalId)
     {
+        if (string.IsNullOrEmpty(nationalId))
+        {
+            return null;
+        }
+
         return await repository.GetByNationalId(nationalId);
     }
 
     public async Task<Customer?> GetByPassportId(string passportId)
     {
+        if (string.IsNullOrEmpty(passportId))
+        {
+            return null;
+        }
+
         return await repository.GetByPassportId(passportId);
     }
 }

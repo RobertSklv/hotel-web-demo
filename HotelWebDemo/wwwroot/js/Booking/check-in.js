@@ -10,8 +10,10 @@ window.newKnownCustomerComponent = function (fieldsWrapperId) {
         knownCustomerAlert: null,
         linkCustomerLink: null,
         cancelAutofillAlert: null,
+        cancelAutofillLink: null,
         fieldsMap: {
-            CitizenshipId: "Address.CitizenshipId",
+            Id: "Id",
+            CitizenshipId: "CitizenshipId",
             FirstName: "FirstName",
             MiddleName: "MiddleName",
             LastName: "LastName",
@@ -35,30 +37,44 @@ window.newKnownCustomerComponent = function (fieldsWrapperId) {
             this.knownCustomerAlert = $('.known-customer-alert', this.wrapperIdSelector);
             this.linkCustomerLink = $('.known-customer-alert .link-customer-link', this.wrapperIdSelector);
             this.cancelAutofillAlert = $('.cancel-autofill-alert', this.wrapperIdSelector);
+            this.cancelAutofillLink = $('.cancel-autofill-alert .cancel-autofill-link', this.wrapperIdSelector);
             this.mapToFields = $('[data-map-to]', this.wrapperIdSelector);
 
             this.nationalIdField.on('input', function () {
                 self._onNationalIdChanged($(this).val());
             });
 
+            this.passportIdField.on('input', function () {
+                self._onPassportIdChanged($(this).val());
+            });
+
             this.linkCustomerLink.on('click', function (e) {
                 e.preventDefault();
                 self._autofill();
+            });
+
+            this.cancelAutofillLink.on('click', function (e) {
+                e.preventDefault();
+                self._cancelAutofill();
             });
         },
 
         _statusCheck: function () {
             if (this.isAutofillActive) {
-                this.knownCustomerAlert.find('.id-type').text('');
-                this.knownCustomerAlert.find('.id').text('');
-                this.knownCustomerAlert.hide();
                 this.cancelAutofillAlert.show();
             } else {
                 this.cancelAutofillAlert.hide();
             }
 
-            if (!!this.currentAutofill) {
+            if (!!this.currentAutofill && (this.currentAutofill.isNew || !this.isAutofillActive)) {
+                this.knownCustomerAlert.find('.id-type').text(this.currentAutofill.idType);
+                this.knownCustomerAlert.find('.id').text(this.currentAutofill.idValue);
                 this.knownCustomerAlert.show();
+                this.currentAutofill.isNew = false;
+            } else {
+                this.knownCustomerAlert.find('.id-type').text('');
+                this.knownCustomerAlert.find('.id').text('');
+                this.knownCustomerAlert.hide();
             }
         },
 
@@ -68,6 +84,15 @@ window.newKnownCustomerComponent = function (fieldsWrapperId) {
                 'nationalId',
                 nationalId,
                 (customerData) => this._setCurrentAutofill(customerData, 'national ID', nationalId)
+            );
+        },
+
+        _onPassportIdChanged: function (passportId) {
+            this._requestCustomerData(
+                'GetByPassportId',
+                'passportId',
+                passportId,
+                (customerData) => this._setCurrentAutofill(customerData, 'passport ID', passportId)
             );
         },
 
@@ -86,10 +111,18 @@ window.newKnownCustomerComponent = function (fieldsWrapperId) {
         },
 
         _setCurrentAutofill: function (customerData, idType, idValue) {
-            this.currentAutofill = customerData;
-
-            this.knownCustomerAlert.find('.id-type').text(idType);
-            this.knownCustomerAlert.find('.id').text(idValue);
+            if (customerData) {
+                this.currentAutofill = {
+                    customerData,
+                    idType,
+                    idValue,
+                    isNew: !!this.currentAutofill
+                        ? this.currentAutofill.idValue !== idValue
+                        : true
+                };
+            } else {
+                this.currentAutofill = null;
+            }
 
             this._statusCheck();
         },
@@ -113,8 +146,8 @@ window.newKnownCustomerComponent = function (fieldsWrapperId) {
             this.mapToFields.each(function (i, e) {
                 let mapToField = $(e).data('map-to');
                 let mappedField = this.fieldsMap[mapToField];
-                $(e).val(this.getAtPath(this.currentAutofill, mappedField));
-                $(e).prop('disabled', true);
+                $(e).val(this.getAtPath(this.currentAutofill.customerData, mappedField));
+                $(e).prop('disabled', !$(e).is('[type=hidden]'));
             }.bind(this));
         },
 

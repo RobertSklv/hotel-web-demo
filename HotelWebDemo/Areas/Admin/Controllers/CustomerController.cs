@@ -68,6 +68,11 @@ public class CustomerController : CrudController<Customer, CustomerViewModel>
         return await service.GetByNationalId(nationalId);
     }
 
+    public async Task<Customer?> GetByPassportId(string passportId)
+    {
+        return await service.GetByPassportId(passportId);
+    }
+
     private void CreateResetPasswordAction(int customerId)
     {
         GetOrCreatePageActionButtonsList().Add(new()

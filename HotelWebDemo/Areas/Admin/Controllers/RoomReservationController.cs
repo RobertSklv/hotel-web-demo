@@ -2,17 +2,24 @@
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc;
+using StarExplorerMainServer.Areas.Admin.Services;
 
 namespace HotelWebDemo.Areas.Admin.Controllers;
 
 public class RoomReservationController : CrudController<RoomReservation>
 {
     private readonly new IRoomReservationService service;
+    private readonly ICountryService countryService;
 
-    public RoomReservationController(IRoomReservationService service, IAdminPageService adminPageService, Serilog.ILogger logger)
+    public RoomReservationController(
+        IRoomReservationService service,
+        IAdminPageService adminPageService,
+        Serilog.ILogger logger,
+        ICountryService countryService)
         : base(service, adminPageService, logger)
     {
         this.service = service;
+        this.countryService = countryService;
     }
 
     [HttpGet]
@@ -21,6 +28,8 @@ public class RoomReservationController : CrudController<RoomReservation>
         if (GetEntity(id, out RoomReservation? roomReservation))
         {
             await service.PrepareNewCheckin(roomReservation);
+
+            ViewData["Countries"] = countryService.GetAll();
 
             AddBackAction(
                 nameof(BookingController.View),
