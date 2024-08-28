@@ -28,22 +28,22 @@ public class RoomController : CrudController<Room>
         ListingTitle = "All rooms";
     }
 
-    public override IActionResult Create()
+    public override async Task<IActionResult> Create()
     {
         ViewData["Hotels"] = hotelService.GetAll();
         ViewData["RoomCategories"] = roomCategoryService.GetAll();
         ViewData["RoomFeatures"] = roomFeatureService.GetAll();
 
-        return base.Create();
+        return await base.Create();
     }
 
-    public override IActionResult Edit(int id)
+    public override async Task<IActionResult> Edit(int id)
     {
         ViewData["Hotels"] = hotelService.GetAll();
         ViewData["RoomCategories"] = roomCategoryService.GetAll();
         ViewData["RoomFeatures"] = roomFeatureService.GetAll();
 
-        return base.Edit(id);
+        return await base.Edit(id);
     }
 
     protected override async Task<string> MassAction(string massAction, List<int> selectedItemIds)

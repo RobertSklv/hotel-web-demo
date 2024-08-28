@@ -6,15 +6,15 @@ namespace HotelWebDemo.Services;
 
 public interface ICustomerService : ICrudService<Customer, CustomerViewModel>
 {
-    Customer? GetFull(int id);
+    Task<Customer?> GetFull(int id);
 
     Task Upsert(CustomerViewModel customerViewModel, ModelStateDictionary modelState);
 
     bool CompareResetPasswordToken(Customer customer, string token);
 
-    bool CompareResetPasswordToken(int userId, string token, ModelStateDictionary modelState);
+    Task<bool> CompareResetPasswordToken(int userId, string token, ModelStateDictionary modelState);
 
-    Customer? CompareResetPasswordToken(ResetPasswordModel model, ModelStateDictionary modelState);
+    Task<Customer?> CompareResetPasswordToken(ResetPasswordModel model, ModelStateDictionary modelState);
 
     string UrlEncodeToken(byte[] token);
 

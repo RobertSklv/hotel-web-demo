@@ -19,17 +19,17 @@ public class RoomFeatureController : CrudController<RoomFeature>
         this.hotelService = hotelService;
     }
 
-    public override IActionResult Create()
+    public override async Task<IActionResult> Create()
     {
         ViewData["Hotels"] = hotelService.GetAll();
 
-        return base.Create();
+        return await base.Create();
     }
 
-    public override IActionResult Edit(int id)
+    public override async Task<IActionResult> Edit(int id)
     {
         ViewData["Hotels"] = hotelService.GetAll();
 
-        return base.Edit(id);
+        return await base.Edit(id);
     }
 }

@@ -34,10 +34,7 @@
 </table>
 
 <form asp-action="CheckIn">
-    @if (Model.Id != 0)
-    {
-        <input type="hidden" asp-for=@Model.Id />
-    }
+    <input type="hidden" asp-for=@Model.Id />
     <input type="hidden" asp-for=@Model.BookingId />
     <input type="hidden" asp-for=@Model.RoomId />
 
@@ -50,7 +47,9 @@
                 <h2>Customer @(i + 1)</h2>
             </div>
             <div class="card-body">
-                <input type="hidden" asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Id data-map-to="Id" />
+                <input type="hidden" asp-for=@Model.CurrentCheckin.Id />
+                <input type="hidden" asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Id />
+                <input type="hidden" asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].CustomerId data-map-to="Id" />
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
                         <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.NationalId></label>

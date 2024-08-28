@@ -52,9 +52,10 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     }
 
     [HttpGet]
-    public virtual IActionResult View(int id)
+    public virtual async Task<IActionResult> View(int id)
     {
-        if (GetEntity(id, out TViewModel? viewModel))
+        TViewModel? viewModel = await GetViewModel(id);
+        if (viewModel != null)
         {
             AddBackAction();
 
@@ -65,7 +66,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     }
 
     [HttpGet]
-    public virtual IActionResult Create()
+    public virtual async Task<IActionResult> Create()
     {
         AddBackAction();
 
@@ -73,16 +74,17 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     }
 
     [HttpGet]
-    public virtual IActionResult Edit(int id)
+    public virtual async Task<IActionResult> Edit(int id)
     {
-        if (GetEntity(id, out TViewModel? model))
+        TViewModel? viewModel = await GetViewModel(id);
+        if (viewModel != null)
         {
             AddBackAction();
 
-            return View(DefaultUpdateViewName, TempData.Pop<TViewModel>(OldModelTempDataKey) ?? model);
+            return View(DefaultUpdateViewName, TempData.Pop<TViewModel>(OldModelTempDataKey) ?? viewModel);
         }
 
-        AddMessage($"Entity with ID {id} doesn't exist.", ColorClass.Danger, log: true);
+        AddMessage($"Entity {typeof(TEntity).Name} with ID {id} doesn't exist.", ColorClass.Danger, log: true);
 
         return RedirectToAction("Index");
     }
@@ -155,7 +157,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
 
     public virtual async Task<IActionResult> Delete(int id)
     {
-        TEntity? entity = GetEntity(id);
+        TEntity? entity = await GetEntity(id);
 
         if (entity != null)
         {
@@ -173,7 +175,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         }
         else
         {
-            AddMessage($"Entity with ID {id} doesn't exist.", ColorClass.Danger, log: true);
+            AddMessage($"Entity {typeof(TEntity).Name} with ID {id} doesn't exist.", ColorClass.Danger, log: true);
         }
 
         return RedirectToAction("Index");
@@ -187,26 +189,24 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         return RedirectToAction(backAction, listingModel?.GenerateListingQuery());
     }
 
-    protected virtual bool GetEntity(int id, [NotNullWhen(true)] out TViewModel? model)
+    protected virtual async Task<TViewModel?> GetViewModel(int id)
     {
-        TEntity? entity = GetEntity(id);
-        model = null;
-
+        TEntity? entity = await GetEntity(id);
         if (entity == null)
         {
-            AddMessage($"Entity with ID {id} doesn't exist.", ColorClass.Danger, log: true);
+            AddMessage($"Entity {typeof(TEntity).Name} with ID {id} doesn't exist.", ColorClass.Danger, log: true);
 
-            return false;
+            return null;
         }
 
-        model = service.EntityToViewModel(entity);
+        TViewModel? model = service.EntityToViewModel(entity);
 
-        return true;
+        return model;
     }
 
-    protected virtual TEntity? GetEntity(int id)
+    protected virtual async Task<TEntity?> GetEntity(int id)
     {
-        return service.Get(id);
+        return await service.Get(id);
     }
 
     protected List<PageActionButton> GetOrCreatePageActionButtonsList()

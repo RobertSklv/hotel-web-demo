@@ -14,9 +14,11 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
     {
     }
 
-    public override Room? Get(int id)
+    public override async Task<Room?> Get(int id)
     {
-        Room? room = DbSet.Where(e => e.Id == id).Include(e => e.Features).FirstOrDefault();
+        Room? room = await DbSet
+            .Include(e => e.Features)
+            .FirstOrDefaultAsync(e => e.Id == id);
 
         if (room != null)
         {

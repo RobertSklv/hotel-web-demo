@@ -14,9 +14,9 @@ public class CustomerController : Controller
     }
 
     [HttpGet]
-    public IActionResult ResetPassword(int userId, string token)
+    public async Task<IActionResult> ResetPassword(int userId, string token)
     {
-        if (service.CompareResetPasswordToken(userId, token, ModelState))
+        if (await service.CompareResetPasswordToken(userId, token, ModelState))
         {
             ResetPasswordModel model = new()
             {

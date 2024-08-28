@@ -43,14 +43,14 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
         return await repository.Delete(id) > 0;
     }
 
-    public virtual TEntity? Get(int id)
+    public virtual async Task<TEntity?> Get(int id)
     {
-        return repository.Get(id);
+        return await repository.Get(id);
     }
 
-    public virtual List<TEntity> GetAll()
+    public virtual async Task<List<TEntity>> GetAll()
     {
-        return repository.GetAll();
+        return await repository.GetAll();
     }
 
     public async Task<List<TEntity>> GetByIds(IEnumerable<int> ids)

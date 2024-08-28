@@ -7,29 +7,47 @@ namespace HotelWebDemo.Data.Repositories;
 
 public class BookingRepository : CrudRepository<Booking, IBookingViewModel>, IBookingRepository
 {
+    private readonly IRoomReservationService roomReservationService;
+
     public override DbSet<Booking> DbSet => db.Bookings;
 
-    public BookingRepository(AppDbContext db, IEntityFilterService filterService, IEntitySortService sortService, IEntitySearchService searchService)
+    public BookingRepository(
+        AppDbContext db,
+        IEntityFilterService filterService,
+        IEntitySortService sortService,
+        IEntitySearchService searchService,
+        IRoomReservationService roomReservationService)
         : base(db, filterService, sortService, searchService)
     {
+        this.roomReservationService = roomReservationService;
     }
 
-    public override Booking? Get(int id)
+    public override async Task<Booking?> Get(int id)
     {
-        return DbSet
+        Booking? booking = await DbSet
             .Include(e => e.Contact)
-            .Include(e => e.ReservedRooms)
+            .Include(e => e.ReservedRooms!)
                 .ThenInclude(e => e.Room)
-                    .ThenInclude(e => e.Features)
-            .Include(e => e.ReservedRooms)
+                    .ThenInclude(e => e!.Features!)
+            .Include(e => e.ReservedRooms!)
                 .ThenInclude(e => e.Room)
-                    .ThenInclude(e => e.Category)
-                        .ThenInclude(e => e.Hotel)
+                    .ThenInclude(e => e!.Category)
+                        .ThenInclude(e => e!.Hotel)
             .Include(e => e.Totals)
-                .ThenInclude(e => e.Discounts)
-            .Include(e => e.BookingTimeline)
+                .ThenInclude(e => e!.Discounts!)
+            .Include(e => e.BookingTimeline!)
                 .ThenInclude(e => e.Admin)
-            .FirstOrDefault(e => e.Id == id);
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (booking != null && booking.ReservedRooms != null)
+        {
+            foreach (RoomReservation r in booking.ReservedRooms)
+            {
+                await roomReservationService.GetOrLoadCurrentCheckinInfo(r);
+            }
+        }
+
+        return booking;
     }
 
     public override IQueryable<Booking> List(DbSet<Booking> dbSet)

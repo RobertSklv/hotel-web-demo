@@ -134,7 +134,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             CheckoutDate = viewModel.CheckOutDate,
             Contact = viewModel.Contact ?? throw new Exception("Contact is null."),
             Totals = viewModel.Totals,
-            ReservedRooms = viewModel.RoomsToReserve.ConvertAll(CreateRoomReservation),
+            ReservedRooms = await CreateRoomReservations(viewModel.RoomsToReserve),
             BookingItems = SquashBookingItems(viewModel.ReservedRooms.ConvertAll(CreateBookingItem)),
             BookingTimeline = new()
             {
@@ -158,11 +158,17 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
         viewModel.Totals = totalsService.CalculateTotals(viewModel);
     }
 
-    public RoomReservation CreateRoomReservation(int roomId)
+    public async Task<List<RoomReservation>> CreateRoomReservations(List<int> roomIds)
     {
-        Room room = roomService.Get(roomId) ?? throw new Exception($"No such room with ID {roomId} was found in the database.");
+        List<RoomReservation> roomReservations = new();
+        List<Room> rooms = await roomService.GetByIds(roomIds);
 
-        return CreateRoomReservation(room);
+        foreach (Room room in rooms)
+        {
+            roomReservations.Add(CreateRoomReservation(room));
+    }
+
+        return roomReservations;
     }
 
     public RoomReservation CreateRoomReservation(Room room)

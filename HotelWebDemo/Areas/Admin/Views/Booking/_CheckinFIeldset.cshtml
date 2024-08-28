@@ -10,7 +10,8 @@
 
 @foreach (RoomReservation r in Model.RoomReservations)
 {
-    @*Do not load alert if the room is already checked in*@
+
+    bool isExistingCheckin = r.CurrentCheckin != null;
 
     <div class="alert alert-info p-3 mb-3">
         <div class="row">
@@ -25,9 +26,28 @@
                     asp-route-id="@r.Id"
                     class="btn btn-link btn-primary text-decoration-none"
                 >
-                    Check-in customers
+                    @(isExistingCheckin ? "Update check-in" : "Check-in customers")
                 </a>
             </div>
         </div>
+        @if (isExistingCheckin)
+        {
+            <table>
+                <tr>
+                    <th>Checked-in customers:</th>
+                </tr>
+                @foreach (CustomerCheckinInfo cci in r.CurrentCheckin.CustomerCheckinInfos)
+                {
+                    <tr>
+                        <td>
+                            <span>@cci.Customer?.FullName</span>
+                            <span>
+                                (@(!string.IsNullOrEmpty(cci.Customer?.NationalId) ? cci.Customer?.NationalId : cci.Customer?.PassportId))
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
     </div>
 }

@@ -25,7 +25,8 @@ public class RoomReservationController : CrudController<RoomReservation>
     [HttpGet]
     public async Task<IActionResult> Checkin(int id)
     {
-        if (GetEntity(id, out RoomReservation? roomReservation))
+        RoomReservation? roomReservation = await GetViewModel(id);
+        if (roomReservation != null)
         {
             await service.PrepareNewCheckin(roomReservation);
 
@@ -42,20 +43,20 @@ public class RoomReservationController : CrudController<RoomReservation>
             return View(roomReservation);
         }
 
-        return RedirectToAction(nameof(BookingController.Index), nameof(BookingController));
+        return RedirectToRoute("/Admin/Booking");
     }
 
     [HttpPost]
     public async Task<IActionResult> Checkin(RoomReservation roomReservation)
     {
-        bool success = await service.Update(roomReservation);
+        bool success = await service.Upsert(roomReservation);
 
         if (!success)
         {
             AddMessage("Failed to check-in. An unknown error occurred.", ColorClass.Danger);
         }
 
-        return RedirectToAction(nameof(BookingController.View), nameof(BookingController), new { roomReservation.BookingId });
+        return RedirectToRoute($"/Admin/Booking/View/{roomReservation.BookingId}");
     }
 
     [HttpPost]
@@ -68,6 +69,6 @@ public class RoomReservationController : CrudController<RoomReservation>
             AddMessage("Failed to check-out. An unknown error occurred.", ColorClass.Danger);
         }
 
-        return RedirectToAction(nameof(BookingController.View), nameof(BookingController), new { roomReservation.BookingId });
+        return RedirectToRoute($"/Admin/Booking/View/{roomReservation.BookingId}");
     }
 }

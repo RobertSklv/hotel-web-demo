@@ -32,9 +32,9 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
         this.linkGeneratorSerivce = linkGeneratorSerivce;
     }
 
-    public Customer? GetFull(int id)
+    public async Task<Customer?> GetFull(int id)
     {
-        return repository.GetFull(id);
+        return await repository.GetFull(id);
     }
 
     public async Task Upsert(CustomerViewModel customerViewModel, ModelStateDictionary modelState)
@@ -152,9 +152,9 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
         return encodedToken == token;
     }
 
-    public bool CompareResetPasswordToken(int userId, string token, ModelStateDictionary modelState)
+    public async Task<bool> CompareResetPasswordToken(int userId, string token, ModelStateDictionary modelState)
     {
-        Customer? customer = Get(userId);
+        Customer? customer = await Get(userId);
 
         if (customer == null)
         {
@@ -166,9 +166,9 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
         return CompareResetPasswordToken(customer, token);
     }
 
-    public Customer? CompareResetPasswordToken(ResetPasswordModel model, ModelStateDictionary modelState)
+    public async Task<Customer?> CompareResetPasswordToken(ResetPasswordModel model, ModelStateDictionary modelState)
     {
-        Customer? customer = Get(model.UserId);
+        Customer? customer = await Get(model.UserId);
 
         if (customer == null)
         {
@@ -219,12 +219,7 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
 
     public async Task<bool> InitiateResetPasswordAndNotify(int customerId)
     {
-        Customer? customer = Get(customerId);
-
-        if (customer == null)
-        {
-            throw new Exception($"Customer not found.");
-        }
+        Customer? customer = await Get(customerId) ?? throw new Exception($"Customer not found.");
 
         byte[] bytes = GenerateResetPasswordBytes();
 
@@ -244,7 +239,7 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
 
         bool isValid = true;
 
-        Customer? customer = CompareResetPasswordToken(model, modelState);
+        Customer? customer = await CompareResetPasswordToken(model, modelState);
 
         if (customer == null)
         {

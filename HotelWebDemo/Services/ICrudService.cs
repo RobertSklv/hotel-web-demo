@@ -9,9 +9,9 @@ public interface ICrudService<TEntity, TViewModel>
     where TEntity : class, IBaseEntity
     where TViewModel : class, IModel
 {
-    TEntity? Get(int id);
+    Task<TEntity?> Get(int id);
 
-    List<TEntity> GetAll();
+    Task<List<TEntity>> GetAll();
 
     Task<List<TEntity>> GetByIds(IEnumerable<int> ids);
 

@@ -1,5 +1,4 @@
 ﻿using HotelWebDemo.Models;
-using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
@@ -35,14 +34,14 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
         return dbSet;
     }
 
-    public virtual TEntity? Get(int id)
+    public virtual async Task<TEntity?> Get(int id)
     {
-        return DbSet.FirstOrDefault(e => e.Id == id);
+        return await DbSet.FirstOrDefaultAsync(e => e.Id == id);
     }
 
-    public virtual List<TEntity> GetAll()
+    public virtual async Task<List<TEntity>> GetAll()
     {
-        return DbSet.ToList();
+        return await DbSet.ToListAsync();
     }
 
     public virtual async Task<List<TEntity>> GetByIds(IEnumerable<int> ids)

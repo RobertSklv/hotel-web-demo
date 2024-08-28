@@ -13,20 +13,37 @@ public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomR
     {
     }
 
-    public override RoomReservation? Get(int id)
+    public override async Task<RoomReservation?> Get(int id)
     {
-        return db.RoomReservations
+        RoomReservation? roomReservation = await db.RoomReservations
             .Include(e => e.Booking)
             .Include(e => e.Room)
-                .ThenInclude(e => e.Category)
-            .Include(e => e.CheckinInfos)
-                .ThenInclude(e => e.CustomerCheckinInfos)
-            .FirstOrDefault(e => e.Id == id);
+                .ThenInclude(e => e!.Category)
+            .Include(e => e.CheckinInfos!)
+                .ThenInclude(e => e.CustomerCheckinInfos!)
+                    .ThenInclude(e => e.Customer)
+                        .ThenInclude(e => e!.Citizenship)
+            .Include(e => e.CheckinInfos!)
+                .ThenInclude(e => e.CustomerCheckinInfos!)
+                    .ThenInclude(e => e.Customer)
+                        .ThenInclude(e => e!.Address)
+                            .ThenInclude(e => e!.Country)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (roomReservation != null)
+        {
+            roomReservation.CurrentCheckin = await GetCurrentCheckinInfo(id);
+        }
+
+        return roomReservation;
     }
 
     public async Task<CheckinInfo?> GetCurrentCheckinInfo(int roomReservationId)
     {
-        return await db.CheckinInfos.FirstOrDefaultAsync(e => e.RoomReservationId == roomReservationId && !e.IsCheckedOut);
+        return await db.CheckinInfos
+            .Include(e => e.CustomerCheckinInfos!)
+                .ThenInclude(e => e.Customer)
+            .FirstOrDefaultAsync(e => e.RoomReservationId == roomReservationId && e.CheckoutDate == null);
     }
 
     public async Task<CheckinInfo?> GetOrLoadCurrentCheckinInfo(RoomReservation roomReservation)
@@ -34,7 +51,7 @@ public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomR
         if (roomReservation.CurrentCheckin == null)
         {
             List<CheckinInfo> checkinInfos = await GetOrLoadCheckinInfos(roomReservation);
-            roomReservation.CurrentCheckin ??= checkinInfos.FirstOrDefault(e => !e.IsCheckedOut);
+            roomReservation.CurrentCheckin = checkinInfos.FirstOrDefault(e => !e.IsCheckedOut);
         }
 
         return roomReservation.CurrentCheckin;
@@ -42,7 +59,11 @@ public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomR
 
     public async Task<List<CheckinInfo>> GetOrLoadCheckinInfos(RoomReservation roomReservation)
     {
-        roomReservation.CheckinInfos ??= await db.CheckinInfos.Where(e => e.RoomReservationId == roomReservation.Id).ToListAsync();
+        roomReservation.CheckinInfos ??= await db.CheckinInfos
+            .Include(e => e.CustomerCheckinInfos!)
+                .ThenInclude(e => e.Customer)
+            .Where(e => e.RoomReservationId == roomReservation.Id)
+            .ToListAsync();
 
         return roomReservation.CheckinInfos;
     }

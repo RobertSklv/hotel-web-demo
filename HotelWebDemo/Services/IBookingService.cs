@@ -10,7 +10,7 @@ public interface IBookingService : ICrudService<Booking, BookingViewModel>
 
     Task LoadReservedRoomsAndCalculateTotals(BookingViewModel viewModel);
 
-    RoomReservation CreateRoomReservation(int roomId);
+    Task<List<RoomReservation>> CreateRoomReservations(List<int> roomIds);
 
     BookingStepContext GenerateBookingStepContext(BookingViewModel? viewModel, string? activeStep = null);
 }

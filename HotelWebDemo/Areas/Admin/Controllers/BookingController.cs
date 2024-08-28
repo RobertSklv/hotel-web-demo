@@ -34,17 +34,17 @@ public class BookingController : CrudController<Booking, BookingViewModel>
         this.adminUserService = adminUserService;
     }
 
-    public override IActionResult View(int id)
+    public override async Task<IActionResult> View(int id)
     {
         CreateViewPageActions(id);
 
-        return base.View(id);
+        return await base.View(id);
     }
 
     [HttpGet]
-    public override IActionResult Create()
+    public override async Task<IActionResult> Create()
     {
-        List<Hotel> hotels = hotelService.GetAll();
+        List<Hotel> hotels = await hotelService.GetAll();
         ViewData["Hotels"] = hotels;
         ViewData["RoomCategories"] = categoryService.GetAll();
 
@@ -62,7 +62,7 @@ public class BookingController : CrudController<Booking, BookingViewModel>
             TempData.Set("StepContext", service.GenerateBookingStepContext(viewModel));
         }
 
-        return base.Create();
+        return await base.Create();
     }
 
     [HttpGet]
@@ -105,7 +105,7 @@ public class BookingController : CrudController<Booking, BookingViewModel>
 
         ViewData["RoomListing"] = await service.CreateRoomListing(viewModel);
 
-        return base.Create();
+        return await base.Create();
     }
 
     [HttpGet]
@@ -129,7 +129,7 @@ public class BookingController : CrudController<Booking, BookingViewModel>
         TempData.Set("StepContext", bookingStepContext);
         TempData.Set(OldModelTempDataKey, viewModel);
 
-        return base.Create();
+        return await base.Create();
     }
 
     [HttpGet]
@@ -147,13 +147,13 @@ public class BookingController : CrudController<Booking, BookingViewModel>
         }
 
         await service.LoadReservedRoomsAndCalculateTotals(viewModel);
-        viewModel.Hotel = hotelService.Get(viewModel.HotelId);
+        viewModel.Hotel = await hotelService.Get(viewModel.HotelId);
 
         bookingStepContext.ActiveStep = BookingService.SUMMARY_STEP_NAME;
         TempData.Set("StepContext", bookingStepContext);
         TempData.Set(OldModelTempDataKey, viewModel);
 
-        return base.Create();
+        return await base.Create();
     }
 
     public override Task<IActionResult> Create(BookingViewModel model)
