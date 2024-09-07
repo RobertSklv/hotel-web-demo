@@ -19,12 +19,12 @@ public class RoomService : CrudService<Room>, IRoomService
         this.roomCategoryService = roomCategoryService;
     }
 
-    public override Table<Room> CreateListingTable(ListingModel<Room> listingModel, PaginatedList<Room> items)
+    public override async Task<Table<Room>> CreateListingTable(ListingModel<Room> listingModel, PaginatedList<Room> items)
     {
-        return base.CreateListingTable(listingModel, items)
+        return (await base.CreateListingTable(listingModel, items))
             .SetAdjustablePageSize(true)
-            .SetSelectableOptionsSource(nameof(Room.Hotel), hotelService.GetAll())
-            .SetSelectableOptionsSource(nameof(Room.Category), roomCategoryService.GetAll())
+            .SetSelectableOptionsSource(nameof(Room.Hotel), await hotelService.GetAll())
+            .SetSelectableOptionsSource(nameof(Room.Category), await roomCategoryService.GetAll())
             .AddMassAction("MassEnable", "Enable selected")
             .AddMassAction("MassDisable", "Disable selected");
     }

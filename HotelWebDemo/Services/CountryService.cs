@@ -1,24 +1,13 @@
 ﻿using HotelWebDemo.Models.Database;
 using HotelWebDemo.Data.Repositories;
+using HotelWebDemo.Services;
 
 namespace StarExplorerMainServer.Areas.Admin.Services;
 
-public class CountryService : ICountryService
+public class CountryService : CrudService<Country>, ICountryService
 {
-    private readonly ICountryRepository repository;
-
     public CountryService(ICountryRepository repository)
+        : base(repository)
     {
-        this.repository = repository;
-    }
-
-    public List<Country> GetAll()
-    {
-        return repository.GetAll();
-    }
-
-    public Country Get(int id)
-    {
-        return repository.Get(id);
     }
 }

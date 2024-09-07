@@ -15,11 +15,11 @@ public class RoomFeatureService : CrudService<RoomFeature>, IRoomFeatureService
         this.hotelService = hotelService;
     }
 
-    public override Table<RoomFeature> CreateListingTable(ListingModel<RoomFeature> listingModel, PaginatedList<RoomFeature> items)
+    public override async Task<Table<RoomFeature>> CreateListingTable(ListingModel<RoomFeature> listingModel, PaginatedList<RoomFeature> items)
     {
-        return base.CreateListingTable(listingModel, items)
+        return (await base.CreateListingTable(listingModel, items))
             .SetSearchable(false)
-            .SetSelectableOptionsSource(nameof(RoomFeature.Hotel), hotelService.GetAll());
+            .SetSelectableOptionsSource(nameof(RoomFeature.Hotel), await hotelService.GetAll());
     }
 
     public override RowAction CustomizeDeleteRowAction(RowAction action)

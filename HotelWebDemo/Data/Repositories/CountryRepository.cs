@@ -1,23 +1,19 @@
 ﻿using HotelWebDemo.Models.Database;
+using HotelWebDemo.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebDemo.Data.Repositories;
 
-public class CountryRepository : ICountryRepository
+public class CountryRepository : CrudRepository<Country>, ICountryRepository
 {
-    private readonly AppDbContext db;
+    public override DbSet<Country> DbSet => db.Countries;
 
-    public CountryRepository(AppDbContext db)
+    public CountryRepository(
+        AppDbContext db,
+        IEntityFilterService filterService,
+        IEntitySortService sortService,
+        IEntitySearchService searchService)
+        : base(db, filterService, sortService, searchService)
     {
-        this.db = db;
-    }
-
-    public List<Country> GetAll()
-    {
-        return db.Countries.ToList();
-    }
-
-    public Country Get(int id)
-    {
-        return db.Countries.FirstOrDefault(c => c.Id == id) ?? throw new Exception($"No such country with ID {id}.");
     }
 }

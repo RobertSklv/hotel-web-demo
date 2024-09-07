@@ -73,7 +73,7 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
         listingModel.Copy(listingQuery);
     }
 
-    public virtual Table<TEntity> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items)
+    public virtual async Task<Table<TEntity>> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items)
     {
         return new Table<TEntity>(listingModel, items)
             .SetSearchable(true)
@@ -114,7 +114,7 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
 
         PaginatedList<TEntity> items = await List(model);
 
-        model.Table = CreateListingTable(model, items);
+        model.Table = await CreateListingTable(model, items);
 
         return model;
     }

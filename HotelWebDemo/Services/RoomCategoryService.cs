@@ -18,11 +18,11 @@ public class RoomCategoryService : CrudService<RoomCategory>, IRoomCategoryServi
         this.hotelService = hotelService;
     }
 
-    public override Table<RoomCategory> CreateListingTable(ListingModel<RoomCategory> listingModel, PaginatedList<RoomCategory> items)
+    public override async Task<Table<RoomCategory>> CreateListingTable(ListingModel<RoomCategory> listingModel, PaginatedList<RoomCategory> items)
     {
-        return base.CreateListingTable(listingModel, items)
+        return (await base.CreateListingTable(listingModel, items))
             .SetSearchable(false)
-            .SetSelectableOptionsSource("Hotel", hotelService.GetAll());
+            .SetSelectableOptionsSource("Hotel", await hotelService.GetAll());
     }
 
     public List<RoomCategory> GetAll(int hotelId)

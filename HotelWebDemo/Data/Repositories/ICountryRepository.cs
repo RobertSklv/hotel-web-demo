@@ -2,9 +2,6 @@
 
 namespace HotelWebDemo.Data.Repositories;
 
-public interface ICountryRepository
+public interface ICountryRepository : ICrudRepository<Country>
 {
-    List<Country> GetAll();
-
-    Country Get(int id);
 }

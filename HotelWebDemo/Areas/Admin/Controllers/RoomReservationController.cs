@@ -30,7 +30,7 @@ public class RoomReservationController : CrudController<RoomReservation>
         {
             await service.PrepareNewCheckin(roomReservation);
 
-            ViewData["Countries"] = countryService.GetAll();
+            ViewData["Countries"] = await countryService.GetAll();
 
             AddBackAction(
                 nameof(BookingController.View),

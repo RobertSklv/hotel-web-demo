@@ -26,10 +26,12 @@ public class BookingTotals : BaseEntity
 
     [Column(TypeName = "decimal(19, 4)")]
     [DataType(DataType.Currency)]
+    [Display(Name = "Grand total")]
     public decimal? CustomGrandTotal { get; set; }
 
     public List<BookingTotalsDiscount>? Discounts { get; set; }
 
+    [Display(Name = "Has custom grand total")]
     public bool HasCustomGrandTotal => CustomGrandTotal != null;
 
     public decimal GetGrandTotal()

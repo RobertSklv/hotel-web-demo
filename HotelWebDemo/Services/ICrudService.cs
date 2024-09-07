@@ -35,7 +35,7 @@ public interface ICrudService<TEntity, TViewModel>
 
     void InitializeListingModel(ListingModel<TEntity> listingModel, ListingModel listingQuery);
 
-    Table<TEntity> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items);
+    Task<Table<TEntity>> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items);
 
     Task<ListingModel<TEntity>> CreateListingModel(ListingModel listingQuery);
 }

@@ -128,11 +128,11 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
         };
     }
 
-    public override Table<Customer> CreateListingTable(ListingModel<Customer> listingModel, PaginatedList<Customer> items)
+    public override async Task<Table<Customer>> CreateListingTable(ListingModel<Customer> listingModel, PaginatedList<Customer> items)
     {
-        List<Country> countries = countryService.GetAll();
+        List<Country> countries = await countryService.GetAll();
 
-        return base.CreateListingTable(listingModel, items)
+        return (await base.CreateListingTable(listingModel, items))
             .SetAdjustablePageSize(true)
             .OverrideColumnName(nameof(Customer.CreatedAt), "Registration date")
             .SetSelectableOptionsSource(nameof(Customer.Citizenship), countries);

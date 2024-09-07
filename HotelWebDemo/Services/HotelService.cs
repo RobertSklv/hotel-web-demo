@@ -12,9 +12,9 @@ public class HotelService : CrudService<Hotel>, IHotelService
     {
     }
 
-    public override Table<Hotel> CreateListingTable(ListingModel<Hotel> listingModel, PaginatedList<Hotel> items)
+    public override async Task<Table<Hotel>> CreateListingTable(ListingModel<Hotel> listingModel, PaginatedList<Hotel> items)
     {
-        return base.CreateListingTable(listingModel, items)
+        return (await base.CreateListingTable(listingModel, items))
             .SetSearchable(false);
     }
 

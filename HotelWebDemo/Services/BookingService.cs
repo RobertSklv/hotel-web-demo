@@ -52,14 +52,14 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             .RemoveColumn(nameof(Room.CreatedAt))
             .RemoveColumn(nameof(Room.UpdatedAt))
             .AddRowAction("Reserve")
-            .SetSelectableOptionsSource(nameof(Room.Category), categoryService.GetAll());
+            .SetSelectableOptionsSource(nameof(Room.Category), await categoryService.GetAll());
 
         return listingModel;
     }
 
-    public override Table<Booking> CreateListingTable(ListingModel<Booking> listingModel, PaginatedList<Booking> items)
+    public override async Task<Table<Booking>> CreateListingTable(ListingModel<Booking> listingModel, PaginatedList<Booking> items)
     {
-        return base.CreateListingTable(listingModel, items)
+        return (await base.CreateListingTable(listingModel, items))
             .RemoveColumn(nameof(BaseEntity.UpdatedAt))
             .AddRowAction("View", RequestMethod.Get, customizationCallback: a => a.SetSortOrder(0));
     }
