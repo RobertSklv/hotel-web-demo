@@ -138,7 +138,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             BookingItems = SquashBookingItems(viewModel.ReservedRooms.ConvertAll(CreateBookingItem)),
             BookingTimeline = new()
             {
-                logService.CreateLog(viewModel.AdminUser, "Booking created.")
+                logService.CreateLog($"{viewModel.AdminUser.RoleAndName} created the Booking.")
             },
             Status = BookingStatus.New,
         };
@@ -166,7 +166,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
         foreach (Room room in rooms)
         {
             roomReservations.Add(CreateRoomReservation(room));
-    }
+        }
 
         return roomReservations;
     }

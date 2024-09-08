@@ -39,4 +39,6 @@ public class AdminUser : BaseEntity
     public string? ProfileImagePath { get; set; }
 
     public DateTime? DateOfBirth { get; set; } = null;
+
+    public string RoleAndName => $"{Role.DisplayedName} {UserName}";
 }

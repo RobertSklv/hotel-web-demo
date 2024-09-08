@@ -39,6 +39,11 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
         return await DbSet.FirstOrDefaultAsync(e => e.Id == id);
     }
 
+    public virtual async Task<TEntity> GetStrict(int id)
+    {
+        return await Get(id) ?? throw new Exception($"No {typeof(TEntity).Name} record with ID {id} was found.");
+    }
+
     public virtual async Task<List<TEntity>> GetAll()
     {
         return await DbSet.ToListAsync();

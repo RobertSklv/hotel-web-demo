@@ -36,7 +36,6 @@ public class BookingRepository : CrudRepository<Booking, IBookingViewModel>, IBo
             .Include(e => e.Totals)
                 .ThenInclude(e => e!.Discounts!)
             .Include(e => e.BookingTimeline!)
-                .ThenInclude(e => e.Admin)
             .FirstOrDefaultAsync(e => e.Id == id);
 
         if (booking != null && booking.ReservedRooms != null)

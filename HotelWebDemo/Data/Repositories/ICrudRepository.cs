@@ -10,6 +10,8 @@ public interface ICrudRepository<TEntity, TViewModel>
     where TViewModel : class, IModel
 {
     Task<TEntity?> Get(int id);
+    
+    Task<TEntity> GetStrict(int id);
 
     Task<List<TEntity>> GetAll();
 

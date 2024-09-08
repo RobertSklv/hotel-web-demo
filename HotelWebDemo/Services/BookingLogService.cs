@@ -17,19 +17,27 @@ public class BookingLogService : IBookingLogService
         return await repository.RecordLog(log);
     }
 
-    public BookingEventLog CreateLog(AdminUser admin, Booking? booking, string message)
+    public BookingEventLog CreateLog(Booking? booking, string message)
     {
         return new BookingEventLog
         {
-            Admin = admin,
             Booking = booking,
             Message = message
         };
     }
 
-    public BookingEventLog CreateLog(AdminUser admin, string message)
+    public BookingEventLog CreateLog(int bookingId, string message)
     {
-        return CreateLog(admin, null, message);
+        return new BookingEventLog
+        {
+            BookingId = bookingId,
+            Message = message
+        };
+    }
+
+    public BookingEventLog CreateLog(string message)
+    {
+        return CreateLog(null, message);
     }
 
     public async Task AddLog(Booking booking, BookingEventLog log)

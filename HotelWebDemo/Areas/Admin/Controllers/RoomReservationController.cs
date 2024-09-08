@@ -47,7 +47,7 @@ public class RoomReservationController : CrudController<RoomReservation>
     }
 
     [HttpPost]
-    public async Task<IActionResult> Checkin(RoomReservation roomReservation)
+    public async Task<IActionResult> SubmitCheckin([FromBody] RoomReservation roomReservation)
     {
         bool success = await service.Upsert(roomReservation);
 
@@ -60,13 +60,24 @@ public class RoomReservationController : CrudController<RoomReservation>
     }
 
     [HttpPost]
-    public async Task<IActionResult> Checkout(RoomReservation roomReservation)
+    public async Task<IActionResult> Checkout(int roomReservationId)
     {
-        bool success = await service.Checkout(roomReservation);
+        RoomReservation? roomReservation = await service.Get(roomReservationId);
 
-        if (!success)
+        if (roomReservation != null)
         {
-            AddMessage("Failed to check-out. An unknown error occurred.", ColorClass.Danger);
+            bool success = await service.Checkout(roomReservation);
+
+            if (!success)
+            {
+                AddMessage("Failed to check-out. An unknown error occurred.", ColorClass.Danger);
+            }
+        }
+        else
+        {
+            AddMessage("Failed to check-out. Room reservation not found.", ColorClass.Danger);
+
+            return RedirectToRoute($"/Admin/Booking");
         }
 
         return RedirectToRoute($"/Admin/Booking/View/{roomReservation.BookingId}");

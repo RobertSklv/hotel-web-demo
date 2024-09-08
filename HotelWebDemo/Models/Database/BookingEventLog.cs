@@ -9,10 +9,6 @@ public class BookingEventLog : BaseEntity
 
     public int BookingId { get; set; }
 
-    public AdminUser? Admin { get; set; }
-
-    public int AdminId { get; set; }
-
     [StringLength(64)]
     [Column(TypeName = "VARCHAR")]
     public string Message { get; set; }

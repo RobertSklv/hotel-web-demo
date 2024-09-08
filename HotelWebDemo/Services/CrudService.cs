@@ -48,6 +48,11 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
         return await repository.Get(id);
     }
 
+    public virtual async Task<TEntity> GetStrict(int id)
+    {
+        return await repository.GetStrict(id);
+    }
+
     public virtual async Task<List<TEntity>> GetAll()
     {
         return await repository.GetAll();

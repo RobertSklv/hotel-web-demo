@@ -41,6 +41,7 @@ CultureInfo culture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();

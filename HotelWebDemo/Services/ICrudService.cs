@@ -11,6 +11,8 @@ public interface ICrudService<TEntity, TViewModel>
 {
     Task<TEntity?> Get(int id);
 
+    Task<TEntity> GetStrict(int id);
+
     Task<List<TEntity>> GetAll();
 
     Task<List<TEntity>> GetByIds(IEnumerable<int> ids);
