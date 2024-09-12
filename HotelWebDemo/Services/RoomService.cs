@@ -43,4 +43,9 @@ public class RoomService : CrudService<Room>, IRoomService
     {
         return await repository.GetBookableRooms(listingModel);
     }
+
+    public Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, RoomReservation roomReservation)
+    {
+        return repository.GetBookableRooms(listingModel, roomReservation);
+    }
 }

@@ -40,7 +40,7 @@ public class Room : BaseEntity
     public List<RoomFeature>? Features { get; set; }
 
     [JsonIgnore]
-    public List<RoomReservation>? BookingRooms { get; set; }
+    public List<RoomReservation>? Reservations { get; set; }
 
     [NotMapped]
     public List<int> SelectedFeatureIds { get; set; } = new();
@@ -87,14 +87,7 @@ public class Room : BaseEntity
                 throw new Exception($"The features must be loaded in order to calculate the total price.");
             }
 
-            decimal total = 0;
-
-            foreach (RoomFeature roomFeature in Features)
-            {
-                total += roomFeature.Price;
-            }
-
-            return total;
+            return Features.Sum(f => f.Price);
         }
     }
 

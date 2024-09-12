@@ -129,17 +129,17 @@
                             <tbody>
                                 <tr>
                                     <td><span>Rooms price:</span></td>
-                                    <td><span class="currency-dollar">@(Model.Totals.RoomsPrice.ToString("#0.00"))</span></td>
+                                    <td><span class="currency-dollar">@(Model.RoomsPrice.ToString("#0.00"))</span></td>
                                 </tr>
                                 <tr>
                                     <td><span>Extra:</span></td>
-                                    <td><span class="currency-dollar">@(Model.Totals.RoomFeaturesPrice.ToString("#0.00"))</span></td>
+                                    <td><span class="currency-dollar">@(Model.RoomFeaturesPrice.ToString("#0.00"))</span></td>
                                 </tr>
                             </tbody>
                             <tfoot class="fw-bold fs-5">
                                 <tr>
                                     <td><span>Total:</span></td>
-                                    <td><span class="currency-dollar">@(Model.Totals.GetGrandTotal().ToString("#0.00"))</span></td>
+                                    <td><span class="currency-dollar">@(Model.GrandTotal.ToString("#0.00"))</span></td>
                                 </tr>
                             </tfoot>
                         </table>

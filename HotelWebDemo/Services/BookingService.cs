@@ -69,7 +69,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
         return table;
     }
 
-    public override BookingViewModel EntityToViewModel(Booking entity)
+    public override async Task<BookingViewModel> EntityToViewModelAsync(Booking entity)
     {
         if (entity.Totals == null)
         {
@@ -90,6 +90,9 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             RoomReservations = entity.ReservedRooms,
             Status = entity.Status,
             Timeline = entity.BookingTimeline,
+            RoomsPrice = await totalsService.CalculateTotals<TotalsCategoryModifier>(entity.Totals),
+            RoomFeaturesPrice = await totalsService.CalculateTotals<TotalsFeatureModifier>(entity.Totals),
+            GrandTotal = await totalsService.CalculateGrandTotal(entity.Totals),
         };
 
         if (entity.ReservedRooms == null || entity.ReservedRooms.Count == 0)
@@ -134,14 +137,14 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             CheckoutDate = viewModel.CheckOutDate,
             Contact = viewModel.Contact ?? throw new Exception("Contact is null."),
             Totals = viewModel.Totals,
-            ReservedRooms = await CreateRoomReservations(viewModel.RoomsToReserve),
-            BookingItems = SquashBookingItems(viewModel.ReservedRooms.ConvertAll(CreateBookingItem)),
             BookingTimeline = new()
             {
                 logService.CreateLog($"{viewModel.AdminUser.RoleAndName} created the Booking.")
             },
             Status = BookingStatus.New,
         };
+
+        await GenerateReservationsAndBookingItems(viewModel, booking);
 
         return booking;
     }
@@ -158,17 +161,28 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
         viewModel.Totals = totalsService.CalculateTotals(viewModel);
     }
 
-    public async Task<List<RoomReservation>> CreateRoomReservations(List<int> roomIds)
+    public async Task GenerateReservationsAndBookingItems(BookingViewModel viewModel, Booking booking)
     {
         List<RoomReservation> roomReservations = new();
-        List<Room> rooms = await roomService.GetByIds(roomIds);
+        List<Room> rooms = await roomService.GetByIds(viewModel.RoomsToReserve ?? new());
+        List<BookingItem> bookingItems = new();
 
         foreach (Room room in rooms)
         {
-            roomReservations.Add(CreateRoomReservation(room));
+            RoomReservation reservation = CreateRoomReservation(room);
+            BookingItem item = CreateBookingItem(room);
+            item.RoomReservations = new()
+            {
+                reservation
+            };
+            reservation.BookingItem = item;
+
+            roomReservations.Add(reservation);
+            bookingItems.Add(item);
         }
 
-        return roomReservations;
+        booking.ReservedRooms = roomReservations;
+        booking.BookingItems = SquashBookingItems(bookingItems);
     }
 
     public RoomReservation CreateRoomReservation(Room room)
@@ -204,6 +218,16 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
 
             int totalQty = identical.Sum(i => i.Quantity);
             identical[0].Quantity = totalQty;
+
+            List<RoomReservation> mergedReservations = new();
+
+            foreach (BookingItem item in identical)
+            {
+                if (item.RoomReservations == null) continue;
+                mergedReservations.AddRange(item.RoomReservations);
+            }
+
+            identical[0].RoomReservations = mergedReservations;
 
             squashedItems.Add(identical[0]);
             items.RemoveAll(identical.Contains);

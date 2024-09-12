@@ -64,7 +64,7 @@ public class Customer : BaseEntity
     public int? CustomerAccountId { get; set; }
 
     [JsonIgnore]
-    public List<CustomerCheckinInfo>? CustomerCheckinInfos { get; set; }
+    public List<CheckedInCustomer>? Checkins { get; set; }
 
     [JsonIgnore]
     public string FullName

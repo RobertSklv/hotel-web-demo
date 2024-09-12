@@ -46,9 +46,7 @@
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             @if (action.Method == RequestMethod.Get)
                             {
-                                <a asp-action="@action.Action"
-                                   asp-controller="@action.Controller"
-                                   asp-route-id="@Model.Item.Id"
+                                <a href="@action.GetRoute(Model.Item.Id)"
                                    id="@actionId"
                                    data-row-action="@action.Action"
                                    data-item-id="@Model.Item.Id"
@@ -62,9 +60,7 @@
                             }
                             else
                             {
-                                <form asp-action="@action.Action"
-                                      asp-controller="@action.Controller"
-                                      asp-route-id="@Model.Item.Id"
+                                <form action="@action.GetRoute(Model.Item.Id)"
                                       id="@actionId"
                                       data-row-action="@action.Action"
                                       data-item-id="@Model.Item.Id"
@@ -86,9 +82,7 @@
         }
         else if (action.Method == RequestMethod.Get)
         {
-            <a asp-action="@action.Action"
-               asp-controller="@action.Controller"
-               asp-route-id="@Model.Item.Id"
+            <a href="@action.GetRoute(Model.Item.Id)"
                id="@(action.Id)-@(Model.Item.Id)"
                data-row-action="@action.Action"
                data-item-id="@Model.Item.Id"
@@ -102,9 +96,7 @@
         }
         else
         {
-            <form asp-action="@action.Action"
-                  asp-controller="@action.Controller"
-                  asp-route-id="@Model.Item.Id"
+            <form action="@action.GetRoute(Model.Item.Id)"
                   id="@(action.Id)-@(Model.Item.Id)"
                   data-row-action="@action.Action"
                   data-item-id="@Model.Item.Id"

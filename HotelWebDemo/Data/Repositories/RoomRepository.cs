@@ -9,7 +9,11 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
 {
     public override DbSet<Room> DbSet => db.Rooms;
 
-    public RoomRepository(AppDbContext db, IEntityFilterService filterService, IEntitySortService sortService, IEntitySearchService searchService)
+    public RoomRepository(
+        AppDbContext db,
+        IEntityFilterService filterService,
+        IEntitySortService sortService,
+        IEntitySearchService searchService)
         : base(db, filterService, sortService, searchService)
     {
     }
@@ -56,6 +60,15 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
         return room.RoomFeatureRooms;
     }
 
+    public async Task<List<RoomReservation>> GetOrLoadRoomReservations(Room room)
+    {
+        room.Reservations ??= await db.RoomReservations
+            .Where(e => e.RoomId == room.Id)
+            .ToListAsync();
+
+        return room.Reservations;
+    }
+
     public async Task UpdateSelectedFeatures(Room room)
     {
         GetOrLoadRoomFeatureRooms(room);
@@ -86,20 +99,83 @@ public class RoomRepository : CrudRepository<Room>, IRoomRepository
             .ExecuteUpdateAsync(e => e.SetProperty(e => e.Enabled, enable));
     }
 
+    public IQueryable<Room> AddEnabledFilter(IQueryable<Room> queryable, bool enabled)
+    {
+        return queryable.Where(e => e.Enabled == enabled);
+    }
+
+    public IQueryable<Room> AddHotelIdFilter(IQueryable<Room> queryable, int hotelId)
+    {
+        return queryable.Where(e => e.HotelId == hotelId);
+    }
+
+    public IQueryable<Room> AddRoomIdFilter(IQueryable<Room> queryable, List<int> ids, bool includes)
+    {
+        return queryable.Where(e => ids.Contains(e.Id) == includes);
+    }
+
+    public IQueryable<Room> AddRoomCategoryIdFilter(IQueryable<Room> queryable, List<int> ids, bool includes)
+    {
+        return queryable.Where(e => ids.Contains(e.CategoryId) == includes);
+    }
+
+    public IQueryable<Room> AddCheckinPeriodFilter(IQueryable<Room> queryable, DateTime checkinDate, DateTime checkoutDate)
+    {
+        return queryable
+            .Include(e => e.Reservations!)
+                .ThenInclude(e => e.Booking)
+                    .ThenInclude(e => e.BookingCancellation)
+            .Where(e => e.Reservations!.Where(e =>
+                    e.Booking!.BookingCancellationId == null &&
+                    e.Booking.CheckinDate < checkoutDate &&
+                    checkinDate < e.Booking.CheckoutDate)
+                .Count() == 0);
+    }
+
+    public async Task<PaginatedList<Room>> GetBookableRooms(
+        ListingModel listingModel,
+        Func<IQueryable<Room>, IQueryable<Room>> queryCallback)
+    {
+        return await List(listingModel, queryCallback);
+    }
+
     public async Task<PaginatedList<Room>> GetBookableRooms(BookingViewModel listingModel)
     {
-        return await List(
-            listingModel,
-            rooms => rooms
-                .Include(e => e.BookingRooms!)
-                .ThenInclude(e => e.Booking)
-                .Where(e => 
-                    e.Enabled &&
-                    e.HotelId == listingModel.HotelId &&
-                    !(listingModel.RoomsToReserve ?? new()).Contains(e.Id) &&
-                    e.BookingRooms!.Where(e => 
-                        (e.Booking!.CheckinDate >= listingModel.CheckInDate && e.Booking.CheckinDate < listingModel.CheckOutDate) ||
-                        (e.Booking.CheckoutDate > listingModel.CheckInDate && e.Booking.CheckoutDate <= listingModel.CheckOutDate))
-                    .Count() == 0));
+        return await GetBookableRooms(listingModel, query =>
+        {
+            AddEnabledFilter(query, true);
+            AddHotelIdFilter(query, listingModel.HotelId);
+            AddCheckinPeriodFilter(query, listingModel.CheckInDate, listingModel.CheckOutDate);
+
+            if (listingModel.RoomsToReserve != null)
+            {
+                AddRoomIdFilter(query, listingModel.RoomsToReserve, includes: false);
+            }
+
+            return query;
+        });
+    }
+
+    public async Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, RoomReservation roomReservation)
+    {
+        if (roomReservation.Room == null)
+        {
+            throw new Exception("Room not loaded.");
+        }
+
+        if (roomReservation.Booking == null)
+        {
+            throw new Exception("Booking not loaded.");
+        }
+
+        return await GetBookableRooms(listingModel, query =>
+        {
+            AddEnabledFilter(query, true);
+            AddHotelIdFilter(query, roomReservation.Room.HotelId);
+            AddRoomCategoryIdFilter(query, new() { roomReservation.Room.CategoryId }, includes: true);
+            AddCheckinPeriodFilter(query, DateTime.UtcNow, roomReservation.Booking.CheckoutDate);
+
+            return query;
+        });
     }
 }

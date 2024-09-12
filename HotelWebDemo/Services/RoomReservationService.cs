@@ -1,5 +1,8 @@
 ﻿using HotelWebDemo.Data.Repositories;
+using HotelWebDemo.Models.Components.Admin.Tables;
+using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
+using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Services;
 
@@ -41,25 +44,30 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
     {
         await GetOrLoadCurrentCheckinInfo(roomReservation);
 
-        roomReservation.CurrentCheckin ??= new();
-        roomReservation.CurrentCheckin.CustomerCheckinInfos ??= new();
-
-        for (int i = 0; i < roomReservation.Room.Capacity; i++)
+        if (roomReservation.CheckinInfo == null)
         {
-            CustomerCheckinInfo cch = new()
+            roomReservation.CheckinInfo = new()
             {
-                Customer = new()
+                CheckedInCustomers = new()
             };
-            roomReservation.CurrentCheckin.CustomerCheckinInfos.Add(cch);
+
+            for (int i = 0; i < roomReservation.Room.Capacity; i++)
+            {
+                CheckedInCustomer cch = new()
+                {
+                    Customer = new()
+                };
+                roomReservation.CheckinInfo.CheckedInCustomers.Add(cch);
+            }
         }
     }
 
-    public async Task<List<CustomerCheckinInfo>> ProcessCheckedInCustomers(CheckinInfo checkinInfo)
+    public async Task<List<CheckedInCustomer>> ProcessCheckedInCustomers(CheckinInfo checkinInfo)
     {
-        List<CustomerCheckinInfo> checkedInCustomers = new();
+        List<CheckedInCustomer> checkedInCustomers = new();
         List<int> knownCustomerIds = new();
 
-        foreach (CustomerCheckinInfo checkedInCustomer in checkinInfo.CustomerCheckinInfos)
+        foreach (CheckedInCustomer checkedInCustomer in checkinInfo.CheckedInCustomers)
         {
             if (checkedInCustomer.CustomerId != 0)
             {
@@ -72,19 +80,19 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         }
 
         List<Customer> knownCustomers = await customerService.GetByIds(knownCustomerIds);
-        List<CustomerCheckinInfo> knownCustomersCheckinInfos = CreateCustomerCheckinInfos(knownCustomers);
+        List<CheckedInCustomer> knownCustomersCheckinInfos = CreateCustomerCheckinInfos(knownCustomers);
         checkedInCustomers.AddRange(knownCustomersCheckinInfos);
 
         return checkedInCustomers;
     }
 
-    public List<CustomerCheckinInfo> CreateCustomerCheckinInfos(List<Customer> customers)
+    public List<CheckedInCustomer> CreateCustomerCheckinInfos(List<Customer> customers)
     {
-        List<CustomerCheckinInfo> customerCheckinInfos = new();
+        List<CheckedInCustomer> customerCheckinInfos = new();
 
         foreach (Customer customer in customers)
         {
-            CustomerCheckinInfo checkedInCustomer = new()
+            CheckedInCustomer checkedInCustomer = new()
             {
                 CustomerId = customer.Id
             };
@@ -96,23 +104,20 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
 
     public async Task<bool> AddOrUpdateCurrentCheckin(RoomReservation roomReservation)
     {
-        if (roomReservation.CurrentCheckin == null)
+        if (roomReservation.CheckinInfo == null)
         {
             throw new Exception("Current check-in is null.");
         }
 
-        roomReservation.CurrentCheckin.RoomReservationId = roomReservation.Id;
-
-        List<CustomerCheckinInfo> checkedInCustomers = await ProcessCheckedInCustomers(roomReservation.CurrentCheckin);
-
-        if (roomReservation.CurrentCheckin.Id > 0)
+        List<CheckedInCustomer> checkedInCustomers = await ProcessCheckedInCustomers(roomReservation.CheckinInfo);
+        if (roomReservation.CheckinInfo.Id > 0)
         {
-            (await checkinService.GetOrLoadCustomerCheckinInfos(roomReservation.CurrentCheckin)).Clear();
+            (await checkinService.GetOrLoadCustomerCheckinInfos(roomReservation.CheckinInfo)).Clear();
         }
+        roomReservation.CheckinInfo.CheckedInCustomers = checkedInCustomers;
 
-        roomReservation.CurrentCheckin.CustomerCheckinInfos = checkedInCustomers;
 
-        return await checkinService.Upsert(roomReservation.CurrentCheckin);
+        return await checkinService.Upsert(roomReservation.CheckinInfo);
     }
 
     public override async Task<bool> Upsert(RoomReservation entity)
@@ -144,7 +149,7 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
             }
         }
 
-        return finalSuccess;
+        return success;
     }
 
     public async Task<bool> Checkout(RoomReservation roomReservation)
@@ -159,7 +164,7 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
                 Room room = await roomService.GetStrict(roomReservation.RoomId);
 
                 bookingLogService.CreateLog(roomReservation.BookingId, $"{admin.RoleAndName} checked out customers for room {room.Number}.");
-                }
+            }
             catch (Exception e)
             {
                 logger.Fatal(e, $"Failed logging checkout event for room reservation: {roomReservation.Id}.");
@@ -167,5 +172,55 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         }
 
         return success;
+    }
+
+    public async Task<bool> ChangeRoom(int roomReservationId, int roomId)
+    {
+        RoomReservation roomReservation = await repository.GetStrict(roomReservationId);
+        Room room = await roomService.GetStrict(roomId);
+
+        RoomReservation? activeReservation = await repository.GetCheckedInReservation(roomId);
+
+        if (activeReservation != null)
+        {
+            throw new Exception($"An active reservation already exists for the selected room.");
+        }
+
+        roomReservation.Room = room;
+        roomReservation.RoomId = roomId;
+
+        return await repository.Update(roomReservation) > 0;
+    }
+
+    public async Task<ListingModel<Room>> CreateChangeRoomListing(ListingModel listingModel, int roomReservationId)
+    {
+        PaginatedList<Room> rooms = await GetBookableRooms(listingModel, roomReservationId);
+
+        ListingModel<Room> listing = new();
+        listing.Clone(listingModel);
+        listing.Table = new Table<Room>(listingModel, rooms, area: "Admin")
+            .AddPagination(true)
+            .RemoveColumn(nameof(Room.Enabled))
+            .AddRowAction(
+                "Change",
+                RequestMethod.Post,
+                customizationCallback: action => action
+                    .AddConfirmationPopup(true)
+                    .SetConfirmationMessage<Room>(r => $"Are you sure you want to switch to room {r.Number}?")
+                    .SetConfirmationTitle("Switch room?")
+                    .SetRoute(id => $"/Admin/RoomReservation/ChangeRoom/{roomReservationId}/Room/{id}")
+                    .SetColor(ColorClass.Primary));
+
+        return listing;
+    }
+
+    public Task<RoomReservation?> GetCheckedInReservation(int roomId)
+    {
+        return repository.GetCheckedInReservation(roomId);
+    }
+
+    public Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, int roomReservationId)
+    {
+        return repository.GetBookableRooms(listingModel, roomReservationId);
     }
 }

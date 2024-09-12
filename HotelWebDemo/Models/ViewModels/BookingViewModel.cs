@@ -30,7 +30,13 @@ public class BookingViewModel : ListingModel<Room>, IBookingViewModel
 
     public BookingContact? Contact { get; set; }
 
+    public decimal RoomsPrice { get; set; }
+
+    public decimal RoomFeaturesPrice { get; set; }
+
     public bool HasCustomGrandTotal { get; set; }
+
+    public decimal GrandTotal { get; set; }
 
     public decimal? CustomGrandTotal { get; set; }
 

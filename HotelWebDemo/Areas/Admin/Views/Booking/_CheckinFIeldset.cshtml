@@ -10,7 +10,7 @@
 
 @foreach (RoomReservation r in Model.RoomReservations)
 {
-    bool isExistingCheckin = r.CurrentCheckin != null;
+    bool isExistingCheckin = r.CheckinInfo != null;
 
     <div class="alert alert-info p-3 mb-3">
         <div class="row">
@@ -35,7 +35,7 @@
                 <tr>
                     <th>Checked-in customers:</th>
                 </tr>
-                @foreach (CustomerCheckinInfo cci in r.CurrentCheckin.CustomerCheckinInfos)
+                @foreach (CheckedInCustomer cci in r.CheckinInfo.CheckedInCustomers)
                 {
                     <tr>
                         <td>

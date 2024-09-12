@@ -1,5 +1,6 @@
 ﻿using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
+using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
 using Microsoft.AspNetCore.Mvc;
 using StarExplorerMainServer.Areas.Admin.Services;
@@ -9,16 +10,19 @@ namespace HotelWebDemo.Areas.Admin.Controllers;
 public class RoomReservationController : CrudController<RoomReservation>
 {
     private readonly new IRoomReservationService service;
+    private readonly IRoomService roomService;
     private readonly ICountryService countryService;
 
     public RoomReservationController(
         IRoomReservationService service,
+        IRoomService roomService,
         IAdminPageService adminPageService,
         Serilog.ILogger logger,
         ICountryService countryService)
         : base(service, adminPageService, logger)
     {
         this.service = service;
+        this.roomService = roomService;
         this.countryService = countryService;
     }
 
@@ -81,5 +85,38 @@ public class RoomReservationController : CrudController<RoomReservation>
         }
 
         return RedirectToRoute($"/Admin/Booking/View/{roomReservation.BookingId}");
+    }
+
+    [HttpGet]
+    [Route("/Admin/RoomReservation/ChangeRoom/{roomReservationId}")]
+    public async Task<IActionResult> ChangeRoom([FromRoute] int roomReservationId, [FromQuery] ListingModel listingModel)
+    {
+        return View(await service.CreateChangeRoomListing(listingModel, roomReservationId));
+    }
+
+    [HttpPost]
+    [Route("/Admin/RoomReservation/ChangeRoom/{roomReservationId}/Room/{roomId}")]
+    public async Task<IActionResult> ChangeRoom([FromRoute] int roomReservationId, [FromRoute] int roomId)
+    {
+        try
+        {
+            bool success = await service.ChangeRoom(roomReservationId, roomId);
+
+            if (success)
+            {
+                AddMessage($"Room successfully changed.", ColorClass.Success);
+            }
+            else
+            {
+                throw new Exception("An unknown error occurred.");
+            }
+        }
+        catch (Exception e)
+        {
+            logger.Fatal(e, $"Failed to change room of room reservation with ID {roomReservationId}.");
+            AddMessage($"Failed to change the room: {e.Message}", ColorClass.Danger);
+        }
+
+        return RedirectToRoute($"/Admin/RoomReservation/ChangeRoom/{roomReservationId}");
     }
 }

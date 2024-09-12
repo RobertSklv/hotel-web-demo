@@ -8,7 +8,7 @@ namespace HotelWebDemo.Models.Database;
 
 [Table("RoomFeatures")]
 [SelectOption]
-public class RoomFeature : BaseEntity
+public class RoomFeature : BaseEntity, IChargeable
 {
     [StringLength(32, MinimumLength = 1)]
     [Column(TypeName = "varchar")]

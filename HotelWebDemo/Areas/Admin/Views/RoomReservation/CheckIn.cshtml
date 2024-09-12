@@ -47,33 +47,33 @@
                 <h2>Customer @(i + 1)</h2>
             </div>
             <div class="card-body">
-                <input type="hidden" asp-for=@Model.CurrentCheckin.Id />
-                <input type="hidden" asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Id />
-                <input type="hidden" asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].CustomerId data-map-to="Id" />
+                <input type="hidden" asp-for=@Model.CheckinInfo.Id />
+                <input type="hidden" asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Id />
+                <input type="hidden" asp-for=@Model.CheckinInfo.CheckedInCustomers[i].CustomerId data-map-to="Id" />
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.NationalId></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.NationalId></label>
                     </div>
                     <div class="col-12 col-lg-8">
-                        <input asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.NationalId class="form-control d-block w-100 national-id-field" />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.NationalId class="text-danger"></span>
+                        <input asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.NationalId class="form-control d-block w-100 national-id-field" />
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.NationalId class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.PassportId></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.PassportId></label>
                     </div>
                     <div class="col-12 col-lg-8">
-                        <input asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.PassportId class="form-control d-block w-100 passport-id-field" />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.PassportId class="text-danger"></span>
+                        <input asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.PassportId class="form-control d-block w-100 passport-id-field" />
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.PassportId class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Citizenship></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Citizenship></label>
                     </div>
                     <div class="col-12 col-lg-8">
-                        <select asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.CitizenshipId
+                        <select asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.CitizenshipId
                                 class="form-select d-block w-100"
                                 data-map-to="CitizenshipId"
                                 asp-items="new SelectList(
@@ -82,7 +82,7 @@
                                 nameof(Country.Name))">
                             <option value="0">-- Please select --</option>
                         </select>
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Citizenship class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Citizenship class="text-danger"></span>
                     </div>
                 </div>
                 <div class="alert alert-info known-customer-alert" style="display:none">
@@ -95,101 +95,101 @@
                 <hr class="my-5" />
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.FirstName></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.FirstName></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.FirstName
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.FirstName
                             class="form-control d-block w-100"
                             data-map-to="FirstName"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.FirstName class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.FirstName class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.MiddleName></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.MiddleName></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.MiddleName
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.MiddleName
                             class="form-control d-block w-100"
                             data-map-to="MiddleName"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.MiddleName class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.MiddleName class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.LastName></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.LastName></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.LastName
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.LastName
                             class="form-control d-block w-100"
                             data-map-to="LastName"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.LastName class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.LastName class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.DateOfBirth></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.DateOfBirth></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.DateOfBirth
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.DateOfBirth
                             class="form-control d-block w-100"
                             data-map-to="DateOfBirth"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.DateOfBirth class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.DateOfBirth class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.StreetLine1></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.StreetLine1></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.StreetLine1
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.StreetLine1
                             class="form-control d-block w-100"
                             data-map-to="StreetLine1"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.StreetLine1 class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.StreetLine1 class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.StreetLine2></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.StreetLine2></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.StreetLine2
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.StreetLine2
                             class="form-control d-block w-100"
                             data-map-to="StreetLine2"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.StreetLine2 class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.StreetLine2 class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.StreetLine3></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.StreetLine3></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.StreetLine3
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.StreetLine3
                             class="form-control d-block w-100"
                             data-map-to="StreetLine3"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.StreetLine3 class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.StreetLine3 class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.Country></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.Country></label>
                     </div>
                     <div class="col-12 col-lg-8">
-                        <select asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.CountryId
+                        <select asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.CountryId
                                 class="form-select d-block w-100"
                                 data-map-to="CountryId"
                                 asp-items="new SelectList(
@@ -198,46 +198,46 @@
                             nameof(Country.Name))">
                             <option value="0">-- Please select --</option>
                         </select>
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.Country class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.Country class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.City></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.City></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.City
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.City
                             class="form-control d-block w-100"
                             data-map-to="City"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.City class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.City class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.PostalCode></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.PostalCode></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.PostalCode
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.PostalCode
                             class="form-control d-block w-100"
                             data-map-to="PostalCode"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.PostalCode class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.PostalCode class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 col-lg-4">
-                        <label asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.Phone></label>
+                        <label asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.Phone></label>
                     </div>
                     <div class="col-12 col-lg-8">
                         <input
-                            asp-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.Phone
+                            asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.Phone
                             class="form-control d-block w-100"
                             data-map-to="Phone"
                         />
-                        <span asp-validation-for=@Model.CurrentCheckin.CustomerCheckinInfos[i].Customer.Address.Phone class="text-danger"></span>
+                        <span asp-validation-for=@Model.CheckinInfo.CheckedInCustomers[i].Customer.Address.Phone class="text-danger"></span>
                     </div>
                 </div>
                 <script>

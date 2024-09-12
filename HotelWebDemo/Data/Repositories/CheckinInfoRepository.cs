@@ -17,21 +17,21 @@ public class CheckinInfoRepository : CrudRepository<CheckinInfo>, ICheckinInfoRe
     {
     }
 
-    public async Task<List<CustomerCheckinInfo>> GetOrLoadCustomerCheckinInfos(CheckinInfo checkinInfo)
+    public async Task<List<CheckedInCustomer>> GetOrLoadCustomerCheckinInfos(CheckinInfo checkinInfo)
     {
-        checkinInfo.CustomerCheckinInfos ??= await db.CustomerCheckinInfos
+        checkinInfo.CheckedInCustomers ??= await db.CustomerCheckinInfos
             .Where(e => e.CheckinInfoId == checkinInfo.Id)
             .ToListAsync();
 
-        return checkinInfo.CustomerCheckinInfos;
+        return checkinInfo.CheckedInCustomers;
     }
 
-    public async Task<List<CustomerCheckinInfo>> GetOrLoadCustomerCheckinInfos(Customer customer)
+    public async Task<List<CheckedInCustomer>> GetOrLoadCustomerCheckinInfos(Customer customer)
     {
-        customer.CustomerCheckinInfos ??= await db.CustomerCheckinInfos
+        customer.Checkins ??= await db.CustomerCheckinInfos
             .Where(e => e.CustomerId == customer.Id)
             .ToListAsync();
 
-        return customer.CustomerCheckinInfos;
+        return customer.Checkins;
     }
 }

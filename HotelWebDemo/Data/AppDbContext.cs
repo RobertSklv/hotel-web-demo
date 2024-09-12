@@ -15,8 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<BookingContact> BookingContacts { get; set; }
     public DbSet<BookingCancellation> BookingCancellations { get; set; }
-    public DbSet<BookingTotalsDiscount> BookingTotalsDiscounts { get; set; }
-    public DbSet<CustomerCheckinInfo> CustomerCheckinInfos { get; set; }
+    public DbSet<CheckedInCustomer> CustomerCheckinInfos { get; set; }
     public DbSet<CheckinInfo> CheckinInfos { get; set; }
     public DbSet<BookingPayment> BookingPayments { get; set; }
     public DbSet<BookingEventLog> BookingEventLogs { get; set; }
@@ -31,6 +30,12 @@ public class AppDbContext : DbContext
     public DbSet<RoomFeature> RoomFeatures { get; set; }
     public DbSet<RoomFeatureRoom> RoomFeatureRooms { get; set; }
     public DbSet<RoomReservation> RoomReservations { get; set; }
+    public DbSet<BookingTotals> BookingTotals { get; set; }
+    public DbSet<TotalsModifier> TotalsModifiers { get; set; }
+    public DbSet<TotalsDiscountModifier> TotalsDiscountModifiers { get; set; }
+    public DbSet<TotalsCategoryModifier> TotalsCategoryModifiers { get; set; }
+    public DbSet<TotalsFeatureModifier> TotalsFeatureModifiers { get; set; }
+    public DbSet<TotalsTaxModifier> TotalsTaxModifiers { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options, IServiceProvider serviceProvider)
         : base(options)

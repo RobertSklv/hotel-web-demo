@@ -1,20 +1,68 @@
-﻿using HotelWebDemo.Models.Database;
+﻿using HotelWebDemo.Data.Repositories;
+using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 
 namespace HotelWebDemo.Services;
 
-public class BookingTotalsService : IBookingTotalsService
+public class BookingTotalsService : CrudService<BookingTotals>, IBookingTotalsService
 {
+    private readonly IBookingTotalsRepository repository;
+
+    public BookingTotalsService(IBookingTotalsRepository repository)
+        : base(repository)
+    {
+        this.repository = repository;
+    }
+
     public BookingTotals CalculateTotals(BookingViewModel viewModel)
     {
         return new BookingTotals
         {
-            RoomsPrice = viewModel.ReservedRooms?.Sum(r => GetRoomPrice(r, viewModel.Nights)) ?? 0,
-            RoomFeaturesPrice = viewModel.ReservedRooms?.Sum(r => GetRoomFeaturesPrice(r, viewModel.Nights)) ?? 0,
+            Nights = viewModel.Nights,
             CustomGrandTotal = viewModel.HasCustomGrandTotal ? viewModel.CustomGrandTotal : null,
-            //Tax = //TODO: calculate tax,
-            Discounts = new() //TODO: Temporary. Here it needs to be checked whether there are some active discounts that affect the selected items and load them up.
+            Modifiers = GenerateRoomTotals(viewModel) //TODO: calculate tax and discounts as well
         };
+    }
+
+    public List<TotalsModifier> GenerateRoomTotals(BookingViewModel viewModel)
+    {
+        List<TotalsModifier> totals = new();
+
+        foreach (Room room in viewModel.ReservedRooms ?? new())
+        {
+            if (room.Category == null)
+            {
+                throw new Exception("Room category not loaded.");
+            }
+
+            totals.Add(new TotalsCategoryModifier()
+            {
+                Category = room.Category,
+                CategoryId = room.CategoryId,
+                Name = room.Category.Name,
+                Price = room.Category.Price,
+                IsPricePerNight = true,
+            });
+
+            if (room.Features == null)
+            {
+                throw new Exception("Room features not loaded.");
+            }
+
+            foreach (RoomFeature feature in room.Features)
+            {
+                totals.Add(new TotalsFeatureModifier()
+                {
+                    Feature = feature,
+                    FeatureId = feature.Id,
+                    Name = feature.Name,
+                    Price = feature.Price,
+                    IsPricePerNight = feature.IsPricePerNight,
+                });
+            }
+        }
+
+        return totals;
     }
 
     public decimal GetRoomPrice(Room room, int nights)
@@ -34,25 +82,44 @@ public class BookingTotalsService : IBookingTotalsService
             throw new Exception($"The features must be loaded in order to calculate the total price.");
         }
 
-        decimal total = 0;
-
-        foreach (RoomFeature roomFeature in room.Features)
-        {
-            decimal featurePrice = roomFeature.Price;
-
-            if (roomFeature.IsPricePerNight)
-            {
-                featurePrice *= nights;
-            }
-
-            total += featurePrice;
-        }
-
-        return total;
+        return room.Features.Sum(f => CalculatePriceOfChargeable(f, nights));
     }
 
     public decimal GetTotalPriceForPeriod(Room room, int nights)
     {
         return GetRoomPrice(room, nights) + GetRoomFeaturesPrice(room, nights);
+    }
+
+    public decimal CalculatePriceOfChargeable(IChargeable chargeable, int nights)
+    {
+        decimal price = chargeable.Price;
+
+        if (!chargeable.IsPricePerNight) return price;
+
+        return price * nights;
+    }
+
+    public Task<List<TotalsModifier>> GetOrLoadModifiers(BookingTotals totals)
+    {
+        return repository.GetOrLoadModifiers(totals);
+    }
+
+    public Task<List<TTotalsModifier>> GetOrLoadModifiers<TTotalsModifier>(BookingTotals totals)
+        where TTotalsModifier : TotalsModifier
+    {
+        return repository.GetOrLoadModifiers<TTotalsModifier>(totals);
+    }
+
+    public async Task<decimal> CalculateTotals<TTotalsModifier>(BookingTotals totals)
+        where TTotalsModifier : TotalsModifier
+    {
+        List<TTotalsModifier> modifiers = await GetOrLoadModifiers<TTotalsModifier>(totals);
+
+        return modifiers.Sum(m => CalculatePriceOfChargeable(m, totals.Nights));
+    }
+
+    public Task<decimal> CalculateGrandTotal(BookingTotals totals)
+    {
+        return CalculateTotals<TotalsModifier>(totals);
     }
 }

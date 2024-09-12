@@ -27,4 +27,6 @@ public class BookingItem : BaseEntity
     public decimal Price { get; set; }
 
     public List<BookingItemRoomFeature>? DesiredFeatures { get; set; }
+
+    public List<RoomReservation>? RoomReservations { get; set; }
 }

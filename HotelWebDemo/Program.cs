@@ -63,6 +63,7 @@ builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingTotalsService, BookingTotalsService>();
+builder.Services.AddScoped<IBookingTotalsRepository, BookingTotalsRepository>();
 builder.Services.AddScoped<IBookingLogService, BookingLogService>();
 builder.Services.AddScoped<IBookingLogRepository, BookingLogRepository>();
 builder.Services.AddScoped<IRoomReservationService, RoomReservationService>();

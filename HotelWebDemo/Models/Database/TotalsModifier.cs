@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelWebDemo.Models.Database;
 
-[Table("BookingTotalsDiscounts")]
-public class BookingTotalsDiscount : BaseEntity
+[Table("TotalsModifiers")]
+public class TotalsModifier : BaseEntity, IChargeable
 {
     public BookingTotals? Totals { get; set; }
 
@@ -15,5 +15,8 @@ public class BookingTotalsDiscount : BaseEntity
 
     [Column(TypeName = "decimal(19, 4)")]
     [DataType(DataType.Currency)]
-    public decimal Amount { get; set; }
+    public decimal Price { get; set; }
+
+    [Display(Name = "Price per night")]
+    public bool IsPricePerNight { get; set; }
 }

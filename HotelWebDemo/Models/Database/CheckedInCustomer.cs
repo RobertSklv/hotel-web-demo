@@ -3,7 +3,7 @@
 namespace HotelWebDemo.Models.Database;
 
 [Table("CustomerCheckinInfos")]
-public class CustomerCheckinInfo : BaseEntity
+public class CheckedInCustomer : BaseEntity
 {
     public Customer? Customer { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Models.Database;
+using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,11 +7,19 @@ namespace HotelWebDemo.Data.Repositories;
 
 public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomReservationRepository
 {
+    private readonly IRoomService roomService;
+
     public override DbSet<RoomReservation> DbSet => db.RoomReservations;
 
-    public RoomReservationRepository(AppDbContext db, IEntityFilterService filterService, IEntitySortService sortService, IEntitySearchService searchService)
+    public RoomReservationRepository(
+        AppDbContext db,
+        IEntityFilterService filterService,
+        IEntitySortService sortService,
+        IEntitySearchService searchService,
+        IRoomService roomService)
         : base(db, filterService, sortService, searchService)
     {
+        this.roomService = roomService;
     }
 
     public override async Task<RoomReservation?> Get(int id)
@@ -19,66 +28,75 @@ public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomR
             .Include(e => e.Booking)
             .Include(e => e.Room)
                 .ThenInclude(e => e!.Category)
-            .Include(e => e.CheckinInfos!)
-                .ThenInclude(e => e.CustomerCheckinInfos!)
+            .Include(e => e.CheckinInfo!)
+                .ThenInclude(e => e.CheckedInCustomers!)
                     .ThenInclude(e => e.Customer)
                         .ThenInclude(e => e!.Citizenship)
-            .Include(e => e.CheckinInfos!)
-                .ThenInclude(e => e.CustomerCheckinInfos!)
+            .Include(e => e.CheckinInfo!)
+                .ThenInclude(e => e.CheckedInCustomers!)
                     .ThenInclude(e => e.Customer)
                         .ThenInclude(e => e!.Address)
                             .ThenInclude(e => e!.Country)
             .FirstOrDefaultAsync(e => e.Id == id);
 
-        if (roomReservation != null)
-        {
-            roomReservation.CurrentCheckin = await GetCurrentCheckinInfo(id);
-        }
-
         return roomReservation;
-    }
-
-    public async Task<CheckinInfo?> GetCurrentCheckinInfo(int roomReservationId)
-    {
-        return await db.CheckinInfos
-            .Include(e => e.CustomerCheckinInfos!)
-                .ThenInclude(e => e.Customer)
-            .FirstOrDefaultAsync(e => e.RoomReservationId == roomReservationId && e.CheckoutDate == null);
     }
 
     public async Task<CheckinInfo?> GetOrLoadCurrentCheckinInfo(RoomReservation roomReservation)
     {
-        if (roomReservation.CurrentCheckin == null)
-        {
-            List<CheckinInfo> checkinInfos = await GetOrLoadCheckinInfos(roomReservation);
-            roomReservation.CurrentCheckin = checkinInfos.FirstOrDefault(e => !e.IsCheckedOut);
-        }
+        roomReservation.CheckinInfo ??= await db.CheckinInfos.FirstOrDefaultAsync(e => e.Id == roomReservation.CheckinInfoId);
 
-        return roomReservation.CurrentCheckin;
-    }
-
-    public async Task<List<CheckinInfo>> GetOrLoadCheckinInfos(RoomReservation roomReservation)
-    {
-        roomReservation.CheckinInfos ??= await db.CheckinInfos
-            .Include(e => e.CustomerCheckinInfos!)
-                .ThenInclude(e => e.Customer)
-            .Where(e => e.RoomReservationId == roomReservation.Id)
-            .ToListAsync();
-
-        return roomReservation.CheckinInfos;
+        return roomReservation.CheckinInfo;
     }
 
     public async Task<int> Checkout(RoomReservation roomReservation)
     {
-        List<CheckinInfo> checkinInfos = await GetOrLoadCheckinInfos(roomReservation);
+        CheckinInfo checkin = await GetOrLoadCurrentCheckinInfo(roomReservation) ?? throw new Exception("No active check-in found.");
 
-        foreach (CheckinInfo checkin in checkinInfos)
-        {
-            checkin.CheckoutDate = DateTime.UtcNow;
-        }
+        checkin.CheckoutDate = DateTime.UtcNow;
 
         db.Update(roomReservation);
 
         return await db.SaveChangesAsync();
     }
+
+    public async Task<List<RoomReservation>> GetAllReservations(int roomId, bool? active = null)
+    {
+        IQueryable<RoomReservation> query = db.RoomReservations
+            .Include(e => e.CheckinInfo)
+            .Where(e => e!.RoomId == roomId)
+            .OrderByDescending(e => e.Id);
+
+        if (active != null)
+        {
+            if ((bool)active)
+            {
+                query.Where(e => e.CheckinInfo != null && e.CheckinInfo.CheckoutDate == null);
+            }
+            else
+            {
+                query.Where(e => e.CheckinInfo == null || e.CheckinInfo.CheckoutDate != null);
+            }
+        }
+
+        return await query.ToListAsync();
+    }
+
+    public async Task<RoomReservation?> GetCheckedInReservation(int roomId)
+    {
+        return await db.RoomReservations
+            .Include(e => e.CheckinInfo)
+            .Where(e => e.RoomId == roomId
+                && e.CheckinInfo != null
+                && e.CheckinInfo.CheckoutDate == null)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, int roomReservationId)
+    {
+        RoomReservation reservation = await GetStrict(roomReservationId);
+
+        return await roomService.GetBookableRooms(listingModel, reservation);
+    }
 }
+ 

@@ -13,12 +13,12 @@ public class CheckinInfoService : CrudService<CheckinInfo>, ICheckinInfoService
         this.repository = repository;
     }
 
-    public async Task<List<CustomerCheckinInfo>> GetOrLoadCustomerCheckinInfos(CheckinInfo checkinInfo)
+    public async Task<List<CheckedInCustomer>> GetOrLoadCustomerCheckinInfos(CheckinInfo checkinInfo)
     {
         return await repository.GetOrLoadCustomerCheckinInfos(checkinInfo);
     }
 
-    public async Task<List<CustomerCheckinInfo>> GetOrLoadCustomerCheckinInfos(Customer customer)
+    public async Task<List<CheckedInCustomer>> GetOrLoadCustomerCheckinInfos(Customer customer)
     {
         return await repository.GetOrLoadCustomerCheckinInfos(customer);
     }

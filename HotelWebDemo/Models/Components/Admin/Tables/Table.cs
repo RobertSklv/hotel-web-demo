@@ -35,10 +35,13 @@ public abstract class Table
 
     public List<Option> YesNoOptions { get; set; }
 
-    public Table(IListingModel listingModel, Type modelType)
+    public string? Area { get; set; }
+
+    public Table(IListingModel listingModel, Type modelType, string? area = null)
     {
         ListingModel = listingModel;
         ModelType = modelType;
+        Area = area;
 
         YesNoOptions = new()
         {
@@ -294,8 +297,8 @@ public class Table<T> : Table
 
     public override bool HasItems => Items.Count > 0;
 
-    public Table(IListingModel listingModel, PaginatedList<T> items)
-        : base(listingModel, typeof(T))
+    public Table(IListingModel listingModel, PaginatedList<T> items, string? area = null)
+        : base(listingModel, typeof(T), area)
     {
         Items = items;
     }
@@ -394,6 +397,7 @@ public class Table<T> : Table
         {
             Action = action,
             Controller = entityType.Name,
+            Area = Area,
             Method = method,
             Icon = icon,
             Content = action

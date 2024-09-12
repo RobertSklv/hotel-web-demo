@@ -80,7 +80,7 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
 
     public virtual async Task<Table<TEntity>> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items)
     {
-        return new Table<TEntity>(listingModel, items)
+        return new Table<TEntity>(listingModel, items, area: "Admin")
             .SetSearchable(true)
             .SetOrderable(true)
             .SetFilterable(true)

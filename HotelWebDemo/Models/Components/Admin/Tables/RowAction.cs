@@ -5,9 +5,18 @@ namespace HotelWebDemo.Models.Components.Admin.Tables;
 
 public class RowAction : Element
 {
+    public delegate string DynamicConfirmationMessage<T>(T entity) where T : IBaseEntity;
+    public delegate string DynamicRoute(int id);
+
+    public DynamicRoute? DynamicRouteCallback { get; set; }
+
+    public string? Route { get; set; }
+
     public string Action { get; set; }
 
     public string? Controller { get; set; }
+
+    public string? Area { get; set; }
 
     public RequestMethod Method { get; set; }
 
@@ -44,8 +53,16 @@ public class RowAction : Element
         return this;
     }
 
+    public RowAction SetRoute(string route)
+    {
+        Route = route;
+
+        return this;
+    }
+
     public RowAction SetAction(string action)
     { 
+        Action = action;
 
         return this;
     }
@@ -53,6 +70,13 @@ public class RowAction : Element
     public RowAction SetController(string controller)
     {
         Controller = controller;
+
+        return this;
+    }
+
+    public RowAction SetArea(string area)
+    {
+        Area = area;
 
         return this;
     }
@@ -99,7 +123,7 @@ public class RowAction : Element
         return AddConfirmationPopup(true);
     }
 
-    public RowAction SetConfirmationMessage<T>(Func<T, string> confirmMessageCallback)
+    public RowAction SetConfirmationMessage<T>(DynamicConfirmationMessage<T> confirmMessageCallback)
         where T : IBaseEntity
     {
         ConfirmMessageCallback = m => confirmMessageCallback((T)m);
@@ -112,5 +136,27 @@ public class RowAction : Element
         Icon = icon;
 
         return this;
+    }
+
+    public RowAction SetRoute(DynamicRoute dynamicRoute)
+    {
+        DynamicRouteCallback = dynamicRoute;
+
+        return this;
+    }
+
+    public string GetRoute(int id)
+    {
+        if (DynamicRouteCallback != null)
+        {
+            return DynamicRouteCallback(id);
+        }
+
+        if (Route != null)
+        {
+            return Route;
+        }
+
+        return string.Join('/', Area, Controller, Action, id);
     }
 }

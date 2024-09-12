@@ -12,42 +12,16 @@ public class BookingTotals : BaseEntity
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public Booking? Booking { get; set; }
 
-    [Column(TypeName = "decimal(19, 4)")]
-    [DataType(DataType.Currency)]
-    public decimal RoomsPrice { get; set; }
+    [Range(1, 999)]
+    public int Nights { get; set; }
 
     [Column(TypeName = "decimal(19, 4)")]
     [DataType(DataType.Currency)]
-    public decimal RoomFeaturesPrice { get; set; }
-
-    [Column(TypeName = "decimal(19, 4)")]
-    [DataType(DataType.Currency)]
-    public decimal Tax { get; set; }
-
-    [Column(TypeName = "decimal(19, 4)")]
-    [DataType(DataType.Currency)]
-    [Display(Name = "Grand total")]
+    [Display(Name = "Custom grand total")]
     public decimal? CustomGrandTotal { get; set; }
 
-    public List<BookingTotalsDiscount>? Discounts { get; set; }
+    public List<TotalsModifier>? Modifiers { get; set; }
 
     [Display(Name = "Has custom grand total")]
     public bool HasCustomGrandTotal => CustomGrandTotal != null;
-
-    public decimal GetGrandTotal()
-    {
-        if (Discounts == null)
-        {
-            throw new Exception("Discounts must be loaded in order to calculate the grand total.");
-        }
-
-        decimal total = RoomsPrice + RoomFeaturesPrice + Tax;
-
-        foreach (BookingTotalsDiscount d in Discounts)
-        {
-            total -= d.Amount;
-        }
-
-        return total;
-    }
 }
