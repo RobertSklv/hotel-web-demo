@@ -25,4 +25,8 @@ public interface IBookingTotalsService : ICrudService<BookingTotals>
     Task<decimal> CalculateTotals<TTotalsModifier>(BookingTotals totals) where TTotalsModifier : TotalsModifier;
 
     Task<decimal> CalculateGrandTotal(BookingTotals totals);
+
+    int OrderByTypeIndex(Type type1, Type type2, Type[] order);
+
+    void SortTotalsModifiers(List<TotalsModifier> modifiers);
 }

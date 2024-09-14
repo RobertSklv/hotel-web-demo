@@ -45,7 +45,7 @@
         <select asp-for=@Model.CountryId
                 class="form-select d-block w-100"
                 asp-items="new SelectList(
-                                countries ?? new List<Country>(),
+                                countries,
                                 nameof(Country.Id),
                                 nameof(Country.Name))">
             <option value="0">-- Please select --</option>

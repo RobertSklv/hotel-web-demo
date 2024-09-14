@@ -157,6 +157,6 @@ public class RowAction : Element
             return Route;
         }
 
-        return string.Join('/', Area, Controller, Action, id);
+        return '/' + string.Join('/', Area, Controller, Action, id);
     }
 }

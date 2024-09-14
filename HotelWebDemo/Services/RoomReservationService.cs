@@ -192,15 +192,20 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         return await repository.Update(roomReservation) > 0;
     }
 
-    public async Task<ListingModel<Room>> CreateChangeRoomListing(ListingModel listingModel, int roomReservationId)
+    public async Task<ChangeRoomViewModel> CreateChangeRoomListing(ListingModel listingQuery, int roomReservationId)
     {
-        PaginatedList<Room> rooms = await GetBookableRooms(listingModel, roomReservationId);
+        ChangeRoomViewModel listing = new();
+        listing.CopyFrom(listingQuery);
 
-        ListingModel<Room> listing = new();
-        listing.Clone(listingModel);
-        listing.Table = new Table<Room>(listingModel, rooms, area: "Admin")
+        PaginatedList<Room> rooms = await GetBookableRooms(listing, roomReservationId);
+
+        listing.Table = new Table<Room>(listingQuery, rooms, area: "Admin")
             .AddPagination(true)
+            .RemoveColumn(nameof(Room.Id))
             .RemoveColumn(nameof(Room.Enabled))
+            .RemoveColumn(nameof(Room.Hotel))
+            .RemoveColumn(nameof(Room.CreatedAt))
+            .RemoveColumn(nameof(Room.UpdatedAt))
             .AddRowAction(
                 "Change",
                 RequestMethod.Post,
@@ -208,10 +213,15 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
                     .AddConfirmationPopup(true)
                     .SetConfirmationMessage<Room>(r => $"Are you sure you want to switch to room {r.Number}?")
                     .SetConfirmationTitle("Switch room?")
-                    .SetRoute(id => $"/Admin/RoomReservation/ChangeRoom/{roomReservationId}/Room/{id}")
+                    .SetRoute(id => $"/Admin/RoomReservation/{roomReservationId}/ChangeRoom/{id}")
                     .SetColor(ColorClass.Primary));
 
         return listing;
+    }
+
+    public Task<List<RoomReservation>> GetAllReservations(int roomId, bool? active = null)
+    {
+        return repository.GetAllReservations(roomId, active);
     }
 
     public Task<RoomReservation?> GetCheckedInReservation(int roomId)
@@ -222,5 +232,15 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
     public Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, int roomReservationId)
     {
         return repository.GetBookableRooms(listingModel, roomReservationId);
+    }
+
+    public async Task<PaginatedList<Room>> GetBookableRooms(BookingViewModel listingModel)
+    {
+        return await repository.GetBookableRooms(listingModel);
+    }
+
+    public Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, RoomReservation roomReservation)
+    {
+        return repository.GetBookableRooms(listingModel, roomReservation);
     }
 }

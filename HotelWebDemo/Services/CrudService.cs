@@ -75,7 +75,7 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
 
     public virtual void InitializeListingModel(ListingModel<TEntity> listingModel, ListingModel listingQuery)
     {
-        listingModel.Copy(listingQuery);
+        listingModel.CopyFrom(listingQuery);
     }
 
     public virtual async Task<Table<TEntity>> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items)

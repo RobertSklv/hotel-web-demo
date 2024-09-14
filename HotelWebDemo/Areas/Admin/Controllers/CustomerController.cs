@@ -27,21 +27,16 @@ public class CustomerController : CrudController<Customer, CustomerViewModel>
 
     public override async Task UpsertMethod(CustomerViewModel model) => await service.Upsert(model, ModelState);
 
-    protected override async Task<Customer?> GetEntity(int id)
-    {
-        return await service.GetFull(id);
-    }
-
     public override async Task<IActionResult> Create()
     {
-        ViewData["Countries"] = countryService.GetAll();
+        ViewData["Countries"] = await countryService.GetAll();
 
         return await base.Create();
     }
 
     public override async Task<IActionResult> Edit(int id)
     {
-        ViewData["Countries"] = countryService.GetAll();
+        ViewData["Countries"] = await countryService.GetAll();
 
         CreateResetPasswordAction(id);
 

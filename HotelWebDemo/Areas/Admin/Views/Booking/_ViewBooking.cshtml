@@ -70,20 +70,13 @@
     <tr>
         <th colspan="2" class="table-dark fs-6">Totals</th>
     </tr>
-    @foreach (Room r in Model.ReservedRooms!)
-    {
-        <tr>
-            <td><span>@r.CategoryNameAndCapacity:</span></td>
-            <td><span class="currency-dollar">@(r.GetTotalPriceForPeriod(Model.Nights).ToString("#0.00"))</span></td>
-        </tr>
-    }
     @if (Model.Totals != null && Model.Totals.Modifiers != null)
     {
-        foreach (TotalsDiscountModifier d in Model.Totals.Modifiers)
+        foreach (TotalsModifier m in Model.Totals.Modifiers)
         {
             <tr>
-                <td><span>@d.Name:</span></td>
-                <td>- <span class="currency-dollar">@(d.Price.ToString("#0.00"))</span></td>
+                <td><span>@m.GetLabel(Model.Nights):</span></td>
+                <td><span class="currency-dollar">@(m.GetPrice(Model.Nights).ToString("#0.00"))</span></td>
             </tr>
         }
     }

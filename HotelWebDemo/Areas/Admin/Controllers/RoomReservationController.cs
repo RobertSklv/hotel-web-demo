@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Models.Components.Common;
+﻿using HotelWebDemo.Models.Components.Admin.Pages;
+using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
 using HotelWebDemo.Models.ViewModels;
 using HotelWebDemo.Services;
@@ -44,14 +45,16 @@ public class RoomReservationController : CrudController<RoomReservation>
                     { "Id", roomReservation.BookingId }
                 });
 
+            AddChangeRoomAction(id);
+
             return View(roomReservation);
         }
 
-        return RedirectToRoute("/Admin/Booking");
+        return Redirect("/Admin/Booking");
     }
 
     [HttpPost]
-    public async Task<IActionResult> SubmitCheckin([FromBody] RoomReservation roomReservation)
+    public async Task<IActionResult> SubmitCheckin(RoomReservation roomReservation)
     {
         bool success = await service.Upsert(roomReservation);
 
@@ -60,7 +63,7 @@ public class RoomReservationController : CrudController<RoomReservation>
             AddMessage("Failed to check-in. An unknown error occurred.", ColorClass.Danger);
         }
 
-        return RedirectToRoute($"/Admin/Booking/View/{roomReservation.BookingId}");
+        return Redirect($"/Admin/Booking/View/{roomReservation.BookingId}");
     }
 
     [HttpPost]
@@ -81,21 +84,29 @@ public class RoomReservationController : CrudController<RoomReservation>
         {
             AddMessage("Failed to check-out. Room reservation not found.", ColorClass.Danger);
 
-            return RedirectToRoute($"/Admin/Booking");
+            return Redirect($"/Admin/Booking");
         }
 
-        return RedirectToRoute($"/Admin/Booking/View/{roomReservation.BookingId}");
+        return Redirect($"/Admin/Booking/View/{roomReservation.BookingId}");
     }
 
     [HttpGet]
     [Route("/Admin/RoomReservation/ChangeRoom/{roomReservationId}")]
     public async Task<IActionResult> ChangeRoom([FromRoute] int roomReservationId, [FromQuery] ListingModel listingModel)
     {
+        AddBackAction(
+            nameof(Checkin),
+            null,
+            requestParameters: new()
+            {
+                { "Id", roomReservationId }
+            });
+
         return View(await service.CreateChangeRoomListing(listingModel, roomReservationId));
     }
 
     [HttpPost]
-    [Route("/Admin/RoomReservation/ChangeRoom/{roomReservationId}/Room/{roomId}")]
+    [Route("/Admin/RoomReservation/{roomReservationId}/ChangeRoom/{roomId}")]
     public async Task<IActionResult> ChangeRoom([FromRoute] int roomReservationId, [FromRoute] int roomId)
     {
         try
@@ -117,6 +128,23 @@ public class RoomReservationController : CrudController<RoomReservation>
             AddMessage($"Failed to change the room: {e.Message}", ColorClass.Danger);
         }
 
-        return RedirectToRoute($"/Admin/RoomReservation/ChangeRoom/{roomReservationId}");
+        return Redirect($"/Admin/RoomReservation/ChangeRoom/{roomReservationId}");
+    }
+
+    private void AddChangeRoomAction(int roomReservationId)
+    {
+        GetOrCreatePageActionButtonsList().Add(new PageActionButton()
+        {
+            Content = "Change room",
+            Area = "Admin",
+            Controller = "RoomReservation",
+            Action = "ChangeRoom",
+            Color = ColorClass.Warning,
+            IsLink = true,
+            RequestParameters = new()
+            {
+                { "Id", roomReservationId }
+            }
+        });
     }
 }

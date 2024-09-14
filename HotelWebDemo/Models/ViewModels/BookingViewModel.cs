@@ -113,9 +113,9 @@ public class BookingViewModel : ListingModel<Room>, IBookingViewModel
         return GetStatusColor().ToString().ToLower();
     }
 
-    public override void Copy(IListingModel? listingModel)
+    public override void CopyFrom(IListingModel? listingModel)
     {
-        base.Copy(listingModel);
+        base.CopyFrom(listingModel);
 
         if (listingModel is BookingViewModel bookingVM)
         {

@@ -1,0 +1,11 @@
+﻿@using HotelWebDemo.Models.ViewModels
+
+@model ChangeRoomViewModel
+
+@{
+    Layout = "_AdminPageLayout";
+    ViewData["Title"] = "Change room";
+    ViewData["PageHeading"] = "Change room";
+}
+
+<partial name="_Table" model="@Model.Table" />

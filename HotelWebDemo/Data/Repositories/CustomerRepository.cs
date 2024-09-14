@@ -22,20 +22,13 @@ public class CustomerRepository : CrudRepository<Customer>, ICustomerRepository
                 .ThenInclude(a => a.Country);
     }
 
-    public async Task<Customer?> GetFull(int id)
+    public override async Task<Customer?> Get(int id)
     {
         return await DbSet
             .Include(i => i.Citizenship)
             .Include(c => c.CustomerAccount)
             .Include(a => a.Address)
-                .ThenInclude(a => a.Country)
-            .FirstOrDefaultAsync(c => c.Id == id);
-    }
-
-    public override async Task<Customer?> Get(int id)
-    {
-        return await DbSet
-            .Include(c => c.CustomerAccount)
+                .ThenInclude(a => a!.Country)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 

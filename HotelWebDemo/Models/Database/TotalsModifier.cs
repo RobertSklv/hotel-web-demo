@@ -19,4 +19,24 @@ public class TotalsModifier : BaseEntity, IChargeable
 
     [Display(Name = "Price per night")]
     public bool IsPricePerNight { get; set; }
+
+    public string GetLabel(int nights)
+    {
+        if (!IsPricePerNight)
+        {
+            return Name;
+        }
+
+        return $"{nights}x {Name}";
+    }
+
+    public decimal GetPrice(int nights)
+    {
+        if (!IsPricePerNight)
+        {
+            return Price;
+        }
+
+        return Price * nights;
+    }
 }

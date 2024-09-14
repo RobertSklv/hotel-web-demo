@@ -32,15 +32,10 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
         this.linkGeneratorSerivce = linkGeneratorSerivce;
     }
 
-    public async Task<Customer?> GetFull(int id)
-    {
-        return await repository.GetFull(id);
-    }
-
     public async Task Upsert(CustomerViewModel customerViewModel, ModelStateDictionary modelState)
     {
         bool newCustomer = customerViewModel.Id == 0;
-        Customer customer = ViewModelToEntity(customerViewModel);
+        Customer customer = await ViewModelToEntityAsync(customerViewModel);
 
         if (newCustomer)
         {
@@ -105,6 +100,16 @@ public class CustomerService : CrudService<Customer, CustomerViewModel>, ICustom
 
     public override CustomerViewModel EntityToViewModel(Customer customer)
     {
+        if (customer.CustomerAccount == null)
+        {
+            throw new Exception("Customer account not loaded.");
+        }
+
+        if (customer.Address == null)
+        {
+            throw new Exception("Customer address not loaded");
+        }
+
         return new CustomerViewModel()
         {
             Id = customer.Id,

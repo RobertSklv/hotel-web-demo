@@ -62,6 +62,8 @@ public class BookingTotalsService : CrudService<BookingTotals>, IBookingTotalsSe
             }
         }
 
+        SortTotalsModifiers(totals);
+
         return totals;
     }
 
@@ -121,5 +123,37 @@ public class BookingTotalsService : CrudService<BookingTotals>, IBookingTotalsSe
     public Task<decimal> CalculateGrandTotal(BookingTotals totals)
     {
         return CalculateTotals<TotalsModifier>(totals);
+    }
+
+    public Type[] GetTotalsModifiersOrder()
+    {
+        return new[]
+        {
+            typeof(TotalsCategoryModifier),
+            typeof(TotalsFeatureModifier),
+            typeof(TotalsTaxModifier),
+            typeof(TotalsDiscountModifier),
+            typeof(TotalsModifier),
+        };
+    }
+
+    public int OrderByTypeIndex(Type type1, Type type2, Type[] order)
+    {
+        int index1 = 0;
+        int index2 = 0;
+
+        for (int i = 0; i < order.Length; i++)
+        {
+            if (order[i] == type1) index1 = i;
+            if (order[i] == type2) index2 = i;
+        }
+
+        return index1 - index2;
+    }
+
+    public void SortTotalsModifiers(List<TotalsModifier> modifiers)
+    {
+        Type[] order = GetTotalsModifiersOrder();
+        modifiers.Sort((m1, m2) => OrderByTypeIndex(m1.GetType(), m2.GetType(), order));
     }
 }

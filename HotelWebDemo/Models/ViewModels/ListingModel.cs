@@ -72,7 +72,7 @@ public class ListingModel : IListingModel
         return query;
     }
 
-    public virtual void Copy(IListingModel? listingModel)
+    public virtual void CopyFrom(IListingModel? listingModel)
     {
         ActionName = listingModel?.ActionName ?? "Index";
         OrderBy = listingModel?.OrderBy ?? DEFAULT_ORDER_BY;

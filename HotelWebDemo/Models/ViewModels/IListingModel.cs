@@ -20,7 +20,7 @@ public interface IListingModel
 
     Dictionary<string, string?> GenerateListingQuery();
 
-    void Copy(IListingModel? listingModel);
+    void CopyFrom(IListingModel? listingModel);
 
     IListingModel Clone();
 }

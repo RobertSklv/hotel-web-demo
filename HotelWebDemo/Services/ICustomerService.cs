@@ -6,8 +6,6 @@ namespace HotelWebDemo.Services;
 
 public interface ICustomerService : ICrudService<Customer, CustomerViewModel>
 {
-    Task<Customer?> GetFull(int id);
-
     Task Upsert(CustomerViewModel customerViewModel, ModelStateDictionary modelState);
 
     bool CompareResetPasswordToken(Customer customer, string token);

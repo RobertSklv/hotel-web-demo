@@ -21,14 +21,14 @@ public class RoomFeatureController : CrudController<RoomFeature>
 
     public override async Task<IActionResult> Create()
     {
-        ViewData["Hotels"] = hotelService.GetAll();
+        ViewData["Hotels"] = await hotelService.GetAll();
 
         return await base.Create();
     }
 
     public override async Task<IActionResult> Edit(int id)
     {
-        ViewData["Hotels"] = hotelService.GetAll();
+        ViewData["Hotels"] = await hotelService.GetAll();
 
         return await base.Edit(id);
     }

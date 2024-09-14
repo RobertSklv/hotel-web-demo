@@ -36,7 +36,9 @@
 <form asp-action="SubmitCheckin">
     <input type="hidden" asp-for=@Model.Id />
     <input type="hidden" asp-for=@Model.BookingId />
+    <input type="hidden" asp-for=@Model.BookingItemId />
     <input type="hidden" asp-for=@Model.RoomId />
+    <input type="hidden" asp-for=@Model.CheckinInfoId />
 
     @for (int i = 0; i < Model.Room.Capacity; i++)
     {
@@ -47,7 +49,6 @@
                 <h2>Customer @(i + 1)</h2>
             </div>
             <div class="card-body">
-                <input type="hidden" asp-for=@Model.CheckinInfo.Id />
                 <input type="hidden" asp-for=@Model.CheckinInfo.CheckedInCustomers[i].Id />
                 <input type="hidden" asp-for=@Model.CheckinInfo.CheckedInCustomers[i].CustomerId data-map-to="Id" />
                 <div class="row mb-4">

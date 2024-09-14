@@ -50,13 +50,29 @@ window.newKnownCustomerComponent = function (fieldsWrapperId) {
 
             this.linkCustomerLink.on('click', function (e) {
                 e.preventDefault();
-                self._autofill();
+                self._autofill(true);
             });
 
             this.cancelAutofillLink.on('click', function (e) {
                 e.preventDefault();
                 self._cancelAutofill();
             });
+
+            var nationalId = this.nationalIdField.val();
+            var passportId = this.passportIdField.val();
+            var mapToId = $('[data-map-to="Id"]', this.wrapperIdSelector).val();
+
+            if (mapToId) {
+                this._autofill(false);
+            } else {
+                if (nationalId) {
+                    this._onNationalIdChanged(nationalId);
+                }
+
+                if (passportId) {
+                    this._onPassportIdChanged(passportId);
+                }
+            }
         },
 
         _statusCheck: function () {
@@ -127,10 +143,15 @@ window.newKnownCustomerComponent = function (fieldsWrapperId) {
             this._statusCheck();
         },
 
-        _autofill: function () {
+        _autofill: function (mapFields) {
             this.isAutofillActive = true;
             this._statusCheck();
-            this._mapFieldsAndLock();
+
+            if (mapFields) {
+                this._mapFieldsAndLock();
+            } else {
+                this._lockFields();
+            }
         },
 
         _cancelAutofill: function () {
@@ -147,6 +168,12 @@ window.newKnownCustomerComponent = function (fieldsWrapperId) {
                 let mapToField = $(e).data('map-to');
                 let mappedField = this.fieldsMap[mapToField];
                 $(e).val(this.getAtPath(this.currentAutofill.customerData, mappedField));
+                $(e).prop('disabled', !$(e).is('[type=hidden]'));
+            }.bind(this));
+        },
+
+        _lockFields: function () {
+            this.mapToFields.each(function (i, e) {
                 $(e).prop('disabled', !$(e).is('[type=hidden]'));
             }.bind(this));
         },

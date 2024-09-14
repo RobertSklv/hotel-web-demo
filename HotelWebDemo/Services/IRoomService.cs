@@ -6,8 +6,4 @@ namespace HotelWebDemo.Services;
 public interface IRoomService : ICrudService<Room>
 {
     Task<int> MassEnableToggle(List<int> selectedItemIds, bool enable);
-
-    Task<PaginatedList<Room>> GetBookableRooms(BookingViewModel listingModel);
-
-    Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, RoomReservation roomReservation);
 }

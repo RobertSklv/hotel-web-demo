@@ -8,12 +8,14 @@ namespace HotelWebDemo.Areas.Admin.Controllers;
 public class RoomController : CrudController<Room>
 {
     private readonly new IRoomService service;
+    private readonly IRoomReservationService roomReservationService;
     private readonly IHotelService hotelService;
     private readonly IRoomCategoryService roomCategoryService;
     private readonly IRoomFeatureService roomFeatureService;
 
     public RoomController(
         IRoomService service,
+        IRoomReservationService roomReservationService,
         IAdminPageService adminPageService,
         IHotelService hotelService,
         IRoomCategoryService roomCategoryService,
@@ -22,6 +24,7 @@ public class RoomController : CrudController<Room>
         : base(service, adminPageService, logger)
     {
         this.service = service;
+        this.roomReservationService = roomReservationService;
         this.hotelService = hotelService;
         this.roomCategoryService = roomCategoryService;
         this.roomFeatureService = roomFeatureService;
@@ -30,18 +33,19 @@ public class RoomController : CrudController<Room>
 
     public override async Task<IActionResult> Create()
     {
-        ViewData["Hotels"] = hotelService.GetAll();
-        ViewData["RoomCategories"] = roomCategoryService.GetAll();
-        ViewData["RoomFeatures"] = roomFeatureService.GetAll();
+        ViewData["Hotels"] = await hotelService.GetAll();
+        ViewData["RoomCategories"] = await roomCategoryService.GetAll();
+        ViewData["RoomFeatures"] = await roomFeatureService.GetAll();
 
         return await base.Create();
     }
 
     public override async Task<IActionResult> Edit(int id)
     {
-        ViewData["Hotels"] = hotelService.GetAll();
-        ViewData["RoomCategories"] = roomCategoryService.GetAll();
-        ViewData["RoomFeatures"] = roomFeatureService.GetAll();
+        ViewData["Hotels"] = await hotelService.GetAll();
+        ViewData["RoomCategories"] = await roomCategoryService.GetAll();
+        ViewData["RoomFeatures"] = await roomFeatureService.GetAll();
+        ViewData["ActiveReservations"] = await roomReservationService.GetAllReservations(id, active: true);
 
         return await base.Edit(id);
     }

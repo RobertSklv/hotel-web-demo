@@ -11,7 +11,11 @@ public interface IRoomRepository : ICrudRepository<Room>
 
     Task<int> MassEnableToggle(List<int> selectedItemIds, bool enable);
 
-    Task<PaginatedList<Room>> GetBookableRooms(BookingViewModel listingModel);
+    IQueryable<Room> AddEnabledFilter(IQueryable<Room> queryable, bool enabled);
 
-    Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, RoomReservation roomReservation);
+    IQueryable<Room> AddHotelIdFilter(IQueryable<Room> queryable, int hotelId);
+
+    IQueryable<Room> AddRoomIdFilter(IQueryable<Room> queryable, List<int> ids, bool includes);
+
+    IQueryable<Room> AddRoomCategoryIdFilter(IQueryable<Room> queryable, List<int> ids, bool includes);
 }

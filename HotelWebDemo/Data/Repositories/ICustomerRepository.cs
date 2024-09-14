@@ -4,8 +4,6 @@ namespace HotelWebDemo.Data.Repositories;
 
 public interface ICustomerRepository : ICrudRepository<Customer>
 {
-    Task<Customer?> GetFull(int id);
-
     Task<Customer?> GetByNationalId(string nationalId);
 
     Task<Customer?> GetByPassportId(string passportId);

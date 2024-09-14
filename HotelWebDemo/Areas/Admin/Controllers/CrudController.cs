@@ -199,7 +199,7 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
             return null;
         }
 
-        TViewModel? model = service.EntityToViewModel(entity);
+        TViewModel? model = await service.EntityToViewModelAsync(entity);
 
         return model;
     }
@@ -234,7 +234,10 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
         }
         else
         {
-            GetOrCreatePageActionButtonsList().Add(adminPageService.BackAction(this, action: action));
+            GetOrCreatePageActionButtonsList().Add(adminPageService.BackAction(
+                this,
+                action: action,
+                requestParameters: requestParameters));
         }
     }
 

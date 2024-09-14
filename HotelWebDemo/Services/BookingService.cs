@@ -16,6 +16,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
     public const string SUMMARY_STEP_NAME = "summary";
 
     private readonly IRoomService roomService;
+    private readonly IRoomReservationService roomReservationService;
     private readonly IRoomCategoryService categoryService;
     private readonly IBookingTotalsService totalsService;
     private readonly IBookingLogService logService;
@@ -23,12 +24,14 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
     public BookingService
         (IBookingRepository repository,
         IRoomService roomService,
+        IRoomReservationService roomReservationService,
         IRoomCategoryService categoryService,
         IBookingTotalsService totalsService,
         IBookingLogService logService)
         : base(repository)
     {
         this.roomService = roomService;
+        this.roomReservationService = roomReservationService;
         this.categoryService = categoryService;
         this.totalsService = totalsService;
         this.logService = logService;
@@ -37,12 +40,12 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
     public async Task<ListingModel<Room>> CreateRoomListing(BookingViewModel? viewModel)
     {
         BookingViewModel listingModel = new();
-        listingModel.Copy(viewModel);
+        listingModel.CopyFrom(viewModel);
         listingModel.ActionName = "ReserveRooms";
 
-        PaginatedList<Room> items = await roomService.GetBookableRooms(listingModel);
+        PaginatedList<Room> items = await roomReservationService.GetBookableRooms(listingModel);
 
-        listingModel.Table = new Table<Room>(listingModel, items)
+        listingModel.Table = new Table<Room>(listingModel, items, area: "Admin")
             .SetOrderable(true)
             .SetFilterable(true)
             .AddPagination(true)
@@ -51,7 +54,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             .RemoveColumn(nameof(Room.Hotel))
             .RemoveColumn(nameof(Room.CreatedAt))
             .RemoveColumn(nameof(Room.UpdatedAt))
-            .AddRowAction("Reserve")
+            .AddRowAction("Reserve", customizationCallback: action => action.SetRoute("/"))
             .SetSelectableOptionsSource(nameof(Room.Category), await categoryService.GetAll());
 
         return listingModel;
@@ -159,6 +162,9 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
         viewModel.ReservedRooms = await roomService.GetByIds(viewModel.RoomsToReserve);
 
         viewModel.Totals = totalsService.CalculateTotals(viewModel);
+        viewModel.RoomsPrice = await totalsService.CalculateTotals<TotalsCategoryModifier>(viewModel.Totals);
+        viewModel.RoomFeaturesPrice = await totalsService.CalculateTotals<TotalsFeatureModifier>(viewModel.Totals);
+        viewModel.GrandTotal = await totalsService.CalculateGrandTotal(viewModel.Totals);
     }
 
     public async Task GenerateReservationsAndBookingItems(BookingViewModel viewModel, Booking booking)
@@ -175,8 +181,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             {
                 reservation
             };
-            reservation.BookingItem = item;
-
+            
             roomReservations.Add(reservation);
             bookingItems.Add(item);
         }
