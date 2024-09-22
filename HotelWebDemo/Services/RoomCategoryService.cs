@@ -25,16 +25,16 @@ public class RoomCategoryService : CrudService<RoomCategory>, IRoomCategoryServi
             .SetSelectableOptionsSource("Hotel", await hotelService.GetAll());
     }
 
-    public List<RoomCategory> GetAll(int hotelId)
+    public Task<List<RoomCategory>> GetAll(int hotelId)
     {
         return repository.GetAll(hotelId);
     }
 
-    public List<RoomCategoryOption> GetAllAsOptions(int hotelId)
+    public async Task<List<RoomCategoryOption>> GetAllAsOptions(int hotelId)
     {
         List<RoomCategoryOption> options = new();
 
-        foreach (RoomCategory item in repository.GetAll(hotelId))
+        foreach (RoomCategory item in await repository.GetAll(hotelId))
         {
             RoomCategoryOption option = new()
             {

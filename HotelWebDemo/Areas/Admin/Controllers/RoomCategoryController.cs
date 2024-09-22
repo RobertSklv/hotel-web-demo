@@ -36,7 +36,7 @@ public class RoomCategoryController : CrudController<RoomCategory>
         return await base.Edit(id);
     }
 
-    public List<RoomCategoryOption> GetHotelRoomCategories(int hotelId)
+    public Task<List<RoomCategoryOption>> GetHotelRoomCategories(int hotelId)
     {
         return service.GetAllAsOptions(hotelId);
     }

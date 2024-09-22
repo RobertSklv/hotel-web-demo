@@ -4,5 +4,5 @@ namespace HotelWebDemo.Data.Repositories;
 
 public interface IRoomCategoryRepository : ICrudRepository<RoomCategory>
 {
-    List<RoomCategory> GetAll(int hotelId);
+    Task<List<RoomCategory>> GetAll(int hotelId);
 }

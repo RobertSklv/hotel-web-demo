@@ -5,7 +5,7 @@ namespace HotelWebDemo.Services;
 
 public interface IRoomCategoryService : ICrudService<RoomCategory>
 {
-    List<RoomCategory> GetAll(int hotelId);
+    Task<List<RoomCategory>> GetAll(int hotelId);
 
-    List<RoomCategoryOption> GetAllAsOptions(int hotelId);
+    Task<List<RoomCategoryOption>> GetAllAsOptions(int hotelId);
 }

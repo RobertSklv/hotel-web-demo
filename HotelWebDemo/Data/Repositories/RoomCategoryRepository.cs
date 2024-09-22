@@ -17,8 +17,13 @@ public class RoomCategoryRepository : CrudRepository<RoomCategory>, IRoomCategor
     {
     }
 
-    public List<RoomCategory> GetAll(int hotelId)
+    public override Task<List<RoomCategory>> GetAll()
     {
-        return db.RoomCategories.Where(e => e.HotelId == hotelId).ToList();
+        return DbSet.Include(e => e.Hotel).ToListAsync();
+    }
+
+    public Task<List<RoomCategory>> GetAll(int hotelId)
+    {
+        return db.RoomCategories.Where(e => e.HotelId == hotelId).ToListAsync();
     }
 }

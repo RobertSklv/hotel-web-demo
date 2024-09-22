@@ -13,6 +13,7 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
     private readonly ICustomerService customerService;
     private readonly ICheckinInfoService checkinService;
     private readonly IRoomService roomService;
+    private readonly IRoomCategoryService roomCategoryService;
     private readonly IBookingLogService bookingLogService;
     private readonly IAdminUserService adminUserService;
     private readonly Serilog.ILogger logger;
@@ -22,6 +23,7 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         ICustomerService customerService,
         ICheckinInfoService checkinService,
         IRoomService roomService,
+        IRoomCategoryService roomCategoryService,
         IBookingLogService bookingLogService,
         IAdminUserService adminUserService,
         Serilog.ILogger logger)
@@ -31,6 +33,7 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         this.customerService = customerService;
         this.checkinService = checkinService;
         this.roomService = roomService;
+        this.roomCategoryService = roomCategoryService;
         this.bookingLogService = bookingLogService;
         this.adminUserService = adminUserService;
         this.logger = logger;
@@ -256,7 +259,8 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
             { "roomReservationId", roomReservationId }
         };
 
-        PaginatedList<Room> rooms = await GetBookableRooms(listing, roomReservationId);
+        RoomReservation reservation = await GetStrict(roomReservationId);
+        PaginatedList<Room> rooms = await GetBookableRooms(listing, reservation);
 
         listing.Table = new Table<Room>(listingQuery, rooms)
             .AddPagination(true)
@@ -268,6 +272,7 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
             .RemoveColumn(nameof(Room.Hotel))
             .RemoveColumn(nameof(Room.CreatedAt))
             .RemoveColumn(nameof(Room.UpdatedAt))
+            .SetSelectableOptionsSource(nameof(Room.Category), await roomCategoryService.GetAll(reservation.Room.HotelId))
             .AddRowAction(
                 "Change",
                 RequestMethod.Post,
