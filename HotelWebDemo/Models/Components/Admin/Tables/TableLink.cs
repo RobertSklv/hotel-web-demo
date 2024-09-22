@@ -60,9 +60,9 @@ public class TableLink : Link
     {
         IListingModel clone = Listing.Clone();
         clone.Route = Route;
-        clone.Area = Area;
-        clone.Controller = Controller;
-        clone.Action = Action;
+        clone.AreaName = AreaName;
+        clone.ControllerName = ControllerName;
+        clone.ActionName = ActionName;
         clone.OrderBy = OrderBy;
         clone.Direction = Direction;
         clone.Page = Page;

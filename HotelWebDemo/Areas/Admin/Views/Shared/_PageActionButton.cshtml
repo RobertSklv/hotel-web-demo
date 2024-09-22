@@ -18,9 +18,9 @@
         }
         else
         {
-            <a asp-area="@Model.Area"
-               asp-controller="@Model.Controller"
-               asp-action="@Model.Action"
+            <a asp-area="@Model.AreaName"
+               asp-controller="@Model.ControllerName"
+               asp-action="@Model.ActionName"
                asp-all-route-data="@Model.RequestParameters?.ToStringDictionary()"
                class="@_class">
                 @Model.Content

@@ -138,9 +138,9 @@ public class RoomReservationController : CrudController<RoomReservation>
         GetOrCreatePageActionButtonsList().Add(new PageActionButton()
         {
             Content = "Change room",
-            Area = "Admin",
-            Controller = "RoomReservation",
-            Action = "ChangeRoom",
+            AreaName = "Admin",
+            ControllerName = "RoomReservation",
+            ActionName = "ChangeRoom",
             Color = ColorClass.Warning,
             IsLink = true,
             RequestParameters = new()

@@ -15,8 +15,8 @@
             Type = action.Icon
         };
         icon.ClassList.Add("me-1");
-        string confirmModalId = $"{action.Action}ConfirmModal-{Model.Item.Id}";
-        string confirmModalLabelId = $"{action.Action}ConfirmModalLabel-{Model.Item.Id}";
+        string confirmModalId = $"{action.ActionName}ConfirmModal-{Model.Item.Id}";
+        string confirmModalLabelId = $"{action.ActionName}ConfirmModalLabel-{Model.Item.Id}";
         string actionId = string.Join('-', action.Id, Model.Item.Id);
 
         if (action.HasConfirmationPopup)
@@ -48,7 +48,7 @@
                             {
                                 <a href="@action.GetRoute(Model.Item.Id)"
                                    id="@actionId"
-                                   data-row-action="@action.Action"
+                                   data-row-action="@action.ActionName"
                                    data-item-id="@Model.Item.Id"
                                    class="btn btn-@(action.ColorClass) text-decoration-none">
                                     @if (action.Icon != BootstrapIconType.None)
@@ -62,7 +62,7 @@
                             {
                                 <form action="@action.GetRoute(Model.Item.Id)"
                                       id="@actionId"
-                                      data-row-action="@action.Action"
+                                      data-row-action="@action.ActionName"
                                       data-item-id="@Model.Item.Id"
                                       method="@action.Method"
                                 >
@@ -84,7 +84,7 @@
         {
             <a href="@action.GetRoute(Model.Item.Id)"
                id="@(action.Id)-@(Model.Item.Id)"
-               data-row-action="@action.Action"
+               data-row-action="@action.ActionName"
                data-item-id="@Model.Item.Id"
                class="btn btn-sm mx-2 btn-@(action.ColorClass) text-decoration-none">
                 @if (action.Icon != BootstrapIconType.None)
@@ -98,7 +98,7 @@
         {
             <form action="@action.GetRoute(Model.Item.Id)"
                   id="@(action.Id)-@(Model.Item.Id)"
-                  data-row-action="@action.Action"
+                  data-row-action="@action.ActionName"
                   data-item-id="@Model.Item.Id"
                   method="@action.Method">
                 <button type="submit" class="btn btn-sm mx-2 btn-@(action.ColorClass)">

@@ -41,9 +41,9 @@
             <div class="list-group">
                 @foreach (SidebarLink link in sidebarLinks)
                 {
-                    <a asp-area="@link.Area"
-                       asp-controller="@link.Controller"
-                       asp-action="@link.Action"
+                    <a asp-area="@link.AreaName"
+                       asp-controller="@link.ControllerName"
+                       asp-action="@link.ActionName"
                        asp-all-route-data="@link.RequestParameters?.ToStringDictionary()"
                        class="list-group-item list-group-item-action @(sidebarLinks.IsActive(link.Id) ? "active" : "") @(link.Disabled ? "disabled" : "")">
                        @link.Content

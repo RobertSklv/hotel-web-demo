@@ -248,9 +248,9 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
     {
         ChangeRoomViewModel listing = new();
         listing.CopyFrom(listingQuery);
-        listing.Area = "Admin";
-        listing.Controller = "RoomReservation";
-        listing.Action = "ChangeRoom";
+        listing.AreaName = "Admin";
+        listing.ControllerName = "RoomReservation";
+        listing.ActionName = "ChangeRoom";
         listing.RequestParameters = new()
         {
             { "roomReservationId", roomReservationId }

@@ -176,9 +176,9 @@ public class BookingController : CrudController<Booking, BookingViewModel>
         {
             Content = "Create payment",
             Color = ColorClass.Primary,
-            Area = "Admin",
-            Controller = "Booking",
-            Action = "CreatePayment",
+            AreaName = "Admin",
+            ControllerName = "Booking",
+            ActionName = "CreatePayment",
             IsLink = true,
             RequestParameters = new()
             {
@@ -190,9 +190,9 @@ public class BookingController : CrudController<Booking, BookingViewModel>
         {
             Content = "Cancel",
             Color = ColorClass.Danger,
-            Area = "Admin",
-            Controller = "Booking",
-            Action = "Cancel",
+            AreaName = "Admin",
+            ControllerName = "Booking",
+            ActionName = "Cancel",
             IsLink = false,
             RequestParameters = new()
             {

@@ -105,9 +105,9 @@ public class RoomController : CrudController<Room>
         {
             Id = ROOM_INFO_SIDEBAR_LINK,
             Content = "General information",
-            Area = "Admin",
-            Controller = "Room",
-            Action = "Edit",
+            AreaName = "Admin",
+            ControllerName = "Room",
+            ActionName = "Edit",
             RequestParameters = new()
             {
                 { "Id", roomId }
@@ -118,9 +118,9 @@ public class RoomController : CrudController<Room>
         {
             Id = ACTIVE_RESERVATIONS_SIDEBAR_LINK,
             Content = "Active reservations",
-            Area = "Admin",
-            Controller = "Room",
-            Action = "ActiveReservations",
+            AreaName = "Admin",
+            ControllerName = "Room",
+            ActionName = "ActiveReservations",
             RequestParameters = new()
             {
                 { "Id", roomId }
@@ -131,9 +131,9 @@ public class RoomController : CrudController<Room>
         {
             Id = RESERVATIONS_HISTORY_SIDEBAR_LINK,
             Content = "Reservation history",
-            Area = "Admin",
-            Controller = "Room",
-            Action = "ReservationHistory",
+            AreaName = "Admin",
+            ControllerName = "Room",
+            ActionName = "ReservationHistory",
             RequestParameters = new()
             {
                 { "Id", roomId }

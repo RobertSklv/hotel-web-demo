@@ -14,9 +14,9 @@ public class AdminPageService : IAdminPageService
     {
         return new()
         {
-            Area = area,
-            Controller = controller,
-            Action = action,
+            AreaName = area,
+            ControllerName = controller,
+            ActionName = action,
             IsLink = true,
             SortOrder = -1,
             Content = "Back",
@@ -46,9 +46,9 @@ public class AdminPageService : IAdminPageService
         return new()
         {
             Content = "Create New",
-            Area = area,
-            Controller = controller,
-            Action = action,
+            AreaName = area,
+            ControllerName = controller,
+            ActionName = action,
             Color = ColorClass.Primary,
             IsLink = true,
             RequestParameters = requestParameters

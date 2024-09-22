@@ -392,9 +392,9 @@ public class Table<T> : Table
         Type entityType = typeof(T);
         RowAction rowAction = new()
         {
-            Action = action,
-            Controller = entityType.Name,
-            Area = ListingModel.Area,
+            ActionName = action,
+            ControllerName = entityType.Name,
+            AreaName = ListingModel.AreaName,
             Method = method,
             Icon = icon,
             Content = action

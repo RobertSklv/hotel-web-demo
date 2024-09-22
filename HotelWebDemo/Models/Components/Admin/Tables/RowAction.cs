@@ -54,21 +54,21 @@ public class RowAction : RouteElement
 
     public RowAction SetAction(string action)
     { 
-        Action = action;
+        ActionName = action;
 
         return this;
     }
 
     public RowAction SetController(string controller)
     {
-        Controller = controller;
+        ControllerName = controller;
 
         return this;
     }
 
     public RowAction SetArea(string area)
     {
-        Area = area;
+        AreaName = area;
 
         return this;
     }

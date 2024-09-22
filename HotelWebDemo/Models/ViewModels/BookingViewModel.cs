@@ -6,7 +6,7 @@ namespace HotelWebDemo.Models.ViewModels;
 
 public class BookingViewModel : ListingModel<Room>, IBookingViewModel
 {
-    public int Id { get; set; }
+    public new int Id { get; set; }
 
     public Hotel? Hotel { get; set; }
 

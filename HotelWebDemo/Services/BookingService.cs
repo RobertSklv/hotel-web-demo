@@ -41,9 +41,9 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
     {
         BookingViewModel listingModel = new();
         listingModel.CopyFrom(viewModel);
-        listingModel.Area = "Admin";
-        listingModel.Controller = "Booking";
-        listingModel.Action = "ReserveRooms";
+        listingModel.AreaName = "Admin";
+        listingModel.ControllerName = "Booking";
+        listingModel.ActionName = "ReserveRooms";
 
         PaginatedList<Room> items = await roomReservationService.GetBookableRooms(listingModel);
 
@@ -281,7 +281,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             Id = HOTEL_SELECTION_STEP_NAME,
             Content = "Hotel selection",
             Partial = "_ChooseHotelFieldset",
-            Action = nameof(BookingController.BackToChooseHotel),
+            ActionName = nameof(BookingController.BackToChooseHotel),
             Order = 0,
         };
 
@@ -290,7 +290,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             Id = ROOM_RESERVATION_STEP_NAME,
             Content = "Room reservation",
             Partial = "_ReserveFieldset",
-            Action = nameof(BookingController.ReserveRooms),
+            ActionName = nameof(BookingController.ReserveRooms),
             Order = 1,
             Disabled = viewModel == null || viewModel.HotelId == 0 || viewModel.CheckInDate == default || viewModel.CheckOutDate == default,
         };
@@ -300,7 +300,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             Id = CONTACT_STEP_NAME,
             Content = "Contact",
             Partial = "_ContactFieldset",
-            Action = nameof(BookingController.Contact),
+            ActionName = nameof(BookingController.Contact),
             Order = 2,
             Disabled = room_reservation.Disabled || viewModel == null || viewModel.RoomsToReserve == null || viewModel.RoomsToReserve.Count == 0,
         };
@@ -310,7 +310,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             Id = SUMMARY_STEP_NAME,
             Content = "Summary",
             Partial = "_SummaryFieldset",
-            Action = nameof(BookingController.BookingSummary),
+            ActionName = nameof(BookingController.BookingSummary),
             Order = 3,
             Disabled = contact.Disabled || viewModel == null || viewModel.Contact == null || viewModel.Contact.FullName == null,
         };

@@ -10,7 +10,7 @@ public class BookingStep : Link
 
     public BookingStep()
     {
-        Area = "Admin";
-        Controller = "Booking";
+        AreaName = "Admin";
+        ControllerName = "Booking";
     }
 }

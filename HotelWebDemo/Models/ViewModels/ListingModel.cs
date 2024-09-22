@@ -74,9 +74,9 @@ public class ListingModel : RouteElement, IListingModel
     public virtual void CopyFrom(IListingModel? listingModel)
     {
         Route = listingModel?.Route;
-        Area = listingModel?.Area;
-        Controller = listingModel?.Controller;
-        Action = listingModel?.Action ?? "Index";
+        AreaName = listingModel?.AreaName;
+        ControllerName = listingModel?.ControllerName;
+        ActionName = listingModel?.ActionName ?? "Index";
         RequestParameters = listingModel?.RequestParameters;
         OrderBy = listingModel?.OrderBy ?? DEFAULT_ORDER_BY;
         Direction = listingModel?.Direction ?? DEFAULT_DIRECTION;

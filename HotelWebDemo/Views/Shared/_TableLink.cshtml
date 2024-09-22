@@ -3,7 +3,7 @@
 @model TableLink
 
 @{
-    string route = Model.Route ?? Url.Action(Model.Action, Model.Controller) ?? "/";
+    string route = Model.Route ?? Url.Action(Model.ActionName, Model.ControllerName) ?? "/";
     string href = route + QueryString.Create(Model.GetListingModel().GenerateListingQuery());
 }
 

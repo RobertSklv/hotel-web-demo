@@ -9,11 +9,11 @@ public abstract class RouteElement : Element, IRouteElement
 {
     public string? Route { get; set; }
 
-    public string? Area { get; set; }
+    public string? AreaName { get; set; }
 
-    public string? Controller { get; set; }
+    public string? ControllerName { get; set; }
 
-    public string? Action { get; set; }
+    public string? ActionName { get; set; }
 
     public Dictionary<string, object>? RequestParameters { get; set; }
 
@@ -26,22 +26,22 @@ public abstract class RouteElement : Element, IRouteElement
 
         StringBuilder sb = new();
 
-        if (Area != null)
+        if (AreaName != null)
         {
             sb.Append('/');
-            sb.Append(Area);
+            sb.Append(AreaName);
         }
 
-        if (Controller != null)
+        if (ControllerName != null)
         {
             sb.Append('/');
-            sb.Append(Controller);
+            sb.Append(ControllerName);
         }
 
-        if (Action != null)
+        if (ActionName != null)
         {
             sb.Append('/');
-            sb.Append(Action);
+            sb.Append(ActionName);
         }
 
         return sb.ToString();

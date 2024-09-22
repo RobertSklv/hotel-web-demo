@@ -20,9 +20,9 @@
             <div class="list-group">
                 @foreach (BookingStep step in stepContext.Steps)
                 {
-                    <a asp-area="@step.Area"
-                       asp-controller="@step.Controller"
-                       asp-action="@step.Action"
+                    <a asp-area="@step.AreaName"
+                       asp-controller="@step.ControllerName"
+                       asp-action="@step.ActionName"
                        asp-all-route-data="@Model.GenerateListingQuery()"
                        class="list-group-item list-group-item-action @(step.Id == stepContext.ActiveStep ? "active" : "") @(step.Disabled ? "disabled" : "")"
                        aria-current="true">
