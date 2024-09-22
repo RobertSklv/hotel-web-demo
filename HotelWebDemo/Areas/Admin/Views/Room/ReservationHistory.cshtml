@@ -1,0 +1,12 @@
+﻿@using HotelWebDemo.Models.Database
+@using HotelWebDemo.Models.ViewModels
+
+@model ListingModel<RoomReservation>
+
+@{
+    Layout = "_AdminPageLayout";
+    ViewData["Title"] = "Reservation History";
+    ViewData["PageHeading"] = "Reservation History";
+}
+
+<partial name="_ReservationHistoryFieldset" model="@Model" />

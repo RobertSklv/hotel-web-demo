@@ -10,11 +10,16 @@
     string modelTypeName = Model.ModelType.Name;
     string tableId = $"table-{modelTypeName}";
     string massActionFormId = $"massActionForm-{tableId}";
+
+    Model.ColumnDatas.Sort((d1, d2) => d1.SortOrder - d2.SortOrder);
 }
 
 <div id="@tableId" class="table-wrapper">
     <div class="filters-wrapper">
-        <form method="get" asp-action="@Model.ListingModel.ActionName" class="filters-form">
+        <form
+            method="get"
+            action="@Model.ListingModel.Route"
+            class="filters-form">
             @if (Model.IsOrderable)
             {
                 if (Model.ListingModel.OrderBy != ListingModel.DEFAULT_ORDER_BY)

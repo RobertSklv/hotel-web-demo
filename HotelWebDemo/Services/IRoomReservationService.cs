@@ -24,4 +24,6 @@ public interface IRoomReservationService : ICrudService<RoomReservation>
     Task<PaginatedList<Room>> GetBookableRooms(BookingViewModel listingModel);
 
     Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, RoomReservation roomReservation);
+
+    Task<ListingModel<RoomReservation>> CreateReservationHistoryListing(ListingModel listingQuery, int roomId);
 }

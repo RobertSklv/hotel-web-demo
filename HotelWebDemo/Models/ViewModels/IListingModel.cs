@@ -1,11 +1,10 @@
 ﻿using HotelWebDemo.Models.Components.Admin.Tables;
+using HotelWebDemo.Models.Components.Common;
 
 namespace HotelWebDemo.Models.ViewModels;
 
-public interface IListingModel
+public interface IListingModel : IRouteElement
 {
-    string ActionName { get; set; }
-
     string? OrderBy { get; set; }
 
     string? Direction { get; set; }

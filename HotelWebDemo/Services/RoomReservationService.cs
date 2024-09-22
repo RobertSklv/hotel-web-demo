@@ -1,4 +1,5 @@
-﻿using HotelWebDemo.Data.Repositories;
+﻿using HotelWebDemo.Areas.Admin.Controllers;
+using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
@@ -136,11 +137,11 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
 
                 if (isCreate)
                 {
-                    bookingLogService.CreateLog(entity.BookingId, $"{admin.RoleAndName} checked in customers for room {room.Number}.");
+                    await bookingLogService.Log(entity.BookingId, $"{admin.RoleAndName} checked in customers for room {room.Number}.");
                 }
                 else
                 {
-                    bookingLogService.CreateLog(entity.BookingId, $"{admin.RoleAndName} updated existing customers check-in for room {room.Number}.");
+                    await bookingLogService.Log(entity.BookingId, $"{admin.RoleAndName} updated existing customers check-in for room {room.Number}.");
                 }
             }
             catch (Exception e)
@@ -163,7 +164,9 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
                 AdminUser admin = adminUserService.GetCurrentAdmin();
                 Room room = await roomService.GetStrict(roomReservation.RoomId);
 
-                bookingLogService.CreateLog(roomReservation.BookingId, $"{admin.RoleAndName} checked out customers for room {room.Number}.");
+                await bookingLogService.Log(
+                    roomReservation.BookingId,
+                    $"{admin.RoleAndName} checked out customers for room {room.Number}.");
             }
             catch (Exception e)
             {
@@ -179,28 +182,87 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         RoomReservation roomReservation = await repository.GetStrict(roomReservationId);
         Room room = await roomService.GetStrict(roomId);
 
-        RoomReservation? activeReservation = await repository.GetCheckedInReservation(roomId);
-
-        if (activeReservation != null)
+        if (!room.Enabled)
         {
-            throw new Exception($"An active reservation already exists for the selected room.");
+            throw new Exception("The room is disabled.");
         }
 
-        roomReservation.Room = room;
-        roomReservation.RoomId = roomId;
+        if (roomReservation.Booking == null)
+        {
+            throw new Exception("Booking not loaded.");
+        }
 
-        return await repository.Update(roomReservation) > 0;
+        List<int> reservedRoomIdsForPeriod = (await repository.GetReservationsForPeriod(DateTime.UtcNow, roomReservation.Booking.CheckoutDate)).ConvertAll(r => r.RoomId);
+
+        if (reservedRoomIdsForPeriod.Contains(roomId))
+        {
+            throw new Exception($"The selected room has an active reservation for the given period.");
+        }
+
+        CheckinInfo? currentCheckinInfo = await GetOrLoadCurrentCheckinInfo(roomReservation);
+        bool checkoutSuccess = currentCheckinInfo == null || await repository.Checkout(roomReservation) > 0;
+        bool success;
+
+        if (currentCheckinInfo != null)
+        {
+            RoomReservation newReservation = new()
+            {
+                BookingId = roomReservation.BookingId,
+                Room = room,
+                RoomId = roomId,
+                BookingItemId = roomReservation.BookingItemId,
+                CheckinInfo = checkinService.CloneCheckinInfoRecord(roomReservation.CheckinInfo)
+            };
+
+            success = await repository.Upsert(newReservation) > 0;
+
+            if (success)
+            {
+                try
+                {
+                    AdminUser admin = adminUserService.GetCurrentAdmin();
+                    Room oldRoom = await roomService.GetStrict(roomReservation.RoomId);
+
+                    await bookingLogService.Log(
+                        roomReservation.BookingId,
+                        $"{admin.RoleAndName} moved customers from room {oldRoom.Number} to room {room.Number}.");
+                }
+                catch (Exception e)
+                {
+                    logger.Fatal(e, $"Failed logging change room event for room reservation: {roomReservation.Id}.");
+                }
+            }
+        }
+        else
+        {
+            roomReservation.RoomId = roomId;
+            roomReservation.Room = room;
+
+            success = await repository.Update(roomReservation) > 0;
+        }
+
+        return success;
     }
 
     public async Task<ChangeRoomViewModel> CreateChangeRoomListing(ListingModel listingQuery, int roomReservationId)
     {
         ChangeRoomViewModel listing = new();
         listing.CopyFrom(listingQuery);
+        listing.Area = "Admin";
+        listing.Controller = "RoomReservation";
+        listing.Action = "ChangeRoom";
+        listing.RequestParameters = new()
+        {
+            { "roomReservationId", roomReservationId }
+        };
 
         PaginatedList<Room> rooms = await GetBookableRooms(listing, roomReservationId);
 
-        listing.Table = new Table<Room>(listingQuery, rooms, area: "Admin")
+        listing.Table = new Table<Room>(listingQuery, rooms)
             .AddPagination(true)
+            .SetFilterable(true)
+            .SetAdjustablePageSize(true)
+            .SetSearchable(true)
             .RemoveColumn(nameof(Room.Id))
             .RemoveColumn(nameof(Room.Enabled))
             .RemoveColumn(nameof(Room.Hotel))
@@ -221,12 +283,12 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
 
     public Task<List<RoomReservation>> GetAllReservations(int roomId, bool? active = null)
     {
-        return repository.GetAllReservations(roomId, active);
+        return repository.GetReservationsForRoom(roomId, active);
     }
 
     public Task<RoomReservation?> GetCheckedInReservation(int roomId)
     {
-        return repository.GetCheckedInReservation(roomId);
+        return repository.GetCheckedInReservationForRoom(roomId);
     }
 
     public Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, int roomReservationId)
@@ -242,5 +304,27 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
     public Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, RoomReservation roomReservation)
     {
         return repository.GetBookableRooms(listingModel, roomReservation);
+    }
+
+    public async Task<ListingModel<RoomReservation>> CreateReservationHistoryListing(ListingModel listingQuery, int roomId)
+    {
+        ListingModel<RoomReservation> listingModel = new();
+        listingModel.CopyFrom(listingQuery);
+        listingModel.Route = $"/Admin/Room/ReservationHistory/{roomId}";
+
+        PaginatedList<RoomReservation> items = await repository.GetReservationsForRoomPaginated(listingModel, roomId);
+
+        listingModel.Table = new Table<RoomReservation>(listingModel, items)
+            .AddPagination(true)
+            .SetOrderable(true)
+            .SetFilterable(true)
+            .SetAdjustablePageSize(true)
+            .RemoveColumn(nameof(RoomReservation.Room))
+            .OverrideColumnSortOrder(nameof(RoomReservation.Period), 1000)
+            .OverrideColumnValue(nameof(RoomReservation.Booking), r => "#" + r.BookingId)
+            .OverrideColumnSortOrder(nameof(RoomReservation.Booking), 1001)
+            .AddColumnLink(nameof(RoomReservation.Booking), r => $"/Admin/Booking/View/{r.BookingId}");
+
+        return listingModel;
     }
 }

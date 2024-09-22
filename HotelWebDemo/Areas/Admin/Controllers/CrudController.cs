@@ -292,6 +292,16 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
 
         return errors;
     }
+
+    protected SidebarLinkGroup GetOrCreateSidebarLinkGroup()
+    {
+        if (ViewData["SidebarLinks"] == null)
+        {
+            ViewData["SidebarLinks"] = new SidebarLinkGroup();
+        }
+
+        return (SidebarLinkGroup)ViewData["SidebarLinks"]!;
+    }
 }
 
 public abstract class CrudController<TEntity> : CrudController<TEntity, TEntity>

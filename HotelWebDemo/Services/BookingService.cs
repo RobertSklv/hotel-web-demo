@@ -41,11 +41,13 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
     {
         BookingViewModel listingModel = new();
         listingModel.CopyFrom(viewModel);
-        listingModel.ActionName = "ReserveRooms";
+        listingModel.Area = "Admin";
+        listingModel.Controller = "Booking";
+        listingModel.Action = "ReserveRooms";
 
         PaginatedList<Room> items = await roomReservationService.GetBookableRooms(listingModel);
 
-        listingModel.Table = new Table<Room>(listingModel, items, area: "Admin")
+        listingModel.Table = new Table<Room>(listingModel, items)
             .SetOrderable(true)
             .SetFilterable(true)
             .AddPagination(true)

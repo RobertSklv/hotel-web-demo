@@ -3,20 +3,12 @@ using HotelWebDemo.Models.Database;
 
 namespace HotelWebDemo.Models.Components.Admin.Tables;
 
-public class RowAction : Element
+public class RowAction : RouteElement
 {
     public delegate string DynamicConfirmationMessage<T>(T entity) where T : IBaseEntity;
     public delegate string DynamicRoute(int id);
 
     public DynamicRoute? DynamicRouteCallback { get; set; }
-
-    public string? Route { get; set; }
-
-    public string Action { get; set; }
-
-    public string? Controller { get; set; }
-
-    public string? Area { get; set; }
 
     public RequestMethod Method { get; set; }
 
@@ -145,18 +137,13 @@ public class RowAction : Element
         return this;
     }
 
-    public string GetRoute(int id)
+    public override string GetRoute(int id)
     {
         if (DynamicRouteCallback != null)
         {
             return DynamicRouteCallback(id);
         }
 
-        if (Route != null)
-        {
-            return Route;
-        }
-
-        return '/' + string.Join('/', Area, Controller, Action, id);
+        return base.GetRoute(id);
     }
 }

@@ -1,9 +1,10 @@
 ﻿using HotelWebDemo.Models.Components.Admin.Tables;
+using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
 
 namespace HotelWebDemo.Models.ViewModels;
 
-public class ListingModel : IListingModel
+public class ListingModel : RouteElement, IListingModel
 {
     public const string DEFAULT_ORDER_BY = "Id";
     public const string DEFAULT_DIRECTION = "desc";
@@ -11,8 +12,6 @@ public class ListingModel : IListingModel
     public const int DEFAULT_PAGE_SIZE = 10;
 
     public static int[] PageSizes = new int[] { 10, 20, 50, 100 };
-
-    public string? ActionName { get; set; }
 
     public string? OrderBy { get; set; }
 
@@ -37,22 +36,22 @@ public class ListingModel : IListingModel
 
         if (OrderBy != null)
         {
-            query.Add("OrderBy", OrderBy);
+            query.Add(nameof(OrderBy), OrderBy);
         }
 
         if (Direction != null)
         {
-            query.Add("Direction", Direction);
+            query.Add(nameof(Direction), Direction);
         }
 
         if (Page != null)
         {
-            query.Add("Page", Page.ToString());
+            query.Add(nameof(Page), Page.ToString());
         }
 
         if (SearchPhrase != null)
         {
-            query.Add("SearchPhrase", SearchPhrase);
+            query.Add(nameof(SearchPhrase), SearchPhrase);
         }
 
         if (Filters != null)
@@ -61,8 +60,8 @@ public class ListingModel : IListingModel
             {
                 if (kvp.Value == null) continue;
 
-                string operatorParamName = $"Filters.{kvp.Key}.Operator";
-                string valueParamName = $"Filters.{kvp.Key}.Value";
+                string operatorParamName = $"{nameof(Filters)}.{kvp.Key}.{nameof(TableFilter.Operator)}";
+                string valueParamName = $"{nameof(Filters)}.{kvp.Key}.{nameof(TableFilter.Value)}";
 
                 query.Add(operatorParamName, kvp.Value.Operator);
                 query.Add(valueParamName, kvp.Value.Value);
@@ -74,7 +73,11 @@ public class ListingModel : IListingModel
 
     public virtual void CopyFrom(IListingModel? listingModel)
     {
-        ActionName = listingModel?.ActionName ?? "Index";
+        Route = listingModel?.Route;
+        Area = listingModel?.Area;
+        Controller = listingModel?.Controller;
+        Action = listingModel?.Action ?? "Index";
+        RequestParameters = listingModel?.RequestParameters;
         OrderBy = listingModel?.OrderBy ?? DEFAULT_ORDER_BY;
         Direction = listingModel?.Direction ?? DEFAULT_DIRECTION;
         Page = listingModel?.Page ?? DEFAULT_PAGE;
@@ -90,7 +93,7 @@ public class ListingModel : IListingModel
 
     public virtual void Clone(IListingModel listingModel)
     {
-        listingModel.ActionName = ActionName;
+        listingModel.Route = Route;
         listingModel.OrderBy = OrderBy;
         listingModel.Direction = Direction;
         listingModel.Page = Page;

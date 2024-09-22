@@ -7,8 +7,6 @@ public class TableLink : Link
 {
     public const string PAGINATION_LINK_CLASS = "page-link";
 
-    public string ActionName { get; set; }
-
     public string? OrderBy { get; set; }
 
     public string? Direction { get; set; }
@@ -25,7 +23,7 @@ public class TableLink : Link
 
     public TableLink(IListingModel listing, string content)
     {
-        ActionName = listing.ActionName;
+        Route = listing.GetRoute();
         Content = content;
         Listing = listing;
     }
@@ -61,7 +59,10 @@ public class TableLink : Link
     public IListingModel GetListingModel()
     {
         IListingModel clone = Listing.Clone();
-        clone.ActionName = ActionName;
+        clone.Route = Route;
+        clone.Area = Area;
+        clone.Controller = Controller;
+        clone.Action = Action;
         clone.OrderBy = OrderBy;
         clone.Direction = Direction;
         clone.Page = Page;

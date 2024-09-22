@@ -2,11 +2,7 @@
 
 namespace HotelWebDemo.Models.Components.Admin.Pages;
 
-public class PageActionButton : Link
+public class SidebarLink : Link
 {
-    public bool IsLink { get; set; }
-
-    public bool AlignToLeft { get; set; }
-
     public int SortOrder { get; set; }
 }

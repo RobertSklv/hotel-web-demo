@@ -6,6 +6,7 @@
 @{
     Layout = "_AdminLayout";
     List<PageActionButton>? actions = ViewData["PageActions"] as List<PageActionButton>;
+    SidebarLinkGroup? sidebarLinks = ViewData["SidebarLinks"] as SidebarLinkGroup;
     actions?.Sort((a1, a2) => a1.SortOrder - a2.SortOrder);
     List<Message>? messages = TempData.Get<List<Message>>("Messages") ?? new();
 }
@@ -33,7 +34,28 @@
     }
 </div>
 
-@RenderBody()
+<div class="row">
+    @if (sidebarLinks != null && sidebarLinks.Any())
+    {
+        <div class="col-2">
+            <div class="list-group">
+                @foreach (SidebarLink link in sidebarLinks)
+                {
+                    <a asp-area="@link.Area"
+                       asp-controller="@link.Controller"
+                       asp-action="@link.Action"
+                       asp-all-route-data="@link.RequestParameters?.ToStringDictionary()"
+                       class="list-group-item list-group-item-action @(sidebarLinks.IsActive(link.Id) ? "active" : "") @(link.Disabled ? "disabled" : "")">
+                       @link.Content
+                    </a>
+                }
+            </div>
+        </div>
+    }
+    <div class="col">
+        @RenderBody()
+    </div>
+</div>
 
 @section ScriptsHead
 {

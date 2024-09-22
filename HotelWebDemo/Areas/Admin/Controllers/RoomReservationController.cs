@@ -116,6 +116,8 @@ public class RoomReservationController : CrudController<RoomReservation>
             if (success)
             {
                 AddMessage($"Room successfully changed.", ColorClass.Success);
+
+                return Redirect($"/Admin/RoomReservation/Checkin/{roomReservationId}");
             }
             else
             {

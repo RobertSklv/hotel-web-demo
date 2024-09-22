@@ -13,13 +13,22 @@ public interface IRoomReservationRepository : ICrudRepository<RoomReservation>
 
     Task<List<int>> GetReservedRoomIdsForPeriod(DateTime from, DateTime to);
 
-    Task<List<RoomReservation>> GetAllReservations(int roomId, bool? active = null);
+    IQueryable<RoomReservation> AddRoomIdFilter(IQueryable<RoomReservation> query, int roomId);
 
-    Task<RoomReservation?> GetCheckedInReservation(int roomId);
+    IQueryable<RoomReservation> AddActiveReservationFilter(IQueryable<RoomReservation> query, bool active);
+
+    Task<List<RoomReservation>> GetReservationsForRoom(int roomId, bool? active = null);
+
+    Task<RoomReservation?> GetCheckedInReservationForRoom(int roomId);
 
     Task<PaginatedList<Room>> GetBookableRooms(BookingViewModel listingModel);
 
     Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, RoomReservation roomReservation);
 
     Task<PaginatedList<Room>> GetBookableRooms(ListingModel listingModel, int roomReservationId);
+
+    Task<PaginatedList<RoomReservation>> GetReservationsForRoomPaginated(
+        ListingModel listingModel,
+        int roomId,
+        bool? active = null);
 }

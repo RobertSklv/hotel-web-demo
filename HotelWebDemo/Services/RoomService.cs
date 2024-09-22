@@ -11,7 +11,10 @@ public class RoomService : CrudService<Room>, IRoomService
     private readonly IHotelService hotelService;
     private readonly IRoomCategoryService roomCategoryService;
 
-    public RoomService(IRoomRepository repository, IHotelService hotelService, IRoomCategoryService roomCategoryService)
+    public RoomService(
+        IRoomRepository repository,
+        IHotelService hotelService,
+        IRoomCategoryService roomCategoryService)
         : base(repository)
     {
         this.repository = repository;

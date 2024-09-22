@@ -50,7 +50,7 @@ public class Room : BaseEntity
         ? string.Join(", ", Features.ConvertAll(f => $"{f.Name} (${f.Price:#0.00})"))
         : "None";
 
-    public string CategoryNameAndCapacity
+    public string RoomCheckinTitle
     {
         get
         {
@@ -61,7 +61,7 @@ public class Room : BaseEntity
 
             string adultsLabel = Capacity > 1 ? "adults" : "adult";
 
-            return $"{Category.Name} ({Capacity} {adultsLabel})";
+            return $"{Category.Name}, {Capacity} {adultsLabel}, room No. {Number}";
         }
     }
 

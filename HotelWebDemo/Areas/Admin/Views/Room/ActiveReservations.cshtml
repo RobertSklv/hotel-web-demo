@@ -1,0 +1,11 @@
+﻿@using HotelWebDemo.Models.Database
+
+@model List<RoomReservation>
+
+@{
+    Layout = "_AdminPageLayout";
+    ViewData["Title"] = "Active Reservations";
+    ViewData["PageHeading"] = ViewData["Title"];
+}
+
+<partial name="_ActiveReservationsFieldset" model="@Model" />

@@ -100,11 +100,11 @@ public class BookingViewModel : ListingModel<Room>, IBookingViewModel
     {
         return Status switch
         {
-            BookingStatus.New => ColorClass.Info,
-            BookingStatus.CheckedIn => ColorClass.Primary,
-            BookingStatus.Cancelled => ColorClass.Danger,
-            BookingStatus.CheckedOut => ColorClass.Success,
-            _ => ColorClass.Secondary,
+            BookingStatus.New => Components.Common.ColorClass.Info,
+            BookingStatus.CheckedIn => Components.Common.ColorClass.Primary,
+            BookingStatus.Cancelled => Components.Common.ColorClass.Danger,
+            BookingStatus.CheckedOut => Components.Common.ColorClass.Success,
+            _ => Components.Common.ColorClass.Secondary,
         };
     }
 

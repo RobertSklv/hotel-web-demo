@@ -10,12 +10,17 @@
 
 @foreach (RoomReservation r in Model.RoomReservations)
 {
+    if (r.CheckinInfo != null && r.CheckinInfo.CheckoutDate != null)
+    {
+        continue;
+    }
+
     bool isExistingCheckin = r.CheckinInfo != null;
 
     <div class="alert alert-info p-3 mb-3">
         <div class="row">
             <div class="col">
-                <h3>@r.Room?.CategoryNameAndCapacity</h3>
+                <h3>@r.Room?.RoomCheckinTitle</h3>
             </div>
             <div class="col text-end">
                 <a

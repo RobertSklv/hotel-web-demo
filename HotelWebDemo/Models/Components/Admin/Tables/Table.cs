@@ -35,13 +35,10 @@ public abstract class Table
 
     public List<Option> YesNoOptions { get; set; }
 
-    public string? Area { get; set; }
-
-    public Table(IListingModel listingModel, Type modelType, string? area = null)
+    public Table(IListingModel listingModel, Type modelType)
     {
         ListingModel = listingModel;
         ModelType = modelType;
-        Area = area;
 
         YesNoOptions = new()
         {
@@ -218,8 +215,6 @@ public abstract class Table
 
             ColumnDatas.Add(colData);
         }
-
-        ColumnDatas.Sort((d1, d2) => d1.SortOrder - d2.SortOrder);
     }
 
     public List<TableHeadingCell> GenerateHeadingCells()
@@ -291,14 +286,12 @@ public abstract class Table
 public class Table<T> : Table
     where T : IBaseEntity
 {
-    public delegate object? ColumnValueOverrider(T model, object? originalValue);
-
     public PaginatedList<T> Items { get; set; }
 
     public override bool HasItems => Items.Count > 0;
 
-    public Table(IListingModel listingModel, PaginatedList<T> items, string? area = null)
-        : base(listingModel, typeof(T), area)
+    public Table(IListingModel listingModel, PaginatedList<T> items)
+        : base(listingModel, typeof(T))
     {
         Items = items;
     }
@@ -329,7 +322,7 @@ public class Table<T> : Table
             TableCellData cellData = new()
             {
                 ColumnData = colData,
-                Value = colData.ValueCallback(item)
+                Item = item,
             };
             rowData.Add(cellData);
         }
@@ -344,16 +337,11 @@ public class Table<T> : Table
         return this;
     }
 
-    public Table<T> OverrideColumnValue(string propertyName, ColumnValueOverrider callback)
+    public Table<T> OverrideColumnValue(string propertyName, Func<T, object?> callback)
     {
         TableColumnData colData = FindColumn(propertyName);
 
-        colData.ValueCallback = (obj) =>
-        {
-            return callback(
-                model: (T)obj,
-                originalValue: colData.ValueCallback(obj));
-        };
+        colData.ValueCallback = (obj) => callback((T)obj);
 
         return this;
     }
@@ -368,6 +356,15 @@ public class Table<T> : Table
     public Table<T> RemoveColumn(string propertyName)
     {
         ColumnDatas.Remove(FindColumn(propertyName));
+
+        return this;
+    }
+
+    public Table<T> AddColumnLink(string propertyName, Func<T, string> callback)
+    {
+        TableColumnData colData = FindColumn(propertyName);
+
+        colData!.LinkCallback = (obj) => callback((T)obj);
 
         return this;
     }
@@ -397,7 +394,7 @@ public class Table<T> : Table
         {
             Action = action,
             Controller = entityType.Name,
-            Area = Area,
+            Area = ListingModel.Area,
             Method = method,
             Icon = icon,
             Content = action

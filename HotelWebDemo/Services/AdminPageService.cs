@@ -38,6 +38,7 @@ public class AdminPageService : IAdminPageService
     }
 
     public PageActionButton CreateAction(
+        string? area,
         string? controller,
         string action = "Create",
         Dictionary<string, object>? requestParameters = null)
@@ -45,6 +46,7 @@ public class AdminPageService : IAdminPageService
         return new()
         {
             Content = "Create New",
+            Area = area,
             Controller = controller,
             Action = action,
             Color = ColorClass.Primary,
@@ -58,8 +60,9 @@ public class AdminPageService : IAdminPageService
         string action = "Create",
         Dictionary<string, object>? requestParameters = null)
     {
+        string? area = controller.ControllerContext.RouteData.Values["area"] as string;
         string? controllerName = controller.ControllerContext.ActionDescriptor.ControllerName;
 
-        return CreateAction(controllerName, action, requestParameters);
+        return CreateAction(area, controllerName, action, requestParameters);
     }
 }

@@ -22,6 +22,13 @@ public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomR
         this.roomRepository = roomRepository;
     }
 
+    public override IQueryable<RoomReservation> List(DbSet<RoomReservation> dbSet)
+    {
+        return base.List(dbSet)
+            .Include(e => e.Booking)
+                .ThenInclude(e => e!.Totals);
+    }
+
     public override async Task<RoomReservation?> Get(int id)
     {
         RoomReservation? roomReservation = await db.RoomReservations
@@ -79,30 +86,43 @@ public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomR
         return reservationsForPeriod.ConvertAll(r => r.RoomId);
     }
 
-    public async Task<List<RoomReservation>> GetAllReservations(int roomId, bool? active = null)
+    public IQueryable<RoomReservation> AddRoomIdFilter(IQueryable<RoomReservation> query, int roomId)
+    {
+        return query.Where(e => e!.RoomId == roomId);
+    }
+
+    public IQueryable<RoomReservation> AddActiveReservationFilter(IQueryable<RoomReservation> query, bool active)
+    {
+        if (active)
+        {
+            query = query.Where(e => e.CheckinInfo != null && e.CheckinInfo.CheckoutDate == null);
+        }
+        else
+        {
+            query = query.Where(e => e.CheckinInfo == null || e.CheckinInfo.CheckoutDate != null);
+        }
+
+        return query;
+    }
+
+    public async Task<List<RoomReservation>> GetReservationsForRoom(int roomId, bool? active = null)
     {
         IQueryable<RoomReservation> query = DbSet
             .Include(e => e.CheckinInfo)
             .Include(e => e.Booking)
-            .Where(e => e!.RoomId == roomId)
             .OrderByDescending(e => e.Id);
+
+        query = AddRoomIdFilter(query, roomId);
 
         if (active != null)
         {
-            if ((bool)active)
-            {
-                query.Where(e => e.CheckinInfo != null && e.CheckinInfo.CheckoutDate == null);
-            }
-            else
-            {
-                query.Where(e => e.CheckinInfo == null || e.CheckinInfo.CheckoutDate != null);
-            }
+            query = AddActiveReservationFilter(query, (bool)active);
         }
 
         return await query.ToListAsync();
     }
 
-    public async Task<RoomReservation?> GetCheckedInReservation(int roomId)
+    public async Task<RoomReservation?> GetCheckedInReservationForRoom(int roomId)
     {
         return await DbSet
             .Include(e => e.CheckinInfo)
@@ -155,10 +175,10 @@ public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomR
         {
             query = roomRepository.AddEnabledFilter(query, true);
             query = roomRepository.AddRoomIdFilter(query, reservedRoomsIds, includes: false);
-            query = roomRepository.AddRoomCategoryIdFilter(query, new()
-            {
-                roomReservation.BookingItem.RoomCategoryId
-            }, includes: true);
+            //query = roomRepository.AddRoomCategoryIdFilter(query, new()
+            //{
+            //    roomReservation.BookingItem.RoomCategoryId
+            //}, includes: true);
             query = query.Where(e => e.Capacity == roomReservation.BookingItem.TargetCapacity);
 
             return query;
@@ -170,6 +190,24 @@ public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomR
         RoomReservation reservation = await GetStrict(roomReservationId);
 
         return await GetBookableRooms(listingModel, reservation);
+    }
+
+    public async Task<PaginatedList<RoomReservation>> GetReservationsForRoomPaginated(
+        ListingModel listingModel,
+        int roomId,
+        bool? active = null)
+    {
+        return await List(listingModel, query =>
+        {
+            query = AddRoomIdFilter(query, roomId);
+
+            if (active != null)
+            {
+                query = AddActiveReservationFilter(query, (bool)active);
+            }
+
+            return query;
+        });
     }
 }
  

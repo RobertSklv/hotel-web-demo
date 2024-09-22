@@ -5,7 +5,7 @@
 @{
     Layout = "_AdminPageLayout";
     ViewData["PageHeading"] = "Check-in";
-    ViewData["PageSubHeading"] = $"Room {Model.Room?.CategoryNameAndCapacity}";
+    ViewData["PageSubHeading"] = $"Room {Model.Room?.RoomCheckinTitle}";
 
     List<Country> countries = ViewData["Countries"] as List<Country> ?? new();
 }

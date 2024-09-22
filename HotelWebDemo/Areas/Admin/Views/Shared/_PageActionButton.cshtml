@@ -10,19 +10,26 @@
 <div class="admin-page-action @(@Model.AlignToLeft ? "me-auto" : "")">
     @if (Model.IsLink)
     {
-        <a
-            asp-area="@Model.Area"
-            asp-controller="@Model.Controller"
-            asp-action="@Model.Action"
-            asp-all-route-data="@Model.RequestParameters?.ToStringDictionary()"
-            class="@_class"
-        >
-            @Html.Raw(Model.Content)
-        </a>
+        if (Model.Route != null)
+        {
+            <a href="@Model.GetRoute()" class="@_class">
+                @Model.Content
+            </a>
+        }
+        else
+        {
+            <a asp-area="@Model.Area"
+               asp-controller="@Model.Controller"
+               asp-action="@Model.Action"
+               asp-all-route-data="@Model.RequestParameters?.ToStringDictionary()"
+               class="@_class">
+                @Model.Content
+            </a>
+        }
     }
     else
     {
-        <form asp-area="@Model.Area" asp-controller="@Model.Controller" asp-action="@Model.Action">
+        <form action="@Model.GetRoute()" method="post">
             @if (Model.RequestParameters != null)
             {
                 foreach (KeyValuePair<string, object> kvp in Model.RequestParameters)
@@ -31,7 +38,7 @@
                 }
             }
             <button type="submit" class="@_class">
-                @Html.Raw(Model.Content)
+                @Model.Content
             </button>
         </form>
     }

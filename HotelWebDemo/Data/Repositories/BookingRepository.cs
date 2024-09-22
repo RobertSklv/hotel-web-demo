@@ -42,14 +42,6 @@ public class BookingRepository : CrudRepository<Booking, IBookingViewModel>, IBo
             .Include(e => e.BookingTimeline!)
             .FirstOrDefaultAsync(e => e.Id == id);
 
-        if (booking != null && booking.ReservedRooms != null)
-        {
-            foreach (RoomReservation r in booking.ReservedRooms)
-            {
-                await roomReservationService.GetOrLoadCurrentCheckinInfo(r);
-            }
-        }
-
         return booking;
     }
 

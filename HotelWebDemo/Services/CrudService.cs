@@ -13,6 +13,10 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
 {
     private readonly ICrudRepository<TEntity> repository;
 
+    public virtual string? AreaName { get; } = "Admin";
+
+    public virtual string ControllerName => typeof(TEntity).Name;
+
     public CrudService(ICrudRepository<TEntity> repository)
     {
         this.repository = repository;
@@ -76,11 +80,14 @@ public abstract class CrudService<TEntity, TViewModel> : ICrudService<TEntity, T
     public virtual void InitializeListingModel(ListingModel<TEntity> listingModel, ListingModel listingQuery)
     {
         listingModel.CopyFrom(listingQuery);
+        listingModel.Area = AreaName;
+        listingModel.Controller = ControllerName;
+        listingModel.Action = "Index";
     }
 
     public virtual async Task<Table<TEntity>> CreateListingTable(ListingModel<TEntity> listingModel, PaginatedList<TEntity> items)
     {
-        return new Table<TEntity>(listingModel, items, area: "Admin")
+        return new Table<TEntity>(listingModel, items)
             .SetSearchable(true)
             .SetOrderable(true)
             .SetFilterable(true)

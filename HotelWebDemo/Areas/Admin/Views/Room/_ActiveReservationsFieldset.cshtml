@@ -1,17 +1,15 @@
 ﻿@using HotelWebDemo.Models.Database
 
-@model Room
+@model List<RoomReservation>
 
 @{
     Layout = "_FieldsetLayout";
     ViewData["Legend"] = "Active reservations";
-
-    List<RoomReservation> activeReservations = ViewData["ActiveReservations"] as List<RoomReservation> ?? new();
 }
 
-@if (activeReservations.Any())
+@if (Model.Any())
 {
-    <table class="table table-stripped table-bordered">
+    <table class="table table-stripped">
         <thead>
             <tr>
                 <th>#</th>
@@ -21,13 +19,15 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (RoomReservation r in activeReservations)
+            @foreach (RoomReservation r in Model)
             {
                 <tr>
                     <td>@r.Id</td>
                     <td>@r.Booking?.CheckinDate.ToString("dd.MM.yyyy")</td>
                     <td>@r.Booking?.CheckoutDate.ToString("dd.MM.yyyy")</td>
-                    <td><a asp-controller="Booking" asp-action="View" asp-route-id=@r.Booking?.Id>@r.Booking?.Id</a></td>
+                    <td>
+                        <a asp-controller="Booking" asp-action="View" asp-route-id=@r.Booking?.Id target="_blank">@r.Booking?.Id</a>
+                    </td>
                 </tr>
             }
         </tbody>

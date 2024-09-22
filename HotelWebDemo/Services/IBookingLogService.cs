@@ -4,7 +4,9 @@ namespace HotelWebDemo.Services;
 
 public interface IBookingLogService
 {
-    Task<int> Log(BookingEventLog log);
+    Task<bool> Log(BookingEventLog log, bool throwOnError = true);
+
+    Task<bool> Log(int bookingId, string message, bool throwOnError = true);
 
     BookingEventLog CreateLog(Booking? booking, string message);
 

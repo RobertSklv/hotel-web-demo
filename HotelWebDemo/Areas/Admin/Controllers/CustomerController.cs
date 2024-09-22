@@ -73,6 +73,7 @@ public class CustomerController : CrudController<Customer, CustomerViewModel>
         GetOrCreatePageActionButtonsList().Add(new()
         {
             Content = "Reset password",
+            Area = "Admin",
             Controller = "Customer",
             Action = "ResetPassword",
             Color = ColorClass.Warning,

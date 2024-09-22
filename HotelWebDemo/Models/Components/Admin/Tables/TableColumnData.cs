@@ -1,4 +1,5 @@
 ﻿using HotelWebDemo.Models.Attributes;
+using HotelWebDemo.Models.Components.Common;
 
 namespace HotelWebDemo.Models.Components.Admin.Tables;
 
@@ -27,4 +28,6 @@ public class TableColumnData
     public bool IsSelectable { get; set; }
 
     public dynamic SelectableDataSource { get; set; }
+
+    public Func<object, string>? LinkCallback { get; set; }
 }

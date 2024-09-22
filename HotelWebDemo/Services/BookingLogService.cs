@@ -12,9 +12,21 @@ public class BookingLogService : IBookingLogService
         this.repository = repository;
     }
 
-    public async Task<int> Log(BookingEventLog log)
+    public async Task<bool> Log(BookingEventLog log, bool throwOnError = true)
     {
-        return await repository.RecordLog(log);
+        bool success = await repository.RecordLog(log) > 0;
+
+        if (throwOnError && !success)
+        {
+            throw new Exception("Failed to log booking event, an unknown error occurred");
+        }
+
+        return success;
+    }
+
+    public async Task<bool> Log(int bookingId, string message, bool throwOnError = true)
+    {
+        return await Log(CreateLog(bookingId, message), throwOnError);
     }
 
     public BookingEventLog CreateLog(Booking? booking, string message)

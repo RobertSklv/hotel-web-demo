@@ -20,8 +20,7 @@
             <div class="list-group">
                 @foreach (BookingStep step in stepContext.Steps)
                 {
-                    <a href="@step.Href"
-                       asp-area="@step.Area"
+                    <a asp-area="@step.Area"
                        asp-controller="@step.Controller"
                        asp-action="@step.Action"
                        asp-all-route-data="@Model.GenerateListingQuery()"

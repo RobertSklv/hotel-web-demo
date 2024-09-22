@@ -18,6 +18,7 @@ public interface IAdminPageService
         Dictionary<string, object>? requestParameters = null);
 
     PageActionButton CreateAction(
+        string? area,
         string? controller,
         string action = "Create",
         Dictionary<string, object>? requestParameters = null);

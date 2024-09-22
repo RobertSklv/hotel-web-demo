@@ -62,7 +62,7 @@ window.newKnownCustomerComponent = function (fieldsWrapperId) {
             var passportId = this.passportIdField.val();
             var mapToId = $('[data-map-to="Id"]', this.wrapperIdSelector).val();
 
-            if (mapToId) {
+            if (parseInt(mapToId) > 0) {
                 this._autofill(false);
             } else {
                 if (nationalId) {

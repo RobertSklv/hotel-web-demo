@@ -3,10 +3,11 @@
 @model TableLink
 
 @{
+    string route = Model.Route ?? Url.Action(Model.Action, Model.Controller) ?? "/";
+    string href = route + QueryString.Create(Model.GetListingModel().GenerateListingQuery());
 }
 
-<a asp-all-route-data=@Model.GetListingModel().GenerateListingQuery()
-   asp-action=@Model.ActionName
+<a href="@href"
    title="@Model.Content"
    class="@Model.Class"
    disabled="@Model.Disabled">
