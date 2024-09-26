@@ -1,5 +1,4 @@
-﻿using HotelWebDemo.Areas.Admin.Controllers;
-using HotelWebDemo.Data.Repositories;
+﻿using HotelWebDemo.Data.Repositories;
 using HotelWebDemo.Models.Components.Admin.Tables;
 using HotelWebDemo.Models.Components.Common;
 using HotelWebDemo.Models.Database;
@@ -325,9 +324,97 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
             .SetFilterable(true)
             .SetAdjustablePageSize(true)
             .RemoveColumn(nameof(RoomReservation.Room))
-            .OverrideColumnSortOrder(nameof(RoomReservation.Period), 1000)
+            .RemoveColumn(nameof(RoomReservation.UpdatedAt))
+            .OverrideColumn(nameof(RoomReservation.CreatedAt), c =>
+            {
+                c.Format = "dd.MM.yyyy hh:mm:ss";
+            })
+            .AddAnonymousColumn<DateTime>("CheckinDate", r =>
+            {
+                if (r.Booking == null) throw new Exception("Booking not loaded.");
+
+                return r.Booking.CheckinDate;
+            }, c =>
+            {
+                c.Name = "Check-in date";
+                c.SortOrder = 1000;
+                c.Format = "dd.MM.yyyy";
+            })
+            .AddAnonymousColumn<DateTime>("CheckoutDate", r =>
+            {
+                if (r.Booking == null) throw new Exception("Booking not loaded.");
+
+                return r.Booking.CheckoutDate;
+            }, c =>
+            {
+                c.Name = "Check-out date";
+                c.SortOrder = 1001;
+                c.Format = "dd.MM.yyyy";
+            })
+            .AddAnonymousColumn<int>("Period", r =>
+            {
+                if (r.Booking == null) throw new Exception("Booking not loaded.");
+                if (r.Booking.Totals == null) throw new Exception("Booking totals not loaded.");
+
+                string period = $"{r.Booking.Totals.Nights} night";
+
+                if (r.Booking.Totals.Nights != 1) period += "s";
+
+                return period;
+            }, c =>
+            {
+                c.SortOrder = 1005;
+            })
+            .AddAnonymousColumn<DateTime>("ActualCheckinDate", r =>
+            {
+                if (r.CheckinInfo == null)
+                {
+                    return null;
+                }
+
+                return r.CheckinInfo.CreatedAt;
+            }, c =>
+            {
+                c.Name = "Actual check-in date";
+                c.SortOrder = 1010;
+                c.Format = "dd.MM.yyyy";
+                c.DefaultValue = "N/A";
+            })
+            .AddAnonymousColumn<DateTime>("CheckoutDate", r =>
+            {
+                if (r.CheckinInfo == null)
+                {
+                    return null;
+                }
+
+                return r.CheckinInfo.CheckoutDate;
+            }, c =>
+            {
+                c.Name = "Actual check-out date";
+                c.SortOrder = 1012;
+                c.Format = "dd.MM.yyyy";
+                c.DefaultValue = "N/A";
+            })
+            .AddAnonymousColumn<int>("Actual period", r =>
+            {
+                if (r.CheckinInfo == null || r.CheckinInfo.CheckoutDate == null)
+                {
+                    return null;
+                }
+
+                var nights = ((DateTime)r.CheckinInfo.CheckoutDate - r.CheckinInfo.CreatedAt).Days;
+                string period = $"{nights} night";
+
+                if (nights != 1) period += "s";
+
+                return period;
+            }, c =>
+            {
+                c.SortOrder = 1015;
+                c.DefaultValue = "N/A";
+            })
             .OverrideColumnValue(nameof(RoomReservation.Booking), r => "#" + r.BookingId)
-            .OverrideColumnSortOrder(nameof(RoomReservation.Booking), 1001)
+            .OverrideColumnSortOrder(nameof(RoomReservation.Booking), 1020)
             .AddColumnLink(nameof(RoomReservation.Booking), r => $"/Admin/Booking/View/{r.BookingId}");
 
         return listingModel;

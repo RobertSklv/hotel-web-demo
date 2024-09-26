@@ -110,7 +110,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
 
         foreach (RoomReservation rr in entity.ReservedRooms)
         {
-            viewModel.ReservedRooms.Add(rr.Room);
+            viewModel.ReservedRooms.Add(RoomViewModel.ToViewModel(rr.Room));
             viewModel.RoomsToReserve.Add(rr.RoomId);
         }
 
@@ -161,7 +161,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             return;
         }
 
-        viewModel.ReservedRooms = await roomService.GetByIds(viewModel.RoomsToReserve);
+        viewModel.ReservedRooms = (await roomService.GetByIds(viewModel.RoomsToReserve)).ConvertAll(RoomViewModel.ToViewModel);
 
         viewModel.Totals = totalsService.CalculateTotals(viewModel);
         viewModel.RoomsPrice = await totalsService.CalculateTotals<TotalsCategoryModifier>(viewModel.Totals);
@@ -207,7 +207,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
         {
             RoomCategoryId = room.CategoryId,
             TargetCapacity = room.Capacity,
-            Price = room.Price,
+            Price = (room.Category ?? throw new Exception($"The category must be loaded in order to calculate the total price.")).Price,
             Quantity = 1,
             DesiredFeatures = CreateBookingItemRoomFeatures(room),
         };

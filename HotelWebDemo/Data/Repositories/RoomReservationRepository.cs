@@ -25,6 +25,7 @@ public class RoomReservationRepository : CrudRepository<RoomReservation>, IRoomR
     public override IQueryable<RoomReservation> List(DbSet<RoomReservation> dbSet)
     {
         return base.List(dbSet)
+            .Include(e => e.CheckinInfo)
             .Include(e => e.Booking)
                 .ThenInclude(e => e!.Totals);
     }

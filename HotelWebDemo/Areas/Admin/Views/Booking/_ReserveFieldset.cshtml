@@ -28,7 +28,7 @@
             @if (Model.ReservedRooms != null)
             {
                 <div class="row">
-                    @foreach (Room r in Model.ReservedRooms)
+                    @foreach (RoomViewModel r in Model.ReservedRooms)
                     {
                         bool hasFeatures = r.Features != null && r.Features.Count > 0;
 

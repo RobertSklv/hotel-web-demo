@@ -27,29 +27,16 @@ public class RoomReservation : BaseEntity
 
     public int? CheckinInfoId { get; set; }
 
-    [TableColumn(Filterable = false, Orderable = false, Searchable = false)]
-    public string? Period
+    public string RoomCheckinTitle
     {
         get
         {
-            if (Booking == null)
-            {
-                throw new Exception("Booking not loaded.");
-            }
+            if (Room == null) throw new Exception($"The room is not loaded.");
+            if (Room.Category == null) throw new Exception($"The category is not loaded.");
 
-            if (Booking.Totals == null)
-            {
-                throw new Exception("Booking totals not loaded.");
-            }
+            string adultsLabel = Room.Capacity > 1 ? "adults" : "adult";
 
-            string period = $"{Booking.Totals.Nights} night";
-
-            if (Booking.Totals.Nights > 1)
-            {
-                period += "s";
-            }
-
-            return period;
+            return $"{Room.Category.Name}, {Room.Capacity} {adultsLabel}, room No. {Room.Number}";
         }
     }
 }

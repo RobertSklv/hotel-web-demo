@@ -24,7 +24,7 @@ public class BookingViewModel : ListingModel<Room>, IBookingViewModel
 
     public List<int>? RoomsToReserve { get; set; }
 
-    public List<Room>? ReservedRooms { get; set; }
+    public List<RoomViewModel>? ReservedRooms { get; set; }
 
     public List<RoomReservation>? RoomReservations { get; set; }
 
@@ -34,10 +34,12 @@ public class BookingViewModel : ListingModel<Room>, IBookingViewModel
 
     public decimal RoomFeaturesPrice { get; set; }
 
+    [Display(Name = "Has custom grand total")]
     public bool HasCustomGrandTotal { get; set; }
 
     public decimal GrandTotal { get; set; }
 
+    [Display(Name = "Custom grand total")]
     public decimal? CustomGrandTotal { get; set; }
 
     public BookingTotals? Totals { get; set; }

@@ -330,6 +330,13 @@ public class Table<T> : Table
         return rowData;
     }
 
+    public Table<T> OverrideColumn(string propertyName, Action<TableColumnData> callback)
+    {
+        callback(FindColumn(propertyName));
+
+        return this;
+    }
+
     public Table<T> OverrideColumnName(string propertyName, string columnName)
     {
         FindColumn(propertyName).Name = columnName;
@@ -356,6 +363,23 @@ public class Table<T> : Table
     public Table<T> RemoveColumn(string propertyName)
     {
         ColumnDatas.Remove(FindColumn(propertyName));
+
+        return this;
+    }
+
+    public Table<T> AddAnonymousColumn<U>(string propertyName, Func<T, object?> valueCallback, Action<TableColumnData>? init = null)
+    {
+        TableColumnData colData = new()
+        {
+            PropertyName = propertyName,
+            PropertyType = typeof(U),
+            Name = propertyName,
+            ValueCallback = (obj) => valueCallback((T)obj)
+        };
+
+        init?.Invoke(colData);
+
+        ColumnDatas.Add(colData);
 
         return this;
     }

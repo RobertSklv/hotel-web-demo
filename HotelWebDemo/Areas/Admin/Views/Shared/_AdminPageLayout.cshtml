@@ -11,16 +11,18 @@
     List<Message>? messages = TempData.Get<List<Message>>("Messages") ?? new();
 }
 
-<h1 class="mt-4 mb-5">
-    @ViewData["PageHeading"]
-</h1>
+<div class="headings mt-4 mb-5">
+    <h1>
+        @ViewData["PageHeading"]
+    </h1>
 
-@if (ViewData["PageSubHeading"] != null)
-{
-    <h2>
-        @ViewData["PageSubHeading"]
-    </h2>
-}
+    @if (ViewData["PageSubHeading"] != null)
+    {
+        <h2 class="h4">
+            @ViewData["PageSubHeading"]
+        </h2>
+    }
+</div>
 
 <partial name="_Messages" model="@messages" />
 
