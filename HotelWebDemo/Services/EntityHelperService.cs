@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -74,5 +75,44 @@ public class EntityHelperService : IEntityHelperService
     public PropertyInfo GetHierarchicalProperty(Type type, PropertyInfo property)
     {
         return GetHierarchicalProperty(type, SplitHierarchicalPropertyName(property.Name));
+    }
+
+    public bool CanPropertyBeMapped(PropertyInfo property)
+    {
+        if (property.GetMethod == null
+            || property.GetMethod.IsAbstract
+            || !property.GetMethod.IsPublic
+            || property.GetMethod.IsStatic)
+        {
+            return false;
+        }
+        else if (property.SetMethod == null
+            || property.SetMethod.IsAbstract
+            || !property.SetMethod.IsPublic
+            || property.SetMethod.IsStatic)
+        {
+            return false;
+        }
+        else if (property.GetCustomAttribute<NotMappedAttribute>() != null)
+        {
+            return false;
+        }
+        else if (!property.PropertyType.IsPrimitive && !(
+            property.PropertyType == typeof(string)
+            || property.PropertyType == typeof(DateTime)))
+        {
+            return false;
+        }
+        else if (property.PropertyType.IsGenericType)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool CanPropertyBeMapped(Type type, string propertyName)
+    {
+        return CanPropertyBeMapped(GetHierarchicalProperty(type, propertyName));
     }
 }

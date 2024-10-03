@@ -33,7 +33,7 @@ public class EntitySortService : IEntitySortService
         return properties;
     }
 
-    public IOrderedQueryable<T> OrderBy<T>(IQueryable<T> queryable, string propertyName, bool descending)
+    public IQueryable<T> OrderBy<T>(IQueryable<T> queryable, string propertyName, bool descending)
     {
         foreach (PropertyInfo prop in GetOrderableProperties(typeof(T)))
         {

@@ -7,5 +7,5 @@ public interface IEntitySortService
 {
     List<PropertyInfo> GetOrderableProperties(Type type);
 
-    IOrderedQueryable<T> OrderBy<T>(IQueryable<T> queryable, string propertyName, bool descending);
+    IQueryable<T> OrderBy<T>(IQueryable<T> queryable, string propertyName, bool descending);
 }

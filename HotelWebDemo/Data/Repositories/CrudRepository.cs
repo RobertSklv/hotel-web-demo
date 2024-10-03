@@ -91,7 +91,7 @@ public abstract class CrudRepository<TEntity, TViewModel> : ICrudRepository<TEnt
         if (listingModel.PageSize == null) throw new ArgumentException($"The {nameof(ListingModel.PageSize)} value is required.");
 
         IQueryable<TEntity> entities = List(DbSet);
-        bool desc = listingModel.Direction == ListingModel.DEFAULT_DIRECTION;
+        bool desc = listingModel.Direction == ListingModel.DESCENDING;
 
         entities = sortService.OrderBy(entities, listingModel.OrderBy, desc);
         entities = filterService.FilterBy(entities, listingModel.Filters);

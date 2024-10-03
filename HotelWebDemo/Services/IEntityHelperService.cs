@@ -16,4 +16,8 @@ public interface IEntityHelperService
     PropertyInfo GetHierarchicalProperty(Type type, string propertyName);
 
     PropertyInfo GetHierarchicalProperty(Type type, PropertyInfo property);
+
+    bool CanPropertyBeMapped(PropertyInfo property);
+
+    bool CanPropertyBeMapped(Type type, string propertyName);
 }

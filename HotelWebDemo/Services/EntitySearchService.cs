@@ -33,7 +33,7 @@ public class EntitySearchService : IEntitySearchService
 
                 SelectOptionAttribute? selectOptionAttr = propInfo.PropertyType.GetCustomAttribute<SelectOptionAttribute>();
 
-                if (selectOptionAttr != null && CanPropertyBeMapped(helper.GetHierarchicalProperty(entityType, propertyName + '_' + selectOptionAttr.LabelProperty)))
+                if (selectOptionAttr != null && helper.CanPropertyBeMapped(entityType, propertyName + '_' + selectOptionAttr.LabelProperty))
                 {
                     propertyName += '_' + selectOptionAttr.LabelProperty;
                 }
@@ -42,7 +42,7 @@ public class EntitySearchService : IEntitySearchService
                     propertyName += '_' + "Name";
                 }
 
-                if (!CanPropertyBeMapped(helper.GetHierarchicalProperty(entityType, propertyName)))
+                if (!helper.CanPropertyBeMapped(entityType, propertyName))
                 {
                     continue;
                 }
@@ -121,39 +121,5 @@ public class EntitySearchService : IEntitySearchService
         }
 
         return properties;
-    }
-
-    public bool CanPropertyBeMapped(PropertyInfo property)
-    {
-        if (property.GetMethod == null
-            || property.GetMethod.IsAbstract
-            || !property.GetMethod.IsPublic
-            || property.GetMethod.IsStatic)
-        {
-            return false;
-        }
-        else if (property.SetMethod == null
-            || property.SetMethod.IsAbstract
-            || !property.SetMethod.IsPublic
-            || property.SetMethod.IsStatic)
-        {
-            return false;
-        }
-        else if (property.GetCustomAttribute<NotMappedAttribute>() != null)
-        {
-            return false;
-        }
-        else if (!property.PropertyType.IsPrimitive && !(
-            property.PropertyType == typeof(string)
-            || property.PropertyType == typeof(DateTime)))
-        {
-            return false;
-        }
-        else if (property.PropertyType.IsGenericType)
-        {
-            return false;
-        }
-
-        return true;
     }
 }

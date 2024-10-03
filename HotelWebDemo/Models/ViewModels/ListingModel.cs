@@ -6,8 +6,10 @@ namespace HotelWebDemo.Models.ViewModels;
 
 public class ListingModel : RouteElement, IListingModel
 {
+    public const string DESCENDING = "desc";
+    public const string ASCENDING = "asc";
     public const string DEFAULT_ORDER_BY = "Id";
-    public const string DEFAULT_DIRECTION = "desc";
+    public const string DEFAULT_DIRECTION = DESCENDING;
     public const int DEFAULT_PAGE = 1;
     public const int DEFAULT_PAGE_SIZE = 10;
 
