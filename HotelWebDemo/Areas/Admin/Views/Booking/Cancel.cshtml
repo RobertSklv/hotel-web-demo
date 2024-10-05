@@ -1,0 +1,10 @@
+﻿@using HotelWebDemo.Models.Database
+
+@model BookingCancellation
+
+@{
+    Layout = "_AdminPageLayout";
+    ViewData["PageHeading"] = "Cancel Booking #" + Model.Booking.Id;
+}
+
+<partial name="_CancelFieldset" model="@Model" />

@@ -7,19 +7,15 @@ namespace HotelWebDemo.Data.Repositories;
 
 public class BookingRepository : CrudRepository<Booking, IBookingViewModel>, IBookingRepository
 {
-    private readonly IRoomReservationService roomReservationService;
-
     public override DbSet<Booking> DbSet => db.Bookings;
 
     public BookingRepository(
         AppDbContext db,
         IEntityFilterService filterService,
         IEntitySortService sortService,
-        IEntitySearchService searchService,
-        IRoomReservationService roomReservationService)
+        IEntitySearchService searchService)
         : base(db, filterService, sortService, searchService)
     {
-        this.roomReservationService = roomReservationService;
     }
 
     public override async Task<Booking?> Get(int id)
@@ -49,5 +45,22 @@ public class BookingRepository : CrudRepository<Booking, IBookingViewModel>, IBo
     {
         return base.List(dbSet)
             .Include(e => e.Contact);
+    }
+
+    public async Task<BookingCancellation?> GetOrLoadBookingCancellation(Booking booking)
+    {
+        booking.BookingCancellation ??= await db.BookingCancellations.FirstOrDefaultAsync(e => e.Id == booking.BookingCancellationId);
+
+        return booking.BookingCancellation;
+    }
+
+    public async Task<List<RoomReservation>?> GetOrLoadReservedRooms(Booking booking)
+    {
+        booking.ReservedRooms ??= await db.RoomReservations
+            .Include(e => e.CheckinInfo)
+            .Where(e => e.BookingId == booking.Id)
+            .ToListAsync();
+
+        return booking.ReservedRooms;
     }
 }

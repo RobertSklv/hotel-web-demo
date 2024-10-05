@@ -13,4 +13,20 @@ public interface IBookingService : ICrudService<Booking, BookingViewModel>
     Task GenerateReservationsAndBookingItems(BookingViewModel viewModel, Booking booking);
 
     BookingStepContext GenerateBookingStepContext(BookingViewModel? viewModel, string? activeStep = null);
+
+    Task<bool> IsNoShow(Booking booking);
+
+    Task<bool> IsPendingCheckin(Booking booking);
+
+    Task<bool> IsPendingCheckout(Booking booking);
+
+    Task<bool> IsCheckedIn(Booking booking);
+
+    Task<bool> IsCheckedOut(Booking booking);
+
+    Task<BookingStatus> GetStatus(Booking booking);
+
+    Task<bool> CanBeCancelled(Booking booking);
+
+    Task<bool> Cancel(int bookingId, BookingCancellation cancellation);
 }

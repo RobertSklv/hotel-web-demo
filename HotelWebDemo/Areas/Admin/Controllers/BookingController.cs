@@ -36,9 +36,14 @@ public class BookingController : CrudController<Booking, BookingViewModel>
 
     public override async Task<IActionResult> View(int id)
     {
-        CreateViewPageActions(id);
+        BookingViewModel? viewModel = await GetViewModel(id);
 
-        return await base.View(id);
+        if (viewModel != null)
+        {
+            CreateViewPageActions(viewModel);
+        }
+
+        return base.View(viewModel);
     }
 
     [HttpGet]
@@ -163,12 +168,57 @@ public class BookingController : CrudController<Booking, BookingViewModel>
         return base.Create(model);
     }
 
+    [HttpGet]
+    [Route("/Admin/Booking/Cancel/{bookingId}")]
+    public async Task<IActionResult> Cancel([FromRoute] int bookingId)
+    {
+        Booking booking = await service.GetStrict(bookingId);
+
+        BookingCancellation cancellation = new()
+        {
+            Booking = booking
+        };
+
+        AddBackAction("View", requestParameters: new()
+        {
+            { "Id", bookingId }
+        });
+
+        return View(cancellation);
+    }
+
+    [HttpPost]
+    [Route("/Admin/Booking/Cancel/{bookingId}")]
+    public async Task<IActionResult> Cancel([FromRoute] int bookingId, BookingCancellation cancellation)
+    {
+        try
+        {
+            bool success = await service.Cancel(bookingId, cancellation);
+
+            if (success)
+            {
+                AddMessage("Booking successfully cancelled.", ColorClass.Success);
+            }
+            else
+            {
+                throw new Exception("An unknown error occurred.");
+            }
+        }
+        catch (Exception e)
+        {
+            logger.Error(e, $"Failed to cancel booking {bookingId}.");
+            AddMessage($"Failed to cancel booking: {e.Message}", ColorClass.Danger);
+        }
+
+        return Redirect($"/Admin/Booking/View/{bookingId}");
+    }
+
     private int GetCurrentAdminHotelId()
     {
         return int.Parse(User.Claims.First(c => c.Type == "HotelId").Value);
     }
 
-    private void CreateViewPageActions(int bookingId)
+    private void CreateViewPageActions(BookingViewModel booking)
     {
         List<PageActionButton> btnList = GetOrCreatePageActionButtonsList();
 
@@ -182,22 +232,25 @@ public class BookingController : CrudController<Booking, BookingViewModel>
             IsLink = true,
             RequestParameters = new()
             {
-                { "Id", bookingId }
+                { "Id", booking.Id }
             }
         });
 
-        btnList.Add(new PageActionButton
+        if (booking.CanBeCancelled)
         {
-            Content = "Cancel",
-            Color = ColorClass.Danger,
-            AreaName = "Admin",
-            ControllerName = "Booking",
-            ActionName = "Cancel",
-            IsLink = false,
-            RequestParameters = new()
+            btnList.Add(new PageActionButton
             {
-                { "Id", bookingId }
-            }
-        });
+                Content = "Cancel",
+                Color = ColorClass.Danger,
+                AreaName = "Admin",
+                ControllerName = "Booking",
+                ActionName = "Cancel",
+                IsLink = true,
+                RequestParameters = new()
+                {
+                    { "Id", booking.Id }
+                }
+            });
+        }
     }
 }

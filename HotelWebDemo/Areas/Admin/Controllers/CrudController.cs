@@ -55,11 +55,18 @@ public abstract class CrudController<TEntity, TViewModel> : AdminController
     public virtual async Task<IActionResult> View(int id)
     {
         TViewModel? viewModel = await GetViewModel(id);
+
+        return View(viewModel);
+    }
+
+    [NonAction]
+    public virtual IActionResult View(TViewModel? viewModel)
+    {
         if (viewModel != null)
         {
             AddBackAction();
 
-            return View(viewModel);
+            return base.View(viewModel);
         }
 
         return RedirectToAction("Index");

@@ -14,12 +14,13 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
     public const string ROOM_RESERVATION_STEP_NAME = "room_reservation";
     public const string CONTACT_STEP_NAME = "contact";
     public const string SUMMARY_STEP_NAME = "summary";
-
+    private readonly IBookingRepository repository;
     private readonly IRoomService roomService;
     private readonly IRoomReservationService roomReservationService;
     private readonly IRoomCategoryService categoryService;
     private readonly IBookingTotalsService totalsService;
     private readonly IBookingLogService logService;
+    private readonly Serilog.ILogger logger;
 
     public BookingService
         (IBookingRepository repository,
@@ -27,14 +28,17 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
         IRoomReservationService roomReservationService,
         IRoomCategoryService categoryService,
         IBookingTotalsService totalsService,
-        IBookingLogService logService)
+        IBookingLogService logService,
+        Serilog.ILogger logger)
         : base(repository)
     {
+        this.repository = repository;
         this.roomService = roomService;
         this.roomReservationService = roomReservationService;
         this.categoryService = categoryService;
         this.totalsService = totalsService;
         this.logService = logService;
+        this.logger = logger;
     }
 
     public async Task<ListingModel<Room>> CreateRoomListing(BookingViewModel? viewModel)
@@ -93,7 +97,8 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             RoomsToReserve = new(),
             ReservedRooms = new(),
             RoomReservations = entity.ReservedRooms,
-            Status = entity.Status,
+            Status = await GetStatus(entity),
+            CanBeCancelled = await CanBeCancelled(entity),
             Timeline = entity.BookingTimeline,
             RoomsPrice = await totalsService.CalculateTotals<TotalsCategoryModifier>(entity.Totals),
             RoomFeaturesPrice = await totalsService.CalculateTotals<TotalsFeatureModifier>(entity.Totals),
@@ -145,8 +150,7 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             BookingTimeline = new()
             {
                 logService.CreateLog($"{viewModel.AdminUser.RoleAndName} created the Booking.")
-            },
-            Status = BookingStatus.New,
+            }
         };
 
         await GenerateReservationsAndBookingItems(viewModel, booking);
@@ -267,6 +271,141 @@ public class BookingService : CrudService<Booking, BookingViewModel>, IBookingSe
             RoomFeature = feature,
             RoomFeatureId = feature.Id
         });
+    }
+
+    public async Task<bool> IsNoShow(Booking booking)
+    {
+        return DateTime.UtcNow > booking.CheckoutDate
+            && !await IsCheckedIn(booking)
+            && !booking.IsCancelled;
+    }
+
+    public async Task<bool> IsPendingCheckin(Booking booking)
+    {
+        return DateTime.UtcNow >= booking.CheckinDate
+            && DateTime.UtcNow < booking.CheckoutDate
+            && !await IsCheckedIn(booking)
+            && !booking.IsCancelled;
+    }
+
+    public async Task<bool> IsPendingCheckout(Booking booking)
+    {
+        return DateTime.UtcNow >= booking.CheckoutDate
+            && await IsCheckedIn(booking)
+            && !await IsCheckedOut(booking)
+            && !booking.IsCancelled;
+    }
+
+    public async Task<bool> IsCheckedIn(Booking booking)
+    {
+        List<RoomReservation>? reservedRooms = await repository.GetOrLoadReservedRooms(booking);
+
+        if (reservedRooms == null || reservedRooms.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (RoomReservation roomReservation in reservedRooms)
+        {
+            if (roomReservation.CheckinInfoId == null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public async Task<bool> IsCheckedOut(Booking booking)
+    {
+        List<RoomReservation>? reservedRooms = await repository.GetOrLoadReservedRooms(booking);
+
+        if (reservedRooms == null || reservedRooms.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (RoomReservation roomReservation in reservedRooms)
+        {
+            if (roomReservation.CheckinInfo == null && roomReservation.CheckinInfoId != null)
+            {
+                throw new Exception($"{nameof(RoomReservation)}.{nameof(RoomReservation.CheckinInfo)} not included!");
+            }
+
+            if (roomReservation.CheckinInfo == null || !roomReservation.CheckinInfo.IsCheckedOut)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+      
+    public async Task<BookingStatus> GetStatus(Booking booking)
+    {
+        if (await IsCheckedOut(booking))
+        {
+            return BookingStatus.CheckedIn;
+        }
+        else if (await IsPendingCheckout(booking))
+        {
+            return BookingStatus.PendingCheckout;
+        }
+        else if (booking.IsCancelled)
+        {
+            return BookingStatus.Cancelled;
+        }
+        else if (await IsCheckedIn(booking))
+        {
+            return BookingStatus.CheckedOut;
+        }
+        else if (await IsPendingCheckin(booking))
+        {
+            return BookingStatus.PendingCheckin;
+        }
+        else if (await IsNoShow(booking))
+        {
+            return BookingStatus.NoShow;
+        }
+
+        return BookingStatus.New;
+    }
+    
+    public async Task<bool> CanBeCancelled(Booking booking)
+    {
+        BookingStatus status = await GetStatus(booking);
+
+        return status == BookingStatus.New || status == BookingStatus.PendingCheckin;
+    }
+
+    public async Task<bool> Cancel(int bookingId, BookingCancellation cancellation)
+    {
+        Booking booking = await repository.GetStrict(bookingId);
+
+        if (await CanBeCancelled(booking))
+        {
+            throw new Exception("Bookings can only be cancelled while in the 'New' or 'Pending check-in' statuses.");
+        }
+
+        booking.BookingCancellation = cancellation;
+
+        bool success = await Update(booking);
+
+        if (success)
+        {
+            try
+            {
+                await logService.Log(
+                    bookingId,
+                    admin => $"{admin.RoleAndName} cancelled the booking. Reason: {cancellation.Reason}");
+            }
+            catch (Exception e)
+            {
+                logger.Fatal(e, $"Failed logging booking cancellation log for booking: {bookingId}.");
+            }
+        }
+
+        return success;
     }
 
     public BookingStepContext GenerateBookingStepContext(BookingViewModel? viewModel, string? activeStep = null)

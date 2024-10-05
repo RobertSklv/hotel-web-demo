@@ -9,10 +9,10 @@
 }
 
 <p>
-    Status: <strong class="text-@Model.GetStatusColorAsString()">@Model.Status</strong>
+    Status: <strong class="text-@Model.GetStatusColorAsString()">@Model.GetStatusLabel()</strong>
 </p>
 
-@if (DateTime.UtcNow >= Model.CheckInDate && DateTime.UtcNow < Model.CheckOutDate)
+@if (Model.Status == BookingStatus.PendingCheckin)
 {
     <partial name="_CheckinFieldset" model="@Model" />
 }

@@ -46,6 +46,8 @@ public class BookingViewModel : ListingModel<Room>, IBookingViewModel
 
     public BookingStatus Status { get; set; }
 
+    public bool CanBeCancelled { get; set; }
+
     public List<BookingEventLog>? Timeline { get; set; }
 
     public int Nights => (CheckOutDate - CheckInDate).Days;
@@ -103,10 +105,28 @@ public class BookingViewModel : ListingModel<Room>, IBookingViewModel
         return Status switch
         {
             BookingStatus.New => Components.Common.ColorClass.Info,
+            BookingStatus.PendingCheckin => Components.Common.ColorClass.Info,
             BookingStatus.CheckedIn => Components.Common.ColorClass.Primary,
             BookingStatus.Cancelled => Components.Common.ColorClass.Danger,
+            BookingStatus.PendingCheckout => Components.Common.ColorClass.Info,
             BookingStatus.CheckedOut => Components.Common.ColorClass.Success,
+            BookingStatus.NoShow => Components.Common.ColorClass.Danger,
             _ => Components.Common.ColorClass.Secondary,
+        };
+    }
+
+    public string GetStatusLabel()
+    {
+        return Status switch
+        {
+            BookingStatus.New => "New",
+            BookingStatus.PendingCheckin => "Pending check-in",
+            BookingStatus.CheckedIn => "Checked in",
+            BookingStatus.Cancelled => "Cancelled",
+            BookingStatus.PendingCheckout => "Pending checkout",
+            BookingStatus.CheckedOut => "Checked out",
+            BookingStatus.NoShow => "No-show",
+            _ => Status.ToString(),
         };
     }
 

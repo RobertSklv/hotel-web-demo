@@ -6,10 +6,12 @@ namespace HotelWebDemo.Services;
 public class BookingLogService : IBookingLogService
 {
     private readonly IBookingLogRepository repository;
+    private readonly IAdminUserService adminUserService;
 
-    public BookingLogService(IBookingLogRepository repository)
+    public BookingLogService(IBookingLogRepository repository, IAdminUserService adminUserService)
     {
         this.repository = repository;
+        this.adminUserService = adminUserService;
     }
 
     public async Task<bool> Log(BookingEventLog log, bool throwOnError = true)
@@ -27,6 +29,13 @@ public class BookingLogService : IBookingLogService
     public async Task<bool> Log(int bookingId, string message, bool throwOnError = true)
     {
         return await Log(CreateLog(bookingId, message), throwOnError);
+    }
+
+    public async Task<bool> Log(int bookingId, Func<AdminUser, string> messageCallback, bool throwOnError = true)
+    {
+        AdminUser currentAdmin = adminUserService.GetCurrentAdmin();
+
+        return await Log(CreateLog(bookingId, messageCallback(currentAdmin)), throwOnError);
     }
 
     public BookingEventLog CreateLog(Booking? booking, string message)

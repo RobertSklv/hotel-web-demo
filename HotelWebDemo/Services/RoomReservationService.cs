@@ -14,7 +14,6 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
     private readonly IRoomService roomService;
     private readonly IRoomCategoryService roomCategoryService;
     private readonly IBookingLogService bookingLogService;
-    private readonly IAdminUserService adminUserService;
     private readonly Serilog.ILogger logger;
 
     public RoomReservationService(
@@ -24,7 +23,6 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         IRoomService roomService,
         IRoomCategoryService roomCategoryService,
         IBookingLogService bookingLogService,
-        IAdminUserService adminUserService,
         Serilog.ILogger logger)
         : base(repository)
     {
@@ -34,7 +32,6 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         this.roomService = roomService;
         this.roomCategoryService = roomCategoryService;
         this.bookingLogService = bookingLogService;
-        this.adminUserService = adminUserService;
         this.logger = logger;
     }
 
@@ -134,16 +131,19 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         {
             try
             {
-                AdminUser admin = adminUserService.GetCurrentAdmin();
                 Room room = await roomService.GetStrict(entity.RoomId);
 
                 if (isCreate)
                 {
-                    await bookingLogService.Log(entity.BookingId, $"{admin.RoleAndName} checked in customers for room {room.Number}.");
+                    await bookingLogService.Log(
+                        entity.BookingId,
+                        admin => $"{admin.RoleAndName} checked in customers for room {room.Number}.");
                 }
                 else
                 {
-                    await bookingLogService.Log(entity.BookingId, $"{admin.RoleAndName} updated existing customers check-in for room {room.Number}.");
+                    await bookingLogService.Log(
+                        entity.BookingId,
+                        admin => $"{admin.RoleAndName} updated existing customers check-in for room {room.Number}.");
                 }
             }
             catch (Exception e)
@@ -163,12 +163,11 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
         {
             try
             {
-                AdminUser admin = adminUserService.GetCurrentAdmin();
                 Room room = await roomService.GetStrict(roomReservation.RoomId);
 
                 await bookingLogService.Log(
                     roomReservation.BookingId,
-                    $"{admin.RoleAndName} checked out customers for room {room.Number}.");
+                    admin => $"{admin.RoleAndName} checked out customers for room {room.Number}.");
             }
             catch (Exception e)
             {
@@ -216,18 +215,17 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
                 CheckinInfo = checkinService.CloneCheckinInfoRecord(roomReservation.CheckinInfo)
             };
 
-            success = await repository.Upsert(newReservation) > 0;
+            success = await Upsert(newReservation);
 
             if (success)
             {
                 try
                 {
-                    AdminUser admin = adminUserService.GetCurrentAdmin();
                     Room oldRoom = await roomService.GetStrict(roomReservation.RoomId);
 
                     await bookingLogService.Log(
                         roomReservation.BookingId,
-                        $"{admin.RoleAndName} moved customers from room {oldRoom.Number} to room {room.Number}.");
+                        admin => $"{admin.RoleAndName} moved customers from room {oldRoom.Number} to room {room.Number}.");
                 }
                 catch (Exception e)
                 {
@@ -240,7 +238,7 @@ public class RoomReservationService : CrudService<RoomReservation>, IRoomReserva
             roomReservation.RoomId = roomId;
             roomReservation.Room = room;
 
-            success = await repository.Update(roomReservation) > 0;
+            success = await Update(roomReservation);
         }
 
         return success;

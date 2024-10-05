@@ -38,11 +38,6 @@ public class Booking : BaseEntity
 
     public int? BookingCancellationId { get; set; }
 
-    [StringLength(32)]
-    [Column(TypeName = "VARCHAR")]
-    [TableColumn(Name = "Status")]
-    public string BookingStatus { get; set; }
-
     public List<BookingItem>? BookingItems { get; set; }
 
     public List<RoomReservation>? ReservedRooms { get; set; }
@@ -57,13 +52,6 @@ public class Booking : BaseEntity
 
     [TableColumn(Name = "Contact e-mail", SpecialFormat = TableColumnSpecialFormat.EmailLink)]
     public string? Contact_Email => Contact?.Email;
-
-    [NotMapped]
-    public BookingStatus Status
-    {
-        get => Enum.TryParse(BookingStatus, out BookingStatus result) ? result : default;
-        set => BookingStatus = value.ToString();
-    }
 
     public bool IsCancelled => BookingCancellationId != null;
 
